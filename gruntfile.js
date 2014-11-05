@@ -26,7 +26,6 @@ module.exports = function (grunt) {
 
   // Define the configuration for all the tasks
   grunt.initConfig({
-
     // Project settings
     pkg: grunt.file.readJSON('package.json'),
     yeoman: {
@@ -378,15 +377,15 @@ module.exports = function (grunt) {
         connectCommits: false,
         message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
       },
-      heroku: {
+      staging: {
         options: {
-          remote: 'heroku',
+          remote: 'git@heroku.com:datageyser-staging.git',
           branch: 'master'
         }
       },
-      openshift: {
+      production: {
         options: {
-          remote: 'openshift',
+          remote: 'git@heroku.com:datageyser.git',
           branch: 'master'
         }
       }
