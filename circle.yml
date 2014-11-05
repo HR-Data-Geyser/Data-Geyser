@@ -11,6 +11,8 @@ deployment:
     branch: master
     commands:
       - grunt build:dist
+      - git config --global user.email "tgvarik@me.com"
+      - git config --global user.name "Tom G Varik"
       - heroku maintenance:on --app datageyser
       - grunt buildcontrol:production
       - heroku maintenance:off --app datageyser
