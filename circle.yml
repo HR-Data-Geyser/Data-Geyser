@@ -4,9 +4,15 @@ test:
 deployment:
   production:
     branch: master
-    heroku:
-      appname: datageyser
+    commands:
+      - grunt build:dist
+      - heroku maintenance:on --app datageyser
+      - grunt buildcontrol:production
+      - heroku maintenance:off --app datageyser
   staging:
     branch: develop
-    heroku:
-      appname: datageyser-staging
+    commands:
+          - grunt build:dist
+          - heroku maintenance:on --app datageyser
+          - grunt buildcontrol:staging
+          - heroku maintenance:off --app datageyser
