@@ -28,3 +28,4 @@ bower_components
 .lock-wscript
 .idea
 data
+public/dist
