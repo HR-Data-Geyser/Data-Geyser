@@ -381,7 +381,7 @@ module.exports = function (grunt) {
       staging: {
         options: {
           remote: 'git@heroku.com:datageyser-staging.git',
-          branch: 'develop'
+          branch: 'master'
         }
       },
       production: {
