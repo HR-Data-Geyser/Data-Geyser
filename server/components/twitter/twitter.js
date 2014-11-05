@@ -1,6 +1,6 @@
 module.exports = {
   streamTweets: streamTweets
-}
+};
 
 var Twit = require('twit');
 var Tweet = require('./../../api/tweet/tweet.model.js');
