@@ -46,7 +46,7 @@ function streamTweets(topic) {
       };
 
       // Save to database
-      Tweet.create(newTweet, function(){console.log('tweet created')});
+      Tweet.create(newTweet);
       // console.log('added ' + newTweet + ' to database from', topic);
     }
   })
