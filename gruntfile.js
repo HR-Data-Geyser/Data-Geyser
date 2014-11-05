@@ -378,15 +378,15 @@ module.exports = function (grunt) {
         connectCommits: false,
         message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
       },
-      heroku: {
+      staging: {
         options: {
-          remote: 'heroku',
-          branch: 'master'
+          remote: 'git@heroku.com:datageyser-staging.git',
+          branch: 'develop'
         }
       },
-      openshift: {
+      production: {
         options: {
-          remote: 'openshift',
+          remote: 'git@heroku.com:datageyser.git',
           branch: 'master'
         }
       }
