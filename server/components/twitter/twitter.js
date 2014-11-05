@@ -1,6 +1,6 @@
 module.exports = {
   streamTweets: streamTweets
-}
+};
 
 var Twit = require('twit');
 var Tweet = require('./../../api/tweet/tweet.model.js');
@@ -8,11 +8,11 @@ var _ = require('lodash');
 
 // should probably put this somewhere else..
 var secrets = {
-  consumerKey: 'JfQKz1Ep76YoHVuhkyt4MibUi',
-  consumerSecret: 'UIE3V0zNM5LMdvReOzdM7dPu4hYYgHOsahUBwHUHtsmPD7xV0P',
-  accessToken: '2861852891-KqG6wm7j7eAPNPUlBmGKTub1IoDTbThJGgWPBdN',
-  accessTokenSecret: 'OXfDXXBfFKML4fBaQDb9ptujbEqTVS7yu7VP9LGJBGSUw'
-}
+  consumerKey: process.env['TWITTER_CONSUMER_KEY'],
+  consumerSecret: process.env['TWITTER_CONSUMER_SECRET'],
+  accessToken: process.env['TWITTER_ACCESS_TOKEN'],
+  accessTokenSecret: process.env['TWITTER_ACCESS_TOKEN_SECRET']
+};
 
 var T = new Twit({
   consumer_key: secrets.consumerKey,
