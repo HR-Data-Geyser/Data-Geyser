@@ -18,6 +18,14 @@ var Tweet = require('./tweet.model');
   twitter.streamTweets();
 })();
 
+(function getTweets(){
+  Tweet.find(function(err, tweetCollection){
+    console.log('tweets got')
+    console.log(tweetCollection);
+  })
+  setTimeout(getTweets, 5000);
+})();
+
 // Get list of tweets
 exports.index = function(req, res) {
   Tweet.find(function (err, tweets) {

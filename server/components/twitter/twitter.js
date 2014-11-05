@@ -24,8 +24,10 @@ var T = new Twit({
 function streamTweets(topic) {
 
   topic = 'Giants';
+  
+  var globe = ['-180', '-90', '180', '90'];
 
-  var stream = T.stream('statuses/filter', { track: topic });
+  var stream = T.stream('statuses/filter', { track: topic, locations: globe });
 
   stream.on('tweet', function (tweet) {
 
@@ -34,35 +36,18 @@ function streamTweets(topic) {
     console.log(tweet.coordinates);
     // Create geodata object
     if (tweet.coordinates) {
+      console.log('hit');
       var geo = tweet.coordinates.coordinates;
       var newTweet = {
         latitude: geo[1],
-        longitude: geo[0]
+        longitude: geo[0],
+        location: tweet.user.location
       };
 
       // Save to database
-      Tweet.create(newTweet);
+      Tweet.create(newTweet, function(){console.log('tweet created')});
       console.log('added ' + newTweet + ' to database from', topic);
     }
   })
-
-// or search directly
-
-  // T.get('search/tweets', { q: tweetWords, count: 100 }, function(err, data, response) {
-  //   for (var i = 0; i < data.statuses.length; i++) {
-
-  //     // Add to database
-  //     if (data.statuses[i].coordinants) {
-  //       var geo = data.statuses[i].coordinants.coordinants;
-  //       var tweetObj = {
-  //         latitude: geo[1],
-  //         longitude: geo[0]
-  //       };
-  //       console.log(tweetObj);
-  //     }
-
-  //   };
-
-  // })
 
 }
