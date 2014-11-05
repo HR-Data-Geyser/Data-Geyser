@@ -18,9 +18,10 @@ var Tweet = require('./tweet.model');
   twitter.streamTweets();
 })();
 
+
 (function getTweets(){
   Tweet.find(function(err, tweetCollection){
-    console.log(tweetCollection);
+    // console.log(tweetCollection);
   })
   setTimeout(getTweets, 5000);
 })();
