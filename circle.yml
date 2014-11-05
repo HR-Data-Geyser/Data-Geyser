@@ -1,3 +1,8 @@
+dependencies:
+  pre:
+    - wget http://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-0.7.5/optipng-0.7.5.tar.gz
+    - tar xvf optipng-0.7.5.tar.gz
+    - cd optipng-0.7.5; ./configure; make; sudo checkinstall -y;
 test:
   pre:
     - bower install
