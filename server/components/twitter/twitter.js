@@ -33,10 +33,8 @@ function streamTweets(topic) {
 
     /* if you want to store more attributes from the tweet object, here is a great place to do it. Right now we're just storing
     the geolocation data, but */
-    console.log(tweet.coordinates);
     // Create geodata object
     if (tweet.coordinates) {
-      console.log('hit');
       var geo = tweet.coordinates.coordinates;
       var newTweet = {
         latitude: geo[1],
@@ -45,8 +43,7 @@ function streamTweets(topic) {
       };
 
       // Save to database
-      Tweet.create(newTweet, function(){console.log('tweet created')});
-      console.log('added ' + newTweet + ' to database from', topic);
+      Tweet.create(newTweet);
     }
   })
 
