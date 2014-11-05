@@ -2,26 +2,26 @@
 
 angular.module('dataGeyserApp')
   .controller('MainCtrl', function ($scope, $http, socket) {
-    $scope.awesomeThings = [];
+    $scope.awesomeTweets = [];
 
-    $http.get('/api/things').success(function(awesomeThings) {
-      $scope.awesomeThings = awesomeThings;
-      socket.syncUpdates('thing', $scope.awesomeThings);
+    $http.get('/api/tweets').success(function(awesomeTweets) {
+      $scope.awesomeTweets = awesomeTweets;
+      socket.syncUpdates('tweet', $scope.awesomeTweets);
     });
 
-    $scope.addThing = function() {
-      if($scope.newThing === '') {
+    $scope.addTweet = function() {
+      if($scope.newTweet === '') {
         return;
       }
-      $http.post('/api/things', { name: $scope.newThing });
-      $scope.newThing = '';
+      $http.post('/api/tweets', { name: $scope.newTweet });
+      $scope.newTweet = '';
     };
 
-    $scope.deleteThing = function(thing) {
-      $http.delete('/api/things/' + thing._id);
+    $scope.deleteTweet = function(tweet) {
+      $http.delete('/api/tweets/' + tweet._id);
     };
 
     $scope.$on('$destroy', function () {
-      socket.unsyncUpdates('thing');
+      socket.unsyncUpdates('tweet');
     });
   });

@@ -1,5 +1,12 @@
+test:
+  pre:
+    - bower install
 deployment:
-  staging:
+  production:
     branch: master
     heroku:
       appname: datageyser
+  staging:
+    branch: develop
+    heroku:
+      appname: datageyser-staging
