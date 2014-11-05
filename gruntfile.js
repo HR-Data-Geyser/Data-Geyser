@@ -31,7 +31,7 @@ module.exports = function(grunt) {
 			clientViews: {
 				files: watchFiles.clientViews,
 				options: {
-					livereload: true,
+					livereload: true
 				}
 			},
 			clientJS: {
@@ -59,7 +59,7 @@ module.exports = function(grunt) {
 		},
 		csslint: {
 			options: {
-				csslintrc: '.csslintrc',
+				csslintrc: '.csslintrc'
 			},
 			all: {
 				src: watchFiles.clientCSS
@@ -136,6 +136,20 @@ module.exports = function(grunt) {
 			unit: {
 				configFile: 'karma.conf.js'
 			}
+		},
+		shell: {
+			mongo: {
+				command: 'mongod --dbpath ./data/db',
+				options: {
+					async: true,
+					stdout: true,
+					stderr: true,
+					failOnError: true,
+					execOptions: {
+						cwd: '.'
+					}
+				}
+			}
 		}
 	});
 
@@ -155,10 +169,10 @@ module.exports = function(grunt) {
 	});
 
 	// Default task(s).
-	grunt.registerTask('default', ['lint', 'concurrent:default']);
+	grunt.registerTask('default', ['lint', 'shell:mongo', 'concurrent:default']);
 
 	// Debug task.
-	grunt.registerTask('debug', ['lint', 'concurrent:debug']);
+	grunt.registerTask('debug', ['lint', 'shell:mongo', 'concurrent:debug']);
 
 	// Lint task(s).
 	grunt.registerTask('lint', ['jshint', 'csslint']);
