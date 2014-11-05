@@ -5,7 +5,8 @@ var mongoose = require('mongoose'),
 
 var TweetSchema = new Schema({
   latitute: Number,
-  longitude: Number
+  longitude: Number,
+  location: String
 });
 
 module.exports = mongoose.model('Tweet', TweetSchema);
