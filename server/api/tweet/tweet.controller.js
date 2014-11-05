@@ -13,16 +13,17 @@ var _ = require('lodash');
 var twitter = require('./../../components/twitter/twitter.js');
 var Tweet = require('./tweet.model');
 
-// (function startTweets(){
-//   console.log('started');
-//   twitter.streamTweets();
-// })();
+(function startTweets(){
+  console.log('started');
+  twitter.streamTweets();
+})();
 
 (function getTweets(){
   Tweet.find(function(err, tweetCollection){
-    console.log('hit')
+    console.log('tweets got')
     console.log(tweetCollection);
   })
+  setTimeout(getTweets, 5000);
 })();
 
 // Get list of tweets
