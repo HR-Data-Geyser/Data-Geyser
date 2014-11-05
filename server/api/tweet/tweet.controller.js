@@ -20,9 +20,9 @@ var Tweet = require('./tweet.model');
 
 (function getTweets(){
   Tweet.find(function(err, tweetCollection){
-    console.log('tweets got')
+    console.log('tweets got');
     console.log(tweetCollection);
-  })
+  });
   setTimeout(getTweets, 5000);
 })();
 
