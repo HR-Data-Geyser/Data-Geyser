@@ -1,4 +1,4 @@
-[![Circle CI](https://circleci.com/gh/HR-Data-Geyser/Data-Geyser/tree/master.png?style=badge)](https://circleci.com/gh/HR-Data-Geyser/Data-Geyser/tree/master)
+[![Circle CI](https://circleci.com/gh/HR-Data-Geyser/Data-Geyser.png?style=badge&circle-token=6cffbaab360c3e24eeb4b3fffe1afb7da7c389ff)](https://circleci.com/gh/HR-Data-Geyser/Data-Geyser)
 #Data Geyser
 
 TODO: Write a project description
