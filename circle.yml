@@ -3,8 +3,6 @@ dependencies:
     - wget http://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-0.7.5/optipng-0.7.5.tar.gz
     - tar xvf optipng-0.7.5.tar.gz
     - cd optipng-0.7.5; ./configure; make; sudo checkinstall -y;
-test:
-  pre:
     - bower install
 deployment:
   production:
@@ -19,9 +17,9 @@ deployment:
   staging:
     branch: develop
     commands:
-          - grunt build:dist
-          - git config --global user.email "tgvarik@me.com"
-          - git config --global user.name "Tom G Varik"
-          - heroku maintenance:on --app datageyser
-          - grunt buildcontrol:staging
-          - heroku maintenance:off --app datageyser
+      - grunt build:dist
+      - git config --global user.email "tgvarik@me.com"
+      - git config --global user.name "Tom G Varik"
+      - heroku maintenance:on --app datageyser
+      - grunt buildcontrol:staging
+      - heroku maintenance:off --app datageyser
