@@ -14,9 +14,15 @@ var twitter = require('./../../components/twitter/twitter.js');
 var Tweet = require('./tweet.model');
 
 (function startTweets(){
-  console.log('started');
   twitter.streamTweets();
 })();
+
+// (function getTweets(){
+//   Tweet.find(function(err, tweetCollection){
+//     // console.log(tweetCollection);
+//   })
+//   setTimeout(getTweets, 5000);
+// })();
 
 // Get list of tweets
 exports.index = function(req, res) {
