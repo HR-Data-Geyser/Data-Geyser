@@ -22,8 +22,17 @@ var T = new Twit({
 });
 
 function streamTweets(topic) {
-
-  topic = topic || 'giants';
+  
+  // Tweet.find(function(err, tweets) {
+  //   for (var i = 0; i < tweets.length; i++){
+  //     console.log(tweets[i].screenName);
+  //     T.get('followers/ids', { screen_name: tweets[i].screenName },  function (err, data, response) {
+  //       console.log(data);
+  //     });
+  //   }
+  // })
+    
+  topic = topic || 'mozilla';
   
   var globe = ['-180', '-90', '180', '90'];
 
@@ -34,10 +43,12 @@ function streamTweets(topic) {
     /* if you want to store more attributes from the tweet object, here is a great place to do it. Right now we're just storing
     the geolocation data, but */
     
+    // console.log(tweet);
     // Create geodata object
     if (tweet.coordinates) {
       var geo = tweet.coordinates.coordinates;
       var newTweet = {
+        screenName: tweet.user.screen_name,
         latitude: geo[1],
         longitude: geo[0],
         location: tweet.user.location,
