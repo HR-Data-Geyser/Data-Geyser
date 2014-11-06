@@ -24,6 +24,11 @@ var Tweet = require('./tweet.model');
 //   setTimeout(getTweets, 5000);
 // })();
 
+exports.startTweets = function(req, res){
+  twitter.streamTweets(req.params.topic);
+  return res.json(200);
+}
+
 // Get list of tweets
 exports.index = function(req, res) {
   Tweet.find(function (err, tweets) {
