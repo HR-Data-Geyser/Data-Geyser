@@ -22,7 +22,7 @@ var T = new Twit({
 });
 
 function streamTweets(topic) {
-  
+  console.log('started', topic);
   // Tweet.find(function(err, tweets) {
   //   for (var i = 0; i < tweets.length; i++){
   //     console.log(tweets[i].screenName);

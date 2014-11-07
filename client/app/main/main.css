@@ -28,3 +28,45 @@
     margin-top: 70px;
     border-top: 1px solid #E5E5E5;
 }
+
+.panel {
+  float: left;
+  width: 35%;
+  height: 630px;
+  background-color: #cccccc;
+}
+
+.term {
+  height: 100px;
+}
+
+.dashboard {
+  float: right;
+}
+
+.display {
+  float: right;
+  width: 65%;
+  height: 630px;
+  background-color: #eeeeee;
+  text-align: center;
+  vertical-align: middle;
+}
+
+button {
+  float:left;
+  text-align:center;
+  clear: left;
+}
+
+table {
+  position: relative;
+  float: right;
+  padding-right: 0px;
+  margin-right: 0px;
+  clear: right;
+}
+
+hr {
+  clear: both;
+}
