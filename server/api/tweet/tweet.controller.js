@@ -13,20 +13,8 @@ var _ = require('lodash');
 var twitter = require('./../../components/twitter/twitter.js');
 var Tweet = require('./tweet.model');
 
-// (function startTweets(){
-//   twitter.streamTweets();
-// })();
-
-// (function getTweets(){
-//   Tweet.find(function(err, tweetCollection){
-//     // console.log(tweetCollection);
-//   })
-//   setTimeout(getTweets, 5000);
-// })();
-
 exports.startTweets = function(req, res){
   twitter.streamTweets(req.params.topic);
-  return res.json(200);
 }
 
 // Get list of tweets
