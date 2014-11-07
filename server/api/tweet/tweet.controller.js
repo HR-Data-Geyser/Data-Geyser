@@ -13,9 +13,9 @@ var _ = require('lodash');
 var twitter = require('./../../components/twitter/twitter.js');
 var Tweet = require('./tweet.model');
 
-(function startTweets(){
-  twitter.streamTweets();
-})();
+// (function startTweets(){
+//   twitter.streamTweets();
+// })();
 
 // (function getTweets(){
 //   Tweet.find(function(err, tweetCollection){
