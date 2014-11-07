@@ -24,4 +24,11 @@ angular.module('dataGeyserApp')
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('tweet');
     });
+    
+    $scope.chooseTopic = function(topic){
+      console.log(topic);
+      $http.post('/api/tweets/getTweets/' + topic).success(function(){
+        console.log('success');
+      })
+    }
   });
