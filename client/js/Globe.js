@@ -18,7 +18,7 @@ function init() {
 
   scene = new THREE.Scene();
 
-  group = new THREE.Group();
+  window.group = new THREE.Group();
   scene.add( group );
 
   // earth
@@ -126,3 +126,42 @@ function render() {
   renderer.render( scene, camera );
 
 }
+
+var firstValidFrame = null
+var cameraRadius = 290
+var rotateY = 90, rotateX = 0, curY = 0
+var fov = camera.fov;
+
+Leap.loop(function(frame) {
+  var earth = group;
+  if (frame.valid) {
+
+    //rotate cloud and earth independently
+    // clouds.rotation.y+=.002
+    earth.rotation.y+=.001
+
+    if (!firstValidFrame) firstValidFrame = frame
+    var t = firstValidFrame.translation(frame)
+
+    //limit y-axis between 0 and 180 degrees
+    // curY = map(t[1], -300, 300, 0, 179)
+
+    //assign rotation coordinates
+    rotateX = t[0]
+    // rotateY = -curY
+    rotateY = t[1]
+
+    zoom = Math.max(0, t[2] + 200);
+    zoomFactor = 1/(1 + (zoom / 150));
+
+    //adjust 3D spherical coordinates of the camera
+    camera.position.x = earth.position.x + cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.cos(rotateX * Math.PI/180)
+    camera.position.z = earth.position.y + cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.sin(rotateX * Math.PI/180)
+    camera.position.y = earth.position.z + cameraRadius * Math.cos(rotateY * Math.PI/180)
+    camera.fov = fov * zoomFactor;
+  }
+
+  camera.updateProjectionMatrix();
+  camera.lookAt(scene.position)
+  renderer.render(scene, camera)
+});
