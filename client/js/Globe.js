@@ -2,6 +2,7 @@ var container, stats;
 var camera, scene, renderer;
 var group;
 var mouseX = 0, mouseY = 0;
+var leapIsOn = false;
 
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
@@ -40,7 +41,7 @@ function init() {
   canvas.width = 128;
   canvas.height = 128;
 
-  var context = canvas.getContext( '2d' );
+  window.context = canvas.getContext( '2d' );
   var gradient = context.createRadialGradient(
     canvas.width / 2,
     canvas.height / 2,
@@ -116,9 +117,13 @@ function animate() {
 }
 
 function render() {
+  
+  console.log(leapIsOn);
+  if (!leapIsOn) {
+    camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+    camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+  }
 
-  camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-  camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
   camera.lookAt( scene.position );
 
   group.rotation.y -= 0.005;
@@ -127,12 +132,50 @@ function render() {
 
 }
 
+
+//////////////////// LEAP Starts Here ///////////////////////
+var controller = new Leap.Controller();
+
+controller.connect();
+
+controller.on('ready', function(){
+  leapIsOn = true;
+});
+
+controller.on('deviceConnected', function(){
+  leapIsOn = true;
+})
+
+controller.on('deviceDisconnected', function(){
+  leapIsOn = false;
+});
+
 var firstValidFrame = null
 var cameraRadius = 290
 var rotateY = 90, rotateX = 0, curY = 0
 var fov = camera.fov;
+var data;
+
+function leapToScene(leapPos){
+  var iBox = data.interactionBox;
+
+  var left = iBox.center[0] - iBox.size[0]/2;
+  var top = iBox.center[1] + iBox.size[1]/2;
+
+  var x = leapPos[0] - left;
+  var y = leapPos[1] - top;
+
+  x /= iBox.size[0];
+  y /= iBox.size[1];
+
+  x *= windowHalfX;
+  y *= windowHalfY;
+
+  return [x, -y];
+}
 
 Leap.loop(function(frame) {
+  data = frame;
   var earth = group;
   if (frame.valid) {
 
@@ -152,13 +195,52 @@ Leap.loop(function(frame) {
     rotateY = t[1]
 
     zoom = Math.max(0, t[2] + 200);
-    zoomFactor = 1/(1 + (zoom / 150));
+    zoomFactor = 2/(1 + (zoom / 150));
+    zoomFactor = 1.7;
 
     //adjust 3D spherical coordinates of the camera
     camera.position.x = earth.position.x + cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.cos(rotateX * Math.PI/180)
     camera.position.z = earth.position.y + cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.sin(rotateX * Math.PI/180)
     camera.position.y = earth.position.z + cameraRadius * Math.cos(rotateY * Math.PI/180)
     camera.fov = fov * zoomFactor;
+  }
+  
+  // loop through hands in each frame
+  for (var i = 0; i < frame.hands.length; i++) {
+
+    var hand = frame.hands[i];
+    var handPos = leapToScene(hand.palmPosition);
+
+    // for each hand in frame loop through all fingers
+    for (var j = 0; j < hand.fingers.length; j++) {
+      var finger = hand.fingers[j];
+
+      var fingerPos = leapToScene(finger.tipPosition);
+
+      context.strokeStyle = "#FFA040";
+      context.lineWidth = 3;
+
+      context.beginPath();
+      context.moveTo(handPos[0], handPos[1]);
+      context.lineTo(fingerPos[0], fingerPos[1]);
+      context.closePath();
+      context.stroke();
+
+      context.strokeStyle = "#39AECF";
+      context.lineWidth = 5;
+      context.beginPath();
+      context.arc(fingerPos[0], fingerPos[1], 20, 0, Math.PI*2);
+      context.closePath();
+      context.stroke();
+    }
+
+    context.fillStyle = "#FF5A40";
+
+    // draw circle for hand
+    context.beginPath();
+    context.arc(handPos[0], handPos[1], 40, 0, Math.PI*2);
+    context.closePath();
+    context.fill();
   }
 
   camera.updateProjectionMatrix();
