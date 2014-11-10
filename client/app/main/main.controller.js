@@ -27,7 +27,14 @@ angular.module('dataGeyserApp')
     
     $scope.chooseTopic = function(topic){
       $http.post('/api/tweets/getTweets/' + topic).success(function(){
-        console.log('success');
+        console.log('post success');
       });
     }
+    
+    $scope.getTopic = function(topic) {
+      $http.get('/api/tweets/getTweets/' + topic).success(function(){
+        console.log('get success');
+      });
+    }
+    
   });
