@@ -73,11 +73,6 @@ function init() {
 
   container.appendChild( renderer.domElement );
 
-  // stats = new Stats();
-  // stats.domElement.style.position = 'absolute';
-  // stats.domElement.style.top = '0px';
-  // container.appendChild( stats.domElement );
-
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
   //
@@ -108,12 +103,9 @@ function onDocumentMouseMove( event ) {
 //
 
 function animate() {
-
   requestAnimationFrame( animate );
 
   render();
-  //stats.update();
-
 }
 
 function render() {
@@ -151,7 +143,7 @@ controller.on('deviceDisconnected', function(){
 
 var firstValidFrame = null
 var cameraRadius = 290
-var rotateY = 90, rotateX = 0, curY = 0
+var rotateY = 90, rotateX = 0
 var fov = camera.fov;
 var data;
 
@@ -175,33 +167,36 @@ function leapToScene(leapPos){
 
 Leap.loop(function(frame) {
   data = frame;
+  context.clearRect(0, 0, windowHalfX, windowHalfY);
   var earth = group;
-  if (frame.valid) {
+  if (frame.valid && frame.hands.length > 0) {
 
     //rotate cloud and earth independently
     // clouds.rotation.y+=.002
-    earth.rotation.y+=.001
+    // earth.rotation.y+=.001
+    earth.rotation.y = 0;
 
     if (!firstValidFrame) firstValidFrame = frame
     var t = firstValidFrame.translation(frame)
 
-    //limit y-axis between 0 and 180 degrees
-    // curY = map(t[1], -300, 300, 0, 179)
-
     //assign rotation coordinates
-    rotateX = t[0]
-    // rotateY = -curY
-    if (t[1] < 0) {
-      rotateY = 0;
-    } else if (t[1] > 180){
-      rotateY = 180;
-    } else {
-      rotateY = t[1]      
+    if (frame.pointables.length === 2){
+      rotateX = t[0]
+      rotateY = t[1]/2;      
+      
     }
 
-    zoom = Math.max(0, t[2] + 200);
-    zoomFactor = 2/(1 + (zoom / 150));
-    // zoomFactor = 1.7;
+    
+    if (frame.pointables.length === 1) {
+      zoom = Math.max(0, t[2] + 200);
+      zoomFactor = 2/(1 + (zoom / 150)) * 2;
+      if (zoomFactor > 2.5) {
+        zoomFactor = 2.5;
+      } else if (zoomFactor < 0.5) {
+        zoomFactor = 0.5;
+      }      
+    }
+
 
     //adjust 3D spherical coordinates of the camera
     camera.position.x = earth.position.x + cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.cos(rotateX * Math.PI/180)
@@ -212,7 +207,6 @@ Leap.loop(function(frame) {
   
   // loop through hands in each frame
   for (var i = 0; i < frame.hands.length; i++) {
-
     var hand = frame.hands[i];
     var handPos = leapToScene(hand.palmPosition);
 
