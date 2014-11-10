@@ -118,7 +118,6 @@ function animate() {
 
 function render() {
   
-  console.log(leapIsOn);
   if (!leapIsOn) {
     camera.position.x += ( mouseX - camera.position.x ) * 0.05;
     camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
@@ -192,11 +191,17 @@ Leap.loop(function(frame) {
     //assign rotation coordinates
     rotateX = t[0]
     // rotateY = -curY
-    rotateY = t[1]
+    if (t[1] < 0) {
+      rotateY = 0;
+    } else if (t[1] > 180){
+      rotateY = 180;
+    } else {
+      rotateY = t[1]      
+    }
 
     zoom = Math.max(0, t[2] + 200);
     zoomFactor = 2/(1 + (zoom / 150));
-    zoomFactor = 1.7;
+    // zoomFactor = 1.7;
 
     //adjust 3D spherical coordinates of the camera
     camera.position.x = earth.position.x + cameraRadius * Math.sin(rotateY * Math.PI/180) * Math.cos(rotateX * Math.PI/180)
