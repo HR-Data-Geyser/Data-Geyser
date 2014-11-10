@@ -1,38 +1,191 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
-<header class="hero-unit" id="banner">
-  <div class="container">
-    <h1>'Allo, 'Allo!</h1>
-    <p class="lead">Kick-start your next web app with Angular Fullstack</p>
-    <img src="assets/images/yeoman.png" alt="I'm Yeoman">
-  </div>
-</header>
-
-<div class="container">
+<div class="panel">
+<div class="term">
+  <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic('ebola')">
+    Ebola
+  </button>
+  <button type="button" class="btn btn-lg btn-default" ng-click="getTopic('ebola')">
+    Get Ebola
+  </button>
   <div class="row">
-    <div class="col-lg-12">
-      <h1 class="page-header">Features:</h1>
-      <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="tweet in awesomeThings">
-        <li><a href="#" tooltip="{{tweet.info}}">{{tweet.name}}<button type="button" class="close" ng-click="deleteTweet(tweet)">&times;</button></a></li>
-      </ul>
-    </div>
-  </div>
-
-  <form class="tweet-form">
-    <label>Syncs in realtime across clients</label>
-    <p class="input-group">
-      <input type="text" class="form-control" placeholder="Add a new tweet here." ng-model="newTweet">
-      <span class="input-group-btn">
-        <button type="submit" class="btn btn-primary" ng-click="addTweet()">Add New</button>
-      </span>
-    </p>
-  </form>
+        <div class="col-md-8 pull-right">
+          <table class="table table-bordered table-striped table-condensed">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td colspan="2">Larry the Bird</td>
+                <td>@twitter</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 </div>
+<hr>
+<div class="term">
+  <button type="button" class="btn btn-default btn-lg" ng-click="chooseTopic('Giants')">
+    Giants
+  </button>
+  <button type="button" class="btn btn-lg btn-default" ng-click="getTopic('Giants')">
+    Get Giants
+  </button>
+  <div class="row">
+        <div class="col-md-8 pull-right">
+          <table class="table table-bordered table-striped table-condensed">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td colspan="2">Larry the Bird</td>
+                <td>@twitter</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+</div>
+<hr>
+<div class="term">
+  <button type="button" class="btn btn-default btn-lg" ng-click="chooseTopic('Kinetech')">
+    Kinetech
+  </button>
+  <div class="row">
+        <div class="col-md-8 pull-right">
+          <table class="table table-bordered table-striped table-condensed">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td colspan="2">Larry the Bird</td>
+                <td>@twitter</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+</div>
+<hr>
+<div class="term">
+  <button type="button" class="btn btn-default btn-lg" ng-click="chooseTopic('Hack Reactor')">
+    Hack Reactor
+  </button>
+  <div class="row">
+        <div class="col-md-8 pull-right">
+          <table class="table table-bordered table-striped table-condensed" >
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td colspan="2">Larry the Bird</td>
+                <td>@twitter</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+</div>
+
+</div><div class="display"><div id="container"></div>
+
+	<!-- // <script src="js/three.min.js"></script> -->
+
+    <div id="container"></div>
+		<!-- <div id="info"><a href="http://threejs.org" target="_blank">three.js</a> - earth demo</div> -->
+
+		<!-- // <script src="../build/three.min.js"></script> -->
+
+		<script src="js/Projector.js"></script>
+		<script src="js/CanvasRenderer.js"></script>
+
+		<!-- // <script src="js/libs/stats.min.js"></script> -->
+
+		<script src="js/Globe.js"></script>
+
+</div>
+
 
 <footer class="footer">
   <div class="container">
-      <p>Angular Fullstack v2.0.13 |
-        <a href="https://twitter.com/tyhenkel">@tyhenkel</a> |
-         <a href="https://github.com/DaftMonk/generator-angular-fullstack/issues?state=open">Issues</a></p>
+      <p>Made at Hack Reactor in conjunction with Kinetech |
+        <!-- <a href="https://twitter.com/tyhenkel">@tyhenkel</a> | -->
+         <a href="https://github.com/HR-Data-Geyser/Data-Geyser/issues?state=open">Issues</a></p>
   </div>
 </footer>

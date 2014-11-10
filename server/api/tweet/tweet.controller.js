@@ -12,19 +12,22 @@
 var _ = require('lodash');
 var twitter = require('./../../components/twitter/twitter.js');
 var Tweet = require('./tweet.model');
+var $ = require('jquery');
 
-(function startTweets(){
-  console.log('started');
-  twitter.streamTweets();
-})();
-
-(function getTweets(){
-  Tweet.find(function(err, tweetCollection){
-    console.log('tweets got');
-    console.log(tweetCollection);
+exports.getTweets = function(req, res){
+  // twitter.getTweets(req.params.topic);
+  Tweet.find({keyword: req.params.topic}, function(err, tweets) {
+    for (var i = 0; i < tweets.length; i++) {
+      console.log(tweets[i]);
+      // $('.display').append(tweets[i].screenName);
+    }
   });
-  setTimeout(getTweets, 5000);
-})();
+}
+
+exports.startTweets = function(req, res){
+  twitter.streamTweets(req.params.topic);
+  // twitter.getHistoric();
+}
 
 // Get list of tweets
 exports.index = function(req, res) {
