@@ -99,8 +99,8 @@ function onWindowResize() {
 
 function onDocumentMouseMove( event ) {
 
-  mouseX = ( event.clientX - windowHalfX );
-  mouseY = ( event.clientY - windowHalfY );
+  // mouseX = ( event.clientX - windowHalfX );
+  // mouseY = ( event.clientY - windowHalfY );
 
 }
 
@@ -111,14 +111,14 @@ function animate() {
   requestAnimationFrame( animate );
 
   render();
-  //stats.update();
+  // stats.update();
 
 }
 
 function render() {
 
-  camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-  camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+  // camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+  // camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
   camera.lookAt( scene.position );
 
   group.rotation.y -= 0.005;
@@ -127,9 +127,9 @@ function render() {
 
 }
 
-var firstValidFrame = null
-var cameraRadius = 290
-var rotateY = 90, rotateX = 0, curY = 0
+var firstValidFrame = null;
+var cameraRadius = 500;
+var rotateY = 90, rotateX = 150, curY = 0;
 var fov = camera.fov;
 
 Leap.loop(function(frame) {
