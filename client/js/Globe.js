@@ -8,11 +8,11 @@ var Globe = function (r) {
   geo.applyMatrix(new THREE.Matrix4().scale(new THREE.Vector3(1.0, 1.0 - this.flattening, 1.0)));
 
 
-  var bmng = THREE.ImageUtils.loadTexture('earth/bmng.png');
+  var bmng = THREE.ImageUtils.loadTexture('../assets/images/earth/bmng.png');
   bmng.wrapS = bmng.wrapT = THREE.RepeatWrapping;
-  var spec = THREE.ImageUtils.loadTexture('earth/spec.png');
+  var spec = THREE.ImageUtils.loadTexture('../assets/images/earth/spec.png');
   spec.wrapS = spec.wrapT = THREE.RepeatWrapping;
-  var norm = THREE.ImageUtils.loadTexture('earth/norm.png');
+  var norm = THREE.ImageUtils.loadTexture('../assets/images/earth/norm.png');
   norm.wrapS = norm.wrapT = THREE.RepeatWrapping;
 
   bmng.anisotropy = spec.anisotropy = norm.anisotropy = 2;
