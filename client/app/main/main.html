@@ -185,9 +185,9 @@
       w = window.innerWidth - w;
       h = window.innerHeight - h;
       var globe = new Globe(200);
-      var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
-      var renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
+      window.scene = new THREE.Scene();
+      window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
+      window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
       var orbitControls = new THREE.OrbitControls(camera);
       var light = new THREE.DirectionalLight(0xffffff, 1);
       scene.add(new THREE.AmbientLight(0x404040));
@@ -204,10 +204,8 @@
       animate();
       
       var leapIsOn = true;
-
-      orbitControls.addEventListener( 'change', render );
-      orbitControls.minDistance = 8000;
-      orbitControls.maxDistance = 50000;
+      orbitControls.minDistance = 8;
+      orbitControls.maxDistance = 8000;
 
       window.orbitControls = orbitControls;
 
@@ -221,19 +219,6 @@
         var dz = 0.001;
 
         leapController.on( 'animationFrame' , function( frame ) {
-          var xHandMin = -300.0;
-          var xHandMax = 300.0;
-          var yHandMin = 15.0;
-          var yHandMax = 400.0;
-          var zHandMin = -200.0;
-          var zHandMax = 200.0;
-
-          var xCamMin = -20000.0;
-          var xCamMax = 20000.0;
-          var yCamMin = -20000.0;
-          var yCamMax = 20000.0;
-          var zCamMin = -10000.0;
-          var zCamMax = 40000.0;
 
           for(var h = 0; h < frame.hands.length; h++){
             var hand = frame.hands[h];
@@ -246,21 +231,18 @@
             var ud = hand.palmPosition[2];
             var zoom = hand.palmPosition[1];
             var vel = hand.palmVelocity;
-            var v = Math.sqrt(vel[0]*vel[0]+vel[1]*vel[1]+vel[2]*vel[2]);
-            // console.log(v);
-            hand.confidence = 0.6;
-            hand.pinchStrength = 0.3;
+            var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
 
             if(hand.confidence > 0.5 && v < 400){
-              if(hand.pinchStrength< 0.4){ //hand open
-                if(Math.abs(lr)>80){
+              if(hand.pinchStrength < 0.4){ //hand open
+                if(Math.abs(lr) > 80){
                   console.log('lr hit', lr);
                   orbitControls.rotateLeft(0.01 * lr / Math.abs(lr));
                 }else if(Math.abs(ud) > 80){
                   console.log('ud hit');
                   var offset = ud;
                   orbitControls.rotateUp(0.01 * offset / Math.abs(offset));
-                }else if(Math.abs(zoom - 250)> 50){
+                }else if(Math.abs(zoom - 250) > 50){
                   console.log('zoom hit');
                   var offset = zoom - 250;
                   if(offset > 0) {
@@ -280,7 +262,7 @@
               }
             }
           }
-
+          renderer.render(scene, camera);
         });
       }
       
