@@ -204,6 +204,8 @@
       animate();
       
       var leapIsOn = true;
+
+      orbitControls.addEventListener( 'change', render );
       orbitControls.minDistance = 8;
       orbitControls.maxDistance = 8000;
 
@@ -219,6 +221,22 @@
         var dz = 0.001;
 
         leapController.on( 'animationFrame' , function( frame ) {
+
+          console.log('leapanimframe');
+          var xHandMin = -300.0;
+          var xHandMax = 300.0;
+          var yHandMin = 15.0;
+          var yHandMax = 400.0;
+          var zHandMin = -200.0;
+          var zHandMax = 200.0;
+
+          var xCamMin = -20000.0;
+          var xCamMax = 20000.0;
+          var yCamMin = -20000.0;
+          var yCamMax = 20000.0;
+          var zCamMin = -10000.0;
+          var zCamMax = 40000.0;
+
 
           for(var h = 0; h < frame.hands.length; h++){
             var hand = frame.hands[h];
@@ -251,6 +269,7 @@
                     orbitControls.dollyOut(1.01);
                   }
                 }
+                orbitControls.update()
               }else if(hand.pinchStrength > 0.8){
                 if(nextFuncReady){
                   if(nextFunc == undefined)
