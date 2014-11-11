@@ -59,7 +59,7 @@ function streamTweets(topic) {
       console.log(tweet);
       var geo = tweet.coordinates.coordinates;
       var newTweet = {
-        tweetId: id,
+        tweetId: tweet.id,
         screenName: tweet.user.screen_name,
         latitude: geo[1],
         longitude: geo[0],

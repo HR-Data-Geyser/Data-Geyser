@@ -5,8 +5,8 @@
   <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic('ebola')">
     Ebola
   </button>
-  <button type="button" class="btn btn-lg btn-default" ng-click="getTopic('ebola')">
-    Get Ebola
+  <button type="button" class="ebola btn btn-lg btn-default" ng-click="getTopic('ebola')">
+    Show Ebola
   </button>
   <div class="row">
         <div class="col-md-8 pull-right">
@@ -167,6 +167,12 @@
 		<script src="js/globe.js"></script>
     <script src="js/orbitControls.js"></script>
     <script>
+    $(function(){
+      $('.ebola').on('click', function(){
+        getTweets();
+      })
+    })
+    
       var getTweets = function(){
         $.ajax({
           type: "GET",
@@ -176,8 +182,6 @@
           }
         });
       } 
-      
-      getTweets();
       
       var renderTweets = function(tweets){
         for (var i = 0; i < tweets.length; i++){
