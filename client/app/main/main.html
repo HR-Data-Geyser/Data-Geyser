@@ -183,12 +183,6 @@
         });
       } 
       
-      var renderTweets = function(tweets){
-        for (var i = 0; i < tweets.length; i++){
-          console.log(tweets[i]);
-        }
-      }
-      
       var render = function(){
         renderer.render(scene, camera);
       };
@@ -300,10 +294,22 @@
               }
             }
           }
-          renderer.render(scene, camera);
         });
       }
       
+      var renderTweets = function(tweets){
+        var i = 0;
+        var renderLoop = function(){
+          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800});         
+          setInterval(function(){
+            if (i < tweets.length) {
+              renderLoop(tweets[i]);
+              i++;            
+            }
+          }, 500);   
+        }
+        renderLoop();
+      }
     </script>
 </div>
 
