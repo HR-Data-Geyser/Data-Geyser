@@ -15,8 +15,6 @@ var Tweet = require('./tweet.model');
 var $ = require('jquery');
 
 exports.getTweets = function(req, res){
-  // twitter.getTweets(req.params.topic);
-  console.log('fired')
   Tweet.find({keyword: req.params.topic}, function(err, tweets) {
     return res.json(200, tweets);
   });

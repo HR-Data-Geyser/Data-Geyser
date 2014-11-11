@@ -167,11 +167,11 @@
 		<script src="js/globe.js"></script>
     <script src="js/orbitControls.js"></script>
     <script>
-    $(function(){
-      $('.ebola').on('click', function(){
-        getTweets();
-      })
-    })
+      $(function(){
+        $('.ebola').on('click', function(){
+          getTweets();
+        })
+      });
     
       var getTweets = function(){
         $.ajax({
@@ -182,6 +182,8 @@
           }
         });
       } 
+      
+      var nextFuncReady = true;
       
       var render = function(){
         renderer.render(scene, camera);
@@ -238,21 +240,6 @@
         var dz = 0.001;
 
         leapController.on( 'animationFrame' , function( frame ) {
-          
-          var xHandMin = -300.0;
-          var xHandMax = 300.0;
-          var yHandMin = 15.0;
-          var yHandMax = 400.0;
-          var zHandMin = -200.0;
-          var zHandMax = 200.0;
-
-          var xCamMin = -20000.0;
-          var xCamMax = 20000.0;
-          var yCamMin = -20000.0;
-          var yCamMax = 20000.0;
-          var zCamMin = -10000.0;
-          var zCamMax = 40000.0;
-
 
           for(var h = 0; h < frame.hands.length; h++){
             var hand = frame.hands[h];
@@ -285,9 +272,10 @@
                 orbitControls.update()
               }else if(hand.pinchStrength > 0.8){
                 if(nextFuncReady){
-                  if(nextFunc == undefined)
-                    initNextFunc();
-                  nextFunc();
+                  // if(nextFunc == undefined)
+                  //   initNextFunc();
+                  // nextFunc();
+                  getTweets();
                   nextFuncReady = false;
                   setTimeout(function(){nextFuncReady = true;}, 10000);
                 }
@@ -301,12 +289,12 @@
         var i = 0;
         var renderLoop = function(){
           globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800});         
-          setInterval(function(){
+          setTimeout(function(){
             if (i < tweets.length) {
-              renderLoop(tweets[i]);
-              i++;            
+              i++;     
+              renderLoop(tweets[i]);       
             }
-          }, 500);   
+          }, 5);   
         }
         renderLoop();
       }
