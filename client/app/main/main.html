@@ -167,6 +167,24 @@
 		<script src="js/globe.js"></script>
     <script src="js/orbitControls.js"></script>
     <script>
+      var getTweets = function(){
+        $.ajax({
+          type: "GET",
+          url: 'api/tweets/getTweets/ebola',
+          success: function(data){
+            renderTweets(data);
+          }
+        });
+      } 
+      
+      getTweets();
+      
+      var renderTweets = function(tweets){
+        for (var i = 0; i < tweets.length; i++){
+          console.log(tweets[i]);
+        }
+      }
+      
       var render = function(){
         renderer.render(scene, camera);
       };
@@ -221,8 +239,7 @@
         var dz = 0.001;
 
         leapController.on( 'animationFrame' , function( frame ) {
-
-          console.log('leapanimframe');
+          
           var xHandMin = -300.0;
           var xHandMax = 300.0;
           var yHandMin = 15.0;
@@ -254,14 +271,11 @@
             if(hand.confidence > 0.5 && v < 400){
               if(hand.pinchStrength < 0.4){ //hand open
                 if(Math.abs(lr) > 80){
-                  console.log('lr hit', lr);
                   orbitControls.rotateLeft(0.01 * lr / Math.abs(lr));
                 }else if(Math.abs(ud) > 80){
-                  console.log('ud hit');
                   var offset = ud;
                   orbitControls.rotateUp(0.01 * offset / Math.abs(offset));
                 }else if(Math.abs(zoom - 250) > 50){
-                  console.log('zoom hit');
                   var offset = zoom - 250;
                   if(offset > 0) {
                     orbitControls.dollyIn(1.01);
