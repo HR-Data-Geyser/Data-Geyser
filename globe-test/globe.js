@@ -33,10 +33,10 @@ var Globe = function (r) {
   var sf = this.geoToEcef(37.7833, 122.4167, 0);
   var gib = this.geoToEcef(35.9717, 5.4858, 0);
   var evr = this.geoToEcef(27 + (59 + 17/60)/60, -86 + (55 + 31/60)/60, 8848/6378137 * 1000)
-  this.add(new THREE.ArrowHelper(cle.clone().normalize(), cle.clone(), 0.5 * r, 0x00ff00));
-  this.add(new THREE.ArrowHelper(sf.clone().normalize(), sf.clone(), 0.5 * r, 0x0000ff));
-  this.add(new THREE.ArrowHelper(gib.clone().normalize(), gib.clone(), 0.5 * r, 0xff0000));
-  this.add(new THREE.ArrowHelper(evr.clone().normalize(), evr.clone(), 0.5 * r, 0xffff00));
+  //this.add(new THREE.ArrowHelper(cle.clone().normalize(), cle.clone(), 0.5 * r, 0x00ff00));
+  //this.add(new THREE.ArrowHelper(sf.clone().normalize(), sf.clone(), 0.5 * r, 0x0000ff));
+  //this.add(new THREE.ArrowHelper(gib.clone().normalize(), gib.clone(), 0.5 * r, 0xff0000));
+  //this.add(new THREE.ArrowHelper(evr.clone().normalize(), evr.clone(), 0.5 * r, 0xffff00));
   var mesh = new THREE.Mesh(geo, mat);
   this.add(mesh);
 };
@@ -77,4 +77,32 @@ Globe.prototype.EcefToGeo = function (x, y, z) {
     lon: lon * 180 / Math.PI,
     alt: h
   };
+};
+
+Globe.prototype.flash = function(params){
+  var lat = params['lat'] || 0;
+  var lon = params['lon'] || 0;
+  var alt = params['alt'] || 0;
+  var size = params['size'] || 1;
+  var duration = params['duration'] || 1;
+  var geo = this.geoToEcef(lat, lon, alt);
+  var arrow = new THREE.ArrowHelper(geo.clone().normalize(), geo.clone(), 0, new THREE.Color('orange'), undefined, 0)
+  this.add(arrow);
+  var that = this;
+  var updateArrow = function(){
+    arrow.setLength(this.length, undefined, this.headWidth);
+  };
+  var outTween = new TWEEN.Tween({length: size, headWidth: size})
+      .to({length: 0, headWidth: size * 7 / 8}, 875 * duration)
+      .easing(TWEEN.Easing.Exponential.In)
+      .onUpdate(updateArrow)
+      .onComplete(function(){
+        that.remove(arrow);
+      });
+  var inTween = new TWEEN.Tween({length: 0, headWidth: 0})
+      .to({length: size, headWidth: size}, 125 * duration)
+      .easing(TWEEN.Easing.Circular.Out)
+      .onUpdate(updateArrow)
+      .chain(outTween)
+      .start();
 };

@@ -17,6 +17,7 @@ var animate = function(){
   requestAnimationFrame(animate);
   camera.lookAt(globe.position);
   globe.rotation.y += 0.001;
+  TWEEN.update();
   //var text = 'Camera distance: ';
   //text += (Math.round(1000 * camera.position.distanceTo(globe.position)) / 1000).toString();
   //text += '\nLOD: ';
