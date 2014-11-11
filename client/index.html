@@ -55,7 +55,6 @@
     <![endif]-->
     <!-- build:js({client,node_modules}) app/vendor.js -->
       <!-- bower:js -->
-      <script src='http://js.leapmotion.com/0.2.0/leap.min.js'></script>
       <script src="bower_components/jquery/dist/jquery.js"></script>
       <script src="bower_components/angular/angular.js"></script>
       <script src="bower_components/angular-resource/angular-resource.js"></script>
@@ -64,6 +63,8 @@
       <script src="bower_components/lodash/dist/lodash.compat.js"></script>
       <script src="bower_components/angular-socket-io/socket.js"></script>
       <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+      <script src="bower_components/leapjs/leap-0.6.2.js"></script>
+      <script src="bower_components/tweenjs/build/tween.min.js"></script>
       <!-- endbower -->
       <script src="socket.io-client/socket.io.js"></script>
     <!-- endbuild -->
@@ -87,5 +88,8 @@
           <!-- endinjector -->
         <!-- endbuild -->
         <script src="js/three.min.js"></script>
+        <script src="//js.leapmotion.com/leap-0.6.2.js"></script>
+        <script src="//js.leapmotion.com/leap-plugins-0.1.6.1.js"></script>
+        <script src="//js.leapmotion.com/leap.rigged-hand-0.1.4.min.js"></script>
 </body>
 </html>

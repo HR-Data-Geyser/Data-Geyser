@@ -5,8 +5,8 @@
   <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic('ebola')">
     Ebola
   </button>
-  <button type="button" class="btn btn-lg btn-default" ng-click="getTopic('ebola')">
-    Get Ebola
+  <button type="button" class="ebola btn btn-lg btn-default" ng-click="getTopic('ebola')">
+    Show Ebola
   </button>
   <div class="row">
         <div class="col-md-8 pull-right">
@@ -167,6 +167,22 @@
 		<script src="js/globe.js"></script>
     <script src="js/orbitControls.js"></script>
     <script>
+    $(function(){
+      $('.ebola').on('click', function(){
+        getTweets();
+      })
+    })
+    
+      var getTweets = function(){
+        $.ajax({
+          type: "GET",
+          url: 'api/tweets/getTweets/ebola',
+          success: function(data){
+            renderTweets(data);
+          }
+        });
+      } 
+      
       var render = function(){
         renderer.render(scene, camera);
       };
@@ -186,9 +202,9 @@
       w = window.innerWidth - w;
       h = window.innerHeight - h;
       var globe = new Globe(200);
-      var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
-      var renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
+      window.scene = new THREE.Scene();
+      window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
+      window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
       var orbitControls = new THREE.OrbitControls(camera);
       var light = new THREE.DirectionalLight(0xffffff, 1);
       scene.add(new THREE.AmbientLight(0x404040));
@@ -222,7 +238,7 @@
         var dz = 0.001;
 
         leapController.on( 'animationFrame' , function( frame ) {
-          console.log('leapanimframe');
+          
           var xHandMin = -300.0;
           var xHandMax = 300.0;
           var yHandMin = 15.0;
@@ -237,6 +253,7 @@
           var zCamMin = -10000.0;
           var zCamMax = 40000.0;
 
+
           for(var h = 0; h < frame.hands.length; h++){
             var hand = frame.hands[h];
             window.hand = hand;
@@ -248,21 +265,16 @@
             var ud = hand.palmPosition[2];
             var zoom = hand.palmPosition[1];
             var vel = hand.palmVelocity;
-            var v = Math.sqrt(vel[0]*vel[0]+vel[1]*vel[1]+vel[2]*vel[2]);
-            // console.log(v);
-            hand.confidence = 0.6;
-            hand.pinchStrength = 0.3;
+            var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
 
             if(hand.confidence > 0.5 && v < 400){
-              if(hand.pinchStrength< 0.4){ //hand open
-                if(Math.abs(lr)>80){
-                  console.log('lr hit', lr);
+              if(hand.pinchStrength < 0.4){ //hand open
+                if(Math.abs(lr) > 80){
                   orbitControls.rotateLeft(0.01 * lr / Math.abs(lr));
                 }else if(Math.abs(ud) > 80){
-                  console.log('ud hit');
-                  orbitControls.rotateUp(0.01 * ud / Math.abs(ud));
-                }else if(Math.abs(zoom - 250)> 50){
-                  console.log('zoom hit');
+                  var offset = ud;
+                  orbitControls.rotateUp(0.01 * offset / Math.abs(offset));
+                }else if(Math.abs(zoom - 250) > 50){
                   var offset = zoom - 250;
                   if(offset > 0) {
                     orbitControls.dollyIn(1.01);
@@ -282,10 +294,22 @@
               }
             }
           }
-
         });
       }
       
+      var renderTweets = function(tweets){
+        var i = 0;
+        var renderLoop = function(){
+          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800});         
+          setInterval(function(){
+            if (i < tweets.length) {
+              renderLoop(tweets[i]);
+              i++;            
+            }
+          }, 500);   
+        }
+        renderLoop();
+      }
     </script>
 </div>
 
