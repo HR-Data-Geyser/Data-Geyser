@@ -8,3 +8,4 @@ server/config/local.env.js
 .idea
 data
 !.gitkeep
+globe-test/three.js
