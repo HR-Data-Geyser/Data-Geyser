@@ -17,8 +17,8 @@ var animate = function(){
   requestAnimationFrame(animate);
   camera.lookAt(globe.position);
   globe.rotation.y += 0.001;
-  var text = 'Camera distance: ';
-  text += (Math.round(1000 * camera.position.distanceTo(globe.position)) / 1000).toString();
+  //var text = 'Camera distance: ';
+  //text += (Math.round(1000 * camera.position.distanceTo(globe.position)) / 1000).toString();
   //text += '\nLOD: ';
   //for (var i = 0; i < globe.children[0].objects.length; i++){
   //  if (globe.children[0].objects[i].object.visible){
@@ -26,17 +26,17 @@ var animate = function(){
   //    break;
   //  }
   //}
-  document.getElementById('info').innerText = text;
+  //document.getElementById('info').innerText = text;
   render();
 };
 
-var globe = new Globe(1000, true);
+var globe = new Globe(1000);
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 5, 100000);
-var renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true});
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 5, 100000);
+var renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
 var controls = new THREE.OrbitControls(camera);
-var light = new THREE.DirectionalLight(0xffffff, 1);
-scene.add(new THREE.AmbientLight(0x202020));
+var light = new THREE.DirectionalLight(0xffffff, 1.25);
+scene.add(new THREE.AmbientLight(0x505050));
 light.position.set(5000, 0, 0);
 camera.lookAt(scene.position);
 camera.position.set(0.0, 0.0, 4000);
