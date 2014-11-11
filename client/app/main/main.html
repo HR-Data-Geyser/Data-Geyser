@@ -194,6 +194,7 @@
       };
       var animate = function(){
         requestAnimationFrame(animate);
+        TWEEN.update();
         render();
       };
       var container = document.getElementById('container');
