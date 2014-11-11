@@ -1,3 +1,4 @@
+
 var Globe = function(r){
   THREE.Object3D.call(this);
   var geo = new THREE.SphereGeometry(r, 72, 36);
@@ -17,3 +18,4 @@ var Globe = function(r){
 
 Globe.prototype = Object.create(THREE.Object3D.prototype);
 Globe.prototype.constructor = Globe;
+
