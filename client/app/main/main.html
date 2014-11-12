@@ -292,26 +292,50 @@
             var zoom = hand.palmPosition[1];
             var vel = hand.palmVelocity;
             var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
+            var scrollSpeed; 
+            var scaleZoom = zoom - 200; 
+
+// CLEANUP TODO: Less hard-code, more params 
 
             if(hand.confidence > 0.5 && v < 400){
+
               if(hand.pinchStrength < 0.4){ //hand open
+
                 if(Math.abs(lr) > 80){
-                  orbitControls.rotateLeft(0.01 * lr / Math.abs(lr));
+
+                  var direction = lr > 0 ? -1 : 1 ;
+                  scrollSpeed = ( Math.abs(lr) - 80 ) / 10000;
+
+                  orbitControls.rotateLeft(direction * scrollSpeed);
                 }
                 if(Math.abs(ud) > 80){
-                  var offset = ud;
-                  orbitControls.rotateUp(0.01 * offset / Math.abs(offset));
+
+                  var direction = ud > 0 ? -1 : 1 ;
+
+                  scrollSpeed = ( Math.abs(ud) - 80 ) / 15000; 
+                  orbitControls.rotateUp(direction * scrollSpeed);
                 }
-                if(Math.abs(zoom - 250) > 50){
-                  var offset = zoom - 250;
-                  if(offset > 0) {
-                    orbitControls.dollyIn(1.01);
-                  } else {
-                    orbitControls.dollyOut(1.01);
+
+
+                if(scaleZoom < 20 || scaleZoom > 80) {
+                  var offset = scaleZoom;
+
+                  if(offset < 20) {
+                    scrollSpeed = Math.abs(offset - 20) / 20000 ; 
+ 
+                    orbitControls.dollyIn(1 + scrollSpeed);
+                  } 
+                  if (offset > 80){
+                    scrollSpeed = Math.abs(offset - 80) / 20000;
+
+                    orbitControls.dollyOut(1.0 + scrollSpeed);
                   }
                 }
                 orbitControls.update()
-              }else if(hand.pinchStrength > 0.8){
+              }
+              if(hand.pinchStrength > 0.8){
+                console.log('pinch'); 
+
                 if(nextFuncReady){
                   getTweets();
                   nextFuncReady = false;
