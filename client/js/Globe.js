@@ -160,4 +160,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   //   createjs.Tween.get(curvedLine.material).wait(5000).to({opacity: 0}, 5000).call(onComplete, [curvedLine]);
   // }
   scene.add(curvedLine);
+  setTimeout(function(){
+    onComplete(curvedLine);
+  }, 1000);
 }
