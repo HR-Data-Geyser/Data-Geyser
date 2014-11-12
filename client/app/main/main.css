@@ -44,10 +44,13 @@
   float: right;
 }
 
-.display {
+.ocOff{
   float: right;
   width: 65%;
   height: 630px;
+}
+
+.display{
   background-color: #eeeeee;
   text-align: center;
   vertical-align: middle;
