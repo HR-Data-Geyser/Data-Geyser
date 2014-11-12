@@ -155,12 +155,12 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   var onComplete = function(curvedLine){
     scene.remove(curvedLine);
   };
-  // if(fade){
-  //   curvedLine.material.transparent = true;
-  //   createjs.Tween.get(curvedLine.material).wait(5000).to({opacity: 0}, 5000).call(onComplete, [curvedLine]);
-  // }
   scene.add(curvedLine);
-  setTimeout(function(){
-    onComplete(curvedLine);
-  }, 1000);
+  if(fade){
+    // curvedLine.material.transparent = true;
+    // createjs.Tween.get(curvedLine.material).wait(5000).to({opacity: 0}, 5000).call(onComplete, [curvedLine]);
+    setTimeout(function(){
+      onComplete(curvedLine);
+    }, 1000);
+  }
 }

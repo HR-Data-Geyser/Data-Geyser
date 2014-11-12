@@ -5,9 +5,13 @@
   <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic('ebola')">
     Ebola
   </button>
-  <button type="button" class="ebola btn btn-lg btn-default" ng-click="getTopic('ebola')">
+  <button type="button" class="ebola btn btn-lg btn-default">
     Show Ebola
   </button>
+  <button type="button" class="edges btn btn-lg btn-default">
+    Show Edges
+  </button>
+    
   <div class="row">
         <div class="col-md-8 pull-right">
           <table class="table table-bordered table-striped table-condensed">
@@ -170,6 +174,10 @@
       $(function(){
         $('.ebola').on('click', function(){
           getTweets();
+        });
+        
+        $('.edges').on('click', function(){
+          addEdge = true;
         })
       });
     
@@ -183,6 +191,7 @@
         });
       } 
       
+      var addEdge = false;
       var nextFuncReady = true;
       
       var render = function(){
@@ -307,12 +316,15 @@
           var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
           if (tweets[i].in_reply_to_screen_name !== null) {
             var color = 'blue';
-            var edgeColor = 'green'
+            // var edgeColor = 'green'
           } else {
             var color = 'orange';
-            var edgeColor = 'red';
+            // var edgeColor = 'red';
           }
-          globe.drawEdge(testSource, testTarget, edgeColor, true, 5);
+          if (addEdge) {
+            globe.drawEdge(testSource, testTarget, color, true, 5);
+            
+          }
           globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });         
           setTimeout(function(){
             if (i < tweets.length) {
