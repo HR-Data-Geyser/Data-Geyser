@@ -286,18 +286,28 @@
       }
       
       var renderTweets = function(tweets){
-        var i = 0;
+        var i = 1;
         var renderLoop = function(){
-          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800});         
+          var testSource = globe.getEcef(tweets[i - 1].latitude, -tweets[i - 1].longitude, 0);
+          var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
+          globe.drawEdge(testSource, testTarget, 'yellow', true, 5);
+          if (tweets[i].in_reply_to_screen_name !== null) {
+            var color = 'blue';
+          } else {
+            var color = 'orange';
+          }
+          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });         
           setTimeout(function(){
             if (i < tweets.length) {
-              i++;     
-              renderLoop(tweets[i]);       
+              console.log(tweets[i].in_reply_to_screen_name);
+              renderLoop(tweets[i++]);       
             }
           }, 5);   
         }
         renderLoop();
       }
+    
+      
     </script>
 </div>
 
