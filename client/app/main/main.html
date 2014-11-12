@@ -5,9 +5,16 @@
   <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic('ebola')">
     Ebola
   </button>
-  <button type="button" class="ebola btn btn-lg btn-default" ng-click="getTopic('ebola')">
+  <button type="button" class="ebola btn btn-lg btn-default">
     Show Ebola
   </button>
+  <button type="button" class="edges btn btn-lg btn-default">
+    Show Edges
+  </button>
+  <button type="button" class="oculus btn btn-lg btn-default">
+    Enable/Disable Oculus
+  </button>
+    
   <div class="row">
         <div class="col-md-8 pull-right">
           <table class="table table-bordered table-striped table-condensed">
@@ -166,12 +173,21 @@
 </div><div class="display"><div id="container"></div>
 		<script src="js/globe.js"></script>
     <script src="js/orbitControls.js"></script>
+    <script src="js/oculusRiftEffect.js"></script>
     <script>
-    $(function(){
-      $('.ebola').on('click', function(){
-        getTweets();
-      })
-    })
+      $(function(){
+        $('.ebola').on('click', function(){
+          getTweets();
+        });
+        
+        $('.edges').on('click', function(){
+          addEdge = !addEdge;
+        });
+        
+        $('.oculus').on('click', function(){
+          oculusIsOn = !oculusIsOn;
+        })
+      });
     
       var getTweets = function(){
         $.ajax({
@@ -183,8 +199,17 @@
         });
       } 
       
+      var addEdge = false;
+      var nextFuncReady = true;
+      var oculusIsOn = false;
+      
       var render = function(){
-        renderer.render(scene, camera);
+        if (oculusIsOn){
+          oculusVr.render(scene, camera); 
+        } else {
+          renderer.autoClear = true;
+          renderer.render(scene, camera);          
+        }
       };
       var animate = function(){
         requestAnimationFrame(animate);
@@ -217,6 +242,8 @@
       scene.add(light);
       container.appendChild(renderer.domElement);
       orbitControls.addEventListener('change', render);
+      var oculusVr = new THREE.OculusRiftEffect(renderer);
+      oculusVr.setSize(w, h);
       render();
       animate();
       
@@ -231,28 +258,12 @@
       if (leapIsOn) {
         leapController = new Leap.Controller({ enableGestures: false });
         leapController.connect();
-        // leapController.on( 'connect' , onControllerConnect);
 
         var dx = 0.001;
         var dy = 0.001;
         var dz = 0.001;
 
         leapController.on( 'animationFrame' , function( frame ) {
-          
-          var xHandMin = -300.0;
-          var xHandMax = 300.0;
-          var yHandMin = 15.0;
-          var yHandMax = 400.0;
-          var zHandMin = -200.0;
-          var zHandMax = 200.0;
-
-          var xCamMin = -20000.0;
-          var xCamMax = 20000.0;
-          var yCamMin = -20000.0;
-          var yCamMax = 20000.0;
-          var zCamMin = -10000.0;
-          var zCamMax = 40000.0;
-
 
           for(var h = 0; h < frame.hands.length; h++){
             var hand = frame.hands[h];
@@ -269,12 +280,27 @@
 
             if(hand.confidence > 0.5 && v < 400){
               if(hand.pinchStrength < 0.4){ //hand open
+                // if(Math.abs(lr) > 80){
+                //   orbitControls.rotateLeft(0.01 * lr / Math.abs(lr));
+                // }else if(Math.abs(ud) > 80){
+                //   var offset = ud;
+                //   orbitControls.rotateUp(0.01 * offset / Math.abs(offset));
+                // }else if(Math.abs(zoom - 250) > 50){
+                //   var offset = zoom - 250;
+                //   if(offset > 0) {
+                //     orbitControls.dollyIn(1.01);
+                //   } else {
+                //     orbitControls.dollyOut(1.01);
+                //   }
+                // }
                 if(Math.abs(lr) > 80){
                   orbitControls.rotateLeft(0.01 * lr / Math.abs(lr));
-                }else if(Math.abs(ud) > 80){
+                }
+                if(Math.abs(ud) > 80){
                   var offset = ud;
                   orbitControls.rotateUp(0.01 * offset / Math.abs(offset));
-                }else if(Math.abs(zoom - 250) > 50){
+                }
+                if(Math.abs(zoom - 250) > 50){
                   var offset = zoom - 250;
                   if(offset > 0) {
                     orbitControls.dollyIn(1.01);
@@ -285,9 +311,10 @@
                 orbitControls.update()
               }else if(hand.pinchStrength > 0.8){
                 if(nextFuncReady){
-                  if(nextFunc == undefined)
-                    initNextFunc();
-                  nextFunc();
+                  // if(nextFunc == undefined)
+                  //   initNextFunc();
+                  // nextFunc();
+                  getTweets();
                   nextFuncReady = false;
                   setTimeout(function(){nextFuncReady = true;}, 10000);
                 }
@@ -298,18 +325,32 @@
       }
       
       var renderTweets = function(tweets){
-        var i = 0;
+        var i = 1;
         var renderLoop = function(){
-          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800});         
-          setInterval(function(){
+          var testSource = globe.getEcef(tweets[i - 1].latitude, -tweets[i - 1].longitude, 0);
+          var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
+          if (tweets[i].in_reply_to_screen_name !== null) {
+            var color = 'blue';
+            // var edgeColor = 'green'
+          } else {
+            var color = 'orange';
+            // var edgeColor = 'red';
+          }
+          if (addEdge) {
+            globe.drawEdge(testSource, testTarget, color, true, 5);
+            
+          }
+          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });         
+          setTimeout(function(){
             if (i < tweets.length) {
-              renderLoop(tweets[i]);
-              i++;            
+              renderLoop(tweets[i++]);       
             }
-          }, 500);   
+          }, 5);   
         }
         renderLoop();
       }
+    
+      
     </script>
 </div>
 
