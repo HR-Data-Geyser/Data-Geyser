@@ -14,7 +14,7 @@
   <button type="button" class="oculus btn btn-lg btn-default">
     Enable/Disable Oculus
   </button>
-    
+
   <div class="row">
         <div class="col-md-8 pull-right">
           <table class="table table-bordered table-striped table-condensed">
@@ -179,16 +179,16 @@
         $('.ebola').on('click', function(){
           getTweets();
         });
-        
+
         $('.edges').on('click', function(){
           addEdge = !addEdge;
         });
-        
+
         $('.oculus').on('click', function(){
           oculusIsOn = !oculusIsOn;
         })
       });
-    
+
       var getTweets = function(){
         $.ajax({
           type: "GET",
@@ -197,33 +197,37 @@
             renderTweets(data);
           }
         });
-      } 
-      
+      }
+
       var addEdge = false;
       var nextFuncReady = true;
-      var oculusIsOn = false;
+      var oculusIsOn = true;
       var oculusW = 0;
       var oculusH = 0;
-      
+
+      if(oculusIsOn){
+        $('.panel').hide();
+        $('.navbar').hide();
+        $('.footer').hide();
+      } else{
+        $('.display').addClass('ocOff');
+      }
+
       var render = function(){
         if (oculusIsOn){
-          $('.panel').hide();
-          $('.navbar').hide();
-          $('.footer').hide();
           oculusVr.render(scene, camera);
         } else {
-          $('.display').addClass('ocOff');
           renderer.autoClear = true;
-          renderer.render(scene, camera);          
+          renderer.render(scene, camera);
         }
       };
-      
+
       var animate = function(){
         requestAnimationFrame(animate);
         TWEEN.update();
         render();
       };
-      
+
       var container = document.getElementById('container');
       var w = 0, h = 0;
       var el = container;
@@ -234,7 +238,7 @@
       }
       if (oculusIsOn) {
         w = oculusW;
-        h = oculusH;        
+        h = oculusH;
       }
       w = window.innerWidth - w;
       h = window.innerHeight - h;
@@ -257,7 +261,7 @@
       oculusVr.setSize(w, h);
       render();
       animate();
-      
+
       var leapIsOn = true;
 
       orbitControls.addEventListener( 'change', render );
@@ -318,7 +322,7 @@
           }
         });
       }
-      
+
       var renderTweets = function(tweets){
         var i = 1;
         var renderLoop = function(){
@@ -333,19 +337,19 @@
           }
           if (addEdge) {
             globe.drawEdge(testSource, testTarget, color, true, 5);
-            
+
           }
-          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });         
+          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });
           setTimeout(function(){
             if (i < tweets.length) {
-              renderLoop(tweets[i++]);       
+              renderLoop(tweets[i++]);
             }
-          }, 5);   
+          }, 5);
         }
         renderLoop();
       }
-    
-      
+
+
     </script>
 </div>
 
