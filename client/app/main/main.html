@@ -4,9 +4,9 @@
 <div class="term">
   <input type="text" class="topic" ng-model="topic"></br>
   <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)">
-    Choose a topic
+    Choose a topic: {{topic}}
   </button>
-  <button type="button" class="get-topic btn btn-lg btn-default" >
+  <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic('ebola')">
     Show {{topic}}
   </button>
   <button type="button" class="edges btn btn-lg btn-default">
@@ -21,30 +21,18 @@
           <table class="table table-bordered table-striped table-condensed">
             <thead>
               <tr>
-                <th>#</th>
-                <th>Kardashian Tweets</th>
-                <th>Ebola Tweets</th>
-                <th>Total Tweets</th>
+                <th>Topic</th>
+                <th># of Tweets</th>
+                <th>Optimal for Viz</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>{{kardashian}}</td>
-                <td>{{counter}}</td>
-                <td>{{awesomeTweets.length}}</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td colspan="2">Larry the Bird</td>
-                <td>@twitter</td>
-              </tr>
+              <tr ng-repeat-start='topic in tweetParser'>
+                <td>{{topic.topic}}</td>
+                <td>{{topic.numTweets}}</td>
+                <td>{{topic.isOptimal}}</td>
+              </tr >
+              <tr ng-repeat-end>
             </tbody>
           </table>
         </div>
@@ -56,6 +44,7 @@
     <script src="js/orbitControls.js"></script>
     <script src="js/oculusRiftEffect.js"></script>
     <script>
+    
       $(function(){
         $('.get-topic').on('click', function(){
           getTweets('ebola');
@@ -217,7 +206,7 @@
       
       var renderTweets = function(tweets){
         var i = 1;
-        console.log('rendering')
+
         var renderLoop = function(){
           var testSource = globe.getEcef(tweets[i - 1].latitude, -tweets[i - 1].longitude, 0);
           var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
