@@ -2,18 +2,19 @@
 
 <div class="panel">
 <div class="term">
-  <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic('ebola')">
-    Ebola
+  <input type="text" class="topic" ng-model="topic"></br>
+  <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)">
+    Choose a topic
   </button>
-  <button type="button" class="ebola btn btn-lg btn-default">
-    Show Ebola
+  <button type="button" class="get-topic btn btn-lg btn-default" >
+    Show {{topic}}
   </button>
   <button type="button" class="edges btn btn-lg btn-default">
     Show Edges
   </button>
   <button type="button" class="oculus btn btn-lg btn-default">
-    Enable/Disable Oculus
-  </button>
+    Oculus
+  </button></br>
 
   <div class="row">
         <div class="col-md-8 pull-right">
@@ -21,17 +22,17 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Username</th>
+                <th>Kardashian Tweets</th>
+                <th>Ebola Tweets</th>
+                <th>Total Tweets</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>1</td>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
+                <td>{{kardashian}}</td>
+                <td>{{counter}}</td>
+                <td>{{awesomeTweets.length}}</td>
               </tr>
               <tr>
                 <td>2</td>
@@ -56,8 +57,8 @@
     <script src="js/oculusRiftEffect.js"></script>
     <script>
       $(function(){
-        $('.ebola').on('click', function(){
-          getTweets();
+        $('.get-topic').on('click', function(){
+          getTweets('ebola');
         });
         $('.edges').on('click', function(){
           addEdge = !addEdge;
@@ -66,20 +67,29 @@
           oculusIsOn = !oculusIsOn;
         })
       });
-      var getTweets = function(){
+      
+      var getTweets = function(topic){
         $.ajax({
           type: "GET",
+          // url: 'api/tweets/getTweets/' + topic,
           url: 'api/tweets/getTweets/ebola',
           success: function(data){
-            renderTweets(data);
+            if (data.length < 2000) {
+              alert('Not enough tweets asshole!');
+            } else {
+              renderTweets(data);              
+            }
           }
         });
       }
+      
       var addEdge = false;
       var nextFuncReady = true;
       var oculusIsOn = false;
+      
       var oculusW = 0;
       var oculusH = 0;
+      
       if(oculusIsOn){
         $('.panel').hide();
         $('.navbar').hide();
@@ -87,6 +97,7 @@
       } else{
         $('.display').addClass('ocOff');
       }
+      
       var render = function(){
         if (oculusIsOn){
           oculusVr.render(scene, camera);
@@ -95,11 +106,13 @@
           renderer.render(scene, camera);
         }
       };
+      
       var animate = function(){
         requestAnimationFrame(animate);
         TWEEN.update();
         render();
       };
+      
       var container = document.getElementById('container');
       var w = 0, h = 0;
       var el = container;
@@ -108,10 +121,12 @@
         h += el.offsetTop;
         el = el.offsetParent;
       }
+      
       if (oculusIsOn) {
         w = oculusW;
         h = oculusH;
       }
+      
       w = window.innerWidth - w;
       h = window.innerHeight - h;
       var globe = new Globe(200);
@@ -133,11 +148,13 @@
       oculusVr.setSize(w, h);
       render();
       animate();
+      
       var leapIsOn = true;
       orbitControls.addEventListener( 'change', render );
       orbitControls.minDistance = 8;
       orbitControls.maxDistance = 8000;
       window.orbitControls = orbitControls;
+      
       if (leapIsOn) {
         leapController = new Leap.Controller({ enableGestures: false });
         leapController.connect();
@@ -197,8 +214,10 @@
           }
         });
       }
+      
       var renderTweets = function(tweets){
         var i = 1;
+        console.log('rendering')
         var renderLoop = function(){
           var testSource = globe.getEcef(tweets[i - 1].latitude, -tweets[i - 1].longitude, 0);
           var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
