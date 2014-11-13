@@ -3,10 +3,30 @@
 angular.module('dataGeyserApp')
   .controller('MainCtrl', function ($scope, $http, socket) {
     $scope.awesomeTweets = [];
-
+    $scope.tweetParser = [];
+    $scope.topic = "ebola";
+    
+    var tweetTempStorage = {};
+    
     $http.get('/api/tweets').success(function(awesomeTweets) {
       $scope.awesomeTweets = awesomeTweets;
-      socket.syncUpdates('tweet', $scope.awesomeTweets);
+      for (var i = 0; i < awesomeTweets.length; i++){
+        tweetTempStorage[awesomeTweets[i].keyword] = tweetTempStorage[awesomeTweets[i].keyword] || 0;
+        tweetTempStorage[awesomeTweets[i].keyword]++;
+      }
+      for (var key in tweetTempStorage) {
+        var newBucket = {};
+        newBucket.topic = key;
+        newBucket.numTweets = tweetTempStorage[key];
+        if (tweetTempStorage[key] > 2000) {
+          newBucket.isOptimal = "Yes";
+        } else {
+          newBucket.isOptimal = "No";
+        }
+        $scope.tweetParser.push(newBucket);
+      }
+      console.log($scope.tweetParser);
+      // socket.syncUpdates('tweet', $scope.awesomeTweets);
     });
 
     $scope.addTweet = function() {
@@ -31,9 +51,10 @@ angular.module('dataGeyserApp')
       });
     }
     
-    $scope.getTopic = function(topic) {
-      $http.get('/api/tweets/getTweets/' + topic).success(function(){
+    $scope.getTopic = function(topic, callback) {
+      $http.get('/api/tweets/getTweets/' + topic).success(function(data){
         console.log('get success');
+        // callback(data);
       });
     }
     
