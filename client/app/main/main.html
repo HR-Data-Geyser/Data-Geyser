@@ -43,6 +43,7 @@
 		<script src="js/globe.js"></script>
     <script src="js/orbitControls.js"></script>
     <script src="js/oculusRiftEffect.js"></script>
+    <script src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
     <script>
     
       $(function(){
@@ -210,8 +211,12 @@
         var renderLoop = function(){
           var testSource = globe.getEcef(tweets[i - 1].latitude, -tweets[i - 1].longitude, 0);
           var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
+          if (i === 1) {
+            displayPhoto(undefined, testTarget);            
+          }
           if (tweets[i].in_reply_to_screen_name !== null) {
             var color = 'blue';
+
             // var edgeColor = 'green'
           } else {
             var color = 'orange';
@@ -229,6 +234,33 @@
         }
         renderLoop();
       }
+      
+      var displayPhoto = function(data, node){
+        var onComplete = function(object){
+          scene.remove(object);
+          // TODO: Note: check what happens with and without render call
+          // renderer.render( scene, camera );
+        };
+        var pos = camera.position;
+        var rnd = Math.random;
+        var texture = new Image();
+        texture.crossOrigin = "anonymous";
+        texture.onload = function(){
+          var material = new THREE.MeshBasicMaterial( { map: new THREE.Texture(texture), side:THREE.DoubleSide, transparent: true } );
+          material.opacity = 0.7;
+          var imageGeometry = new THREE.PlaneGeometry(texture.width / 100, texture.height / 100, 1, 1);
+          var image = new THREE.Mesh(imageGeometry, material);
+          image.position.set( node.position.x,node.position.y,node.position.z );
+          image.material.map.needsUpdate = true;
+          image.lookAt(camera.position);
+          scene.add(image);
+          createjs.Tween.get(image.position)
+          .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
+          .call(onComplete, [image]); // Tween hijacked .call() -> .call( callback, parameter )
+        };
+        texture.src = '../../oculus.jpg';
+      };
+      
     </script>
 </div>
 
