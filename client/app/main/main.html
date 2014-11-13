@@ -200,7 +200,7 @@
 
       var addEdge = false;
       var nextFuncReady = true;
-      var oculusIsOn = true;
+      var oculusIsOn = false;
       var oculusW = 0;
       var oculusH = 0;
 
@@ -265,8 +265,8 @@
       var leapIsOn = true;
 
       orbitControls.addEventListener( 'change', render );
-      orbitControls.minDistance = 8000;
-      orbitControls.maxDistance = 50000;
+      orbitControls.minDistance = 80;
+      orbitControls.maxDistance = 5000;
 
       window.orbitControls = orbitControls;
 

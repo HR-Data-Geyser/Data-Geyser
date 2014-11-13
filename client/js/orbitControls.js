@@ -105,14 +105,8 @@ THREE.OrbitControls = function ( object, domElement, localElement ) {
  
  
 	this.rotateLeft = function ( angle ) {
-<<<<<<< HEAD
-    console.log(angle)
-		if ( angle === undefined ) {
- 
-=======
 		if ( angle === undefined ) {
       
->>>>>>> 2c3f5e22c300963b1c02df5936b023c751f72b64
 			angle = getAutoRotationAngle();
  
 		}
