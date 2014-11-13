@@ -21,7 +21,9 @@ exports.getTweets = function(req, res){
 }
 
 exports.startTweets = function(req, res){
-  twitter.streamTweets(req.params.topic);
+  twitter.streamTweets(req.params.topic, function(err, data){
+    return res.json(200, data);
+  });
   // twitter.getHistoric();
 }
 

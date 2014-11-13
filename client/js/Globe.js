@@ -3,7 +3,7 @@ var Globe = function (r) {
   this.flattening = 1.0 / 298.257223563;
   this.equatorialRadius = r;
   this.polarRadius = this.equatorialRadius * (1.0 - this.flattening);
-
+  
   var geo = new THREE.SphereGeometry(r, 72, 36);
   geo.applyMatrix(new THREE.Matrix4().scale(new THREE.Vector3(1.0, 1.0 - this.flattening, 1.0)));
 
