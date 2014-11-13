@@ -15,12 +15,8 @@ var Tweet = require('./tweet.model');
 var $ = require('jquery');
 
 exports.getTweets = function(req, res){
-  // twitter.getTweets(req.params.topic);
   Tweet.find({keyword: req.params.topic}, function(err, tweets) {
-    for (var i = 0; i < tweets.length; i++) {
-      console.log(tweets[i]);
-      // $('.display').append(tweets[i].screenName);
-    }
+    return res.json(200, tweets);
   });
 }
 

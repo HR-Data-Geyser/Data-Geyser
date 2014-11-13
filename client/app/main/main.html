@@ -1,13 +1,20 @@
-<div ng-include="'components/navbar/navbar.html'"></div>
+<div class ="navbar" ng-include="'components/navbar/navbar.html'"></div>
 
 <div class="panel">
 <div class="term">
   <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic('ebola')">
     Ebola
   </button>
-  <button type="button" class="btn btn-lg btn-default" ng-click="getTopic('ebola')">
-    Get Ebola
+  <button type="button" class="ebola btn btn-lg btn-default">
+    Show Ebola
   </button>
+  <button type="button" class="edges btn btn-lg btn-default">
+    Show Edges
+  </button>
+  <button type="button" class="oculus btn btn-lg btn-default">
+    Enable/Disable Oculus
+  </button>
+
   <div class="row">
         <div class="col-md-8 pull-right">
           <table class="table table-bordered table-striped table-condensed">
@@ -167,13 +174,59 @@
 		<script src="js/Globe.js"></script>
     <script src="js/orbitControls.js"></script>
     <script>
+      $(function(){
+        $('.ebola').on('click', function(){
+          getTweets();
+        });
+
+        $('.edges').on('click', function(){
+          addEdge = !addEdge;
+        });
+
+        $('.oculus').on('click', function(){
+          oculusIsOn = !oculusIsOn;
+        })
+      });
+
+      var getTweets = function(){
+        $.ajax({
+          type: "GET",
+          url: 'api/tweets/getTweets/ebola',
+          success: function(data){
+            renderTweets(data);
+          }
+        });
+      }
+
+      var addEdge = false;
+      var nextFuncReady = true;
+      var oculusIsOn = true;
+      var oculusW = 0;
+      var oculusH = 0;
+
+      if(oculusIsOn){
+        $('.panel').hide();
+        $('.navbar').hide();
+        $('.footer').hide();
+      } else{
+        $('.display').addClass('ocOff');
+      }
+
       var render = function(){
-        renderer.render(scene, camera);
+        if (oculusIsOn){
+          oculusVr.render(scene, camera);
+        } else {
+          renderer.autoClear = true;
+          renderer.render(scene, camera);
+        }
       };
+
       var animate = function(){
         requestAnimationFrame(animate);
+        TWEEN.update();
         render();
       };
+
       var container = document.getElementById('container');
       var w = 0, h = 0;
       var el = container;
@@ -182,23 +235,29 @@
         h += el.offsetTop;
         el = el.offsetParent;
       }
+      if (oculusIsOn) {
+        w = oculusW;
+        h = oculusH;
+      }
       w = window.innerWidth - w;
       h = window.innerHeight - h;
       var globe = new Globe(200);
       var scene = new THREE.Scene();
       var camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
       var renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
+
       var orbitControls = new THREE.OrbitControls(camera);
       var light = new THREE.DirectionalLight(0xffffff, 1);
       scene.add(new THREE.AmbientLight(0x404040));
       light.position.set(500, 0, 0);
       camera.lookAt(scene.position);
-      camera.position.set(0.0, 0.0, 500);
+      camera.position.set(0.0, 0.0, 600);
       renderer.setSize(w, h);
       globe.position.set(0.0, 0.0, 0.0);
       scene.add(globe);
       scene.add(light);
       container.appendChild(renderer.domElement);
+
       orbitControls.addEventListener('change', render);
       render();
       animate();
@@ -214,26 +273,12 @@
       if (leapIsOn) {
         leapController = new Leap.Controller({ enableGestures: false });
         leapController.connect();
-        // leapController.on( 'connect' , onControllerConnect);
 
         var dx = 0.001;
         var dy = 0.001;
         var dz = 0.001;
 
         leapController.on( 'animationFrame' , function( frame ) {
-          var xHandMin = -300.0;
-          var xHandMax = 300.0;
-          var yHandMin = 15.0;
-          var yHandMax = 400.0;
-          var zHandMin = -200.0;
-          var zHandMax = 200.0;
-
-          var xCamMin = -20000.0;
-          var xCamMax = 20000.0;
-          var yCamMin = -20000.0;
-          var yCamMax = 20000.0;
-          var zCamMin = -10000.0;
-          var zCamMax = 40000.0;
 
           for(var h = 0; h < frame.hands.length; h++){
             var hand = frame.hands[h];
@@ -246,6 +291,7 @@
             var ud = hand.palmPosition[2];
             var zoom = hand.palmPosition[1];
             var vel = hand.palmVelocity;
+
             var v = Math.sqrt(vel[0]*vel[0]+vel[1]*vel[1]+vel[2]*vel[2]);
             // console.log(v);
             hand.confidence = 0.6;
@@ -274,6 +320,7 @@
                   if(nextFunc == undefined)
                     initNextFunc();
                   nextFunc();
+
                   nextFuncReady = false;
                   setTimeout(function(){nextFuncReady = true;}, 10000);
                 }
@@ -284,14 +331,12 @@
         });
       }
       
-      
     </script>
 </div>
 
 <footer class="footer">
   <div class="container">
       <p>Made at Hack Reactor in conjunction with Kinetech |
-        <!-- <a href="https://twitter.com/tyhenkel">@tyhenkel</a> | -->
          <a href="https://github.com/HR-Data-Geyser/Data-Geyser/issues?state=open">Issues</a></p>
   </div>
 </footer>
