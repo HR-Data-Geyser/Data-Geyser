@@ -12,11 +12,18 @@
 var _ = require('lodash');
 var twitter = require('./../../components/twitter/twitter.js');
 var Tweet = require('./tweet.model');
+var $ = require('jquery');
 
-(function startTweets(){
-  console.log('started');
-  twitter.streamTweets();
-})();
+exports.getTweets = function(req, res){
+  Tweet.find({keyword: req.params.topic}, function(err, tweets) {
+    return res.json(200, tweets);
+  });
+}
+
+exports.startTweets = function(req, res){
+  twitter.streamTweets(req.params.topic);
+  // twitter.getHistoric();
+}
 
 // Get list of tweets
 exports.index = function(req, res) {

@@ -241,5 +241,4 @@ Globe.prototype.solarCoordinates = function(date){
   var jd = this.dateToJD(date);
   var t = (jd - 2451545.0)/36525.0;
   //var l0 =
-
 };
