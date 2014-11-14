@@ -12,9 +12,9 @@
   <button type="button" class="edges btn btn-lg btn-default">
     Show Edges
   </button>
-  <button type="button" class="oculus btn btn-lg btn-default">
-    Oculus
-  </button></br>
+  <button type="button" class="controls btn btn-lg btn-default">
+    Enable Controls
+  </button>
 
   <div class="row">
         <div class="col-md-8 pull-right">
@@ -53,8 +53,8 @@
         $('.edges').on('click', function(){
           addEdge = !addEdge;
         });
-        $('.oculus').on('click', function(){
-          oculusIsOn = !oculusIsOn;
+        $('.controls').on('click', function(){
+          initControls();
         })
       });
       
@@ -64,11 +64,7 @@
           // url: 'api/tweets/getTweets/' + topic,
           url: 'api/tweets/getTweets/ebola',
           success: function(data){
-            if (data.length < 2000) {
-              alert('Not enough tweets asshole!');
-            } else {
-              renderTweets(data);              
-            }
+            renderTweets(data);              
           }
         });
       }
@@ -123,7 +119,7 @@
       window.scene = new THREE.Scene();
       window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
       window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
-      var orbitControls = new THREE.OrbitControls(camera);
+
       var light = new THREE.DirectionalLight(0xffffff, 1);
       scene.add(new THREE.AmbientLight(0x404040));
       light.position.set(500, 0, 0);
@@ -140,10 +136,15 @@
       animate();
       
       var leapIsOn = true;
-      orbitControls.addEventListener( 'change', render );
-      orbitControls.minDistance = 8;
-      orbitControls.maxDistance = 8000;
-      window.orbitControls = orbitControls;
+      
+      var initControls = function(){
+        var orbitControls = new THREE.OrbitControls(camera);      
+        orbitControls.addEventListener( 'change', render );
+        orbitControls.minDistance = 8;
+        orbitControls.maxDistance = 8000;
+        window.orbitControls = orbitControls;        
+      }
+
       
       if (leapIsOn) {
         leapController = new Leap.Controller({ enableGestures: false });
@@ -167,7 +168,7 @@
             var scaleZoom = zoom - 200; 
 // CLEANUP TODO: Less hard-code, more params 
             if(hand.confidence > 0.5 && v < 400){
-              if(hand.pinchStrength < 0.4){ //hand open
+              if(hand.grabStrength < 0.4){ //hand open
                 if(Math.abs(lr) > 80){
                   var direction = lr > 0 ? -1 : 1 ;
                   scrollSpeed = ( Math.abs(lr) - 80 ) / 10000;
@@ -192,7 +193,7 @@
                 }
                 orbitControls.update()
               }
-              if(hand.pinchStrength > 0.8){
+              if(hand.grabStrength > 0.8){
                 console.log('pinch'); 
                 if(nextFuncReady){
                   getTweets();
@@ -212,11 +213,10 @@
           var testSource = globe.getEcef(tweets[i - 1].latitude, -tweets[i - 1].longitude, 0);
           var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
           if (i === 1) {
-            displayPhoto(undefined, testTarget);            
+            displayPhoto(undefined, testTarget);
           }
           if (tweets[i].in_reply_to_screen_name !== null) {
             var color = 'blue';
-
             // var edgeColor = 'green'
           } else {
             var color = 'orange';
@@ -259,6 +259,8 @@
           .call(onComplete, [image]); // Tween hijacked .call() -> .call( callback, parameter )
         };
         texture.src = '../../oculus.jpg';
+        // texture.src = 'https://pbs.twimg.com/profile_images/530518957111791616/Uwx091tE_normal.png';
+        // texture.src = 'http://t.co/dLAkkcBfpl';
       };
       
     </script>

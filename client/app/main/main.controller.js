@@ -25,7 +25,6 @@ angular.module('dataGeyserApp')
         }
         $scope.tweetParser.push(newBucket);
       }
-      console.log($scope.tweetParser);
       // socket.syncUpdates('tweet', $scope.awesomeTweets);
     });
 
