@@ -4,7 +4,7 @@
 <div class="term">
   <input type="text" class="topic" ng-model="topic"></br>
   <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)">
-    Choose a topic: {{topic}}
+    Start Gathering Topic: {{topic}}
   </button>
   <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic(topic)">
     Show {{topic}}
@@ -208,15 +208,27 @@
           }
         });
       }
-      
+        var loadTexture = function(url, cb){
+           var image = document.createElement( 'img' );
+           image.crossOrigin = '';
+           var texture = new THREE.Texture( image );
+           image.onload = function()  {
+             texture.needsUpdate = true;
+             if (typeof(cb) !== 'undefined'){
+               cb(texture);
+             }
+           };
+           image.src = url;
+         };      
       var renderTweets = function(tweets){
+        
         var i = 1;
-
+        var url = 'https://pbs.twimg.com/profile_images/530518957111791616/Uwx091tE_normal.png';
         var renderLoop = function(){
           var testSource = globe.getEcef(tweets[i - 1].latitude, -tweets[i - 1].longitude, 0);
           var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
-          if (i === 1) {
-            displayPhoto(undefined, testTarget);
+          if (i < 10) {
+            // displayPhoto(url, testTarget);  // Uncomment to enable borken displayPhoto
           }
           if (tweets[i].in_reply_to_screen_name !== null) {
             var color = 'blue';
@@ -228,19 +240,23 @@
           if (addEdge) {
             globe.drawEdge(testSource, testTarget, color, true, 5);
           }
-          globe.spark({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 50, color: color, duration: 2 });
+          globe.spark({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: 200 + Math.log(tweets[i].followers_count), color: color, duration: 2 });
           // globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });
           setTimeout(function(){
             if (i < tweets.length) {
-              console.log(i);
               renderLoop(tweets[i++]);
             }
-          }, 5);
+          }, 10);
         }
         renderLoop();
       }
-      
-      var displayPhoto = function(data, node){
+
+      var displayPhoto = function(url, node){
+        
+        
+         //loadTexture('https://pbs.twimg.com/profile_images/527443333086740480/DwGCc7Hu_normal.jpeg', function(){console.log('loaded');});
+        
+        
         var onComplete = function(object){
           scene.remove(object);
           // TODO: Note: check what happens with and without render call
@@ -248,12 +264,10 @@
         };
         var pos = camera.position;
         var rnd = Math.random;
-        var texture = new Image();
-        texture.crossOrigin = "anonymous";
-        texture.onload = function(){
-          var material = new THREE.MeshBasicMaterial( { map: new THREE.Texture(texture), side:THREE.DoubleSide, transparent: true } );
+        loadTexture(url, function(texture){
+          var material = new THREE.MeshBasicMaterial( { map: texture, side:THREE.DoubleSide, transparent: true } );
           material.opacity = 0.7;
-          var imageGeometry = new THREE.PlaneGeometry(texture.width / 100, texture.height / 100, 1, 1);
+          var imageGeometry = new THREE.PlaneGeometry(texture.width * 100, texture.height * 100, 1, 1);
           var image = new THREE.Mesh(imageGeometry, material);
           image.position.set( node.position.x,node.position.y,node.position.z );
           image.material.map.needsUpdate = true;
@@ -262,10 +276,7 @@
           createjs.Tween.get(image.position)
           .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
           .call(onComplete, [image]); // Tween hijacked .call() -> .call( callback, parameter )
-        };
-        texture.src = '../../oculus.jpg';
-        // texture.src = 'https://pbs.twimg.com/profile_images/530518957111791616/Uwx091tE_normal.png';
-        // texture.src = 'http://t.co/dLAkkcBfpl';
+        });
       };
       
     </script>

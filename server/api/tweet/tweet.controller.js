@@ -33,6 +33,7 @@ exports.destroyTweets = function(req, res){
     for (var i = 0; i < tweets.length; i++) {
       tweets[i].remove();
     }
+    return res.send(200);
   })
 }
 
