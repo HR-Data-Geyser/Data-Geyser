@@ -44,7 +44,7 @@
     <script src="js/orbitControls.js"></script>
     <script src="js/oculusRiftEffect.js"></script>
     <script>
-    
+
       $(function(){
         $('.get-topic').on('click', function(){
           getTweets('ebola');
@@ -56,7 +56,7 @@
           oculusIsOn = !oculusIsOn;
         })
       });
-      
+
       var getTweets = function(topic){
         $.ajax({
           type: "GET",
@@ -66,19 +66,22 @@
             if (data.length < 2000) {
               alert('Not enough tweets asshole!');
             } else {
-              renderTweets(data);              
+              renderTweets(data);
             }
           }
         });
       }
-      
+
       var addEdge = false;
       var nextFuncReady = true;
       var oculusIsOn = false;
-      
+      var oculusControl = true;
+
       var oculusW = 0;
       var oculusH = 0;
-      
+      var clock = new THREE.Clock();
+
+
       if(oculusIsOn){
         $('.panel').hide();
         $('.navbar').hide();
@@ -86,7 +89,7 @@
       } else{
         $('.display').addClass('ocOff');
       }
-      
+
       var render = function(){
         if (oculusIsOn){
           oculusVr.render(scene, camera);
@@ -95,13 +98,25 @@
           renderer.render(scene, camera);
         }
       };
-      
+
       var animate = function(){
+
+        var dt = clock.getDelta();
+        orbitControls.update(dt);
+
+        // if (that.leapOn) {
+        //   trackHands();
+        // }
+        //
+        if (oculusIsOn && oculusControl) {
+          vrControls.update();
+        }
+
         requestAnimationFrame(animate);
         TWEEN.update();
         render();
       };
-      
+
       var container = document.getElementById('container');
       var w = 0, h = 0;
       var el = container;
@@ -110,17 +125,18 @@
         h += el.offsetTop;
         el = el.offsetParent;
       }
-      
+
       if (oculusIsOn) {
         w = oculusW;
         h = oculusH;
       }
-      
+
       w = window.innerWidth - w;
       h = window.innerHeight - h;
       var globe = new Globe(200);
       window.scene = new THREE.Scene();
       window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
+      var vrControls = new THREE.VRControls( camera );
       window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
       var orbitControls = new THREE.OrbitControls(camera);
       var light = new THREE.DirectionalLight(0xffffff, 1);
@@ -137,13 +153,13 @@
       oculusVr.setSize(w, h);
       render();
       animate();
-      
+
       var leapIsOn = true;
       orbitControls.addEventListener( 'change', render );
       orbitControls.minDistance = 8;
       orbitControls.maxDistance = 8000;
       window.orbitControls = orbitControls;
-      
+
       if (leapIsOn) {
         leapController = new Leap.Controller({ enableGestures: false });
         leapController.connect();
@@ -162,9 +178,9 @@
             var zoom = hand.palmPosition[1];
             var vel = hand.palmVelocity;
             var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
-            var scrollSpeed; 
-            var scaleZoom = zoom - 200; 
-// CLEANUP TODO: Less hard-code, more params 
+            var scrollSpeed;
+            var scaleZoom = zoom - 200;
+// CLEANUP TODO: Less hard-code, more params
             if(hand.confidence > 0.5 && v < 400){
               if(hand.pinchStrength < 0.4){ //hand open
                 if(Math.abs(lr) > 80){
@@ -174,16 +190,16 @@
                 }
                 if(Math.abs(ud) > 80){
                   var direction = ud > 0 ? -1 : 1 ;
-                  scrollSpeed = ( Math.abs(ud) - 80 ) / 15000; 
+                  scrollSpeed = ( Math.abs(ud) - 80 ) / 15000;
                   orbitControls.rotateUp(direction * scrollSpeed);
                 }
                 if(scaleZoom < 20 || scaleZoom > 80) {
                   var offset = scaleZoom;
                   if(offset < 20) {
-                    scrollSpeed = Math.abs(offset - 20) / 20000 ; 
- 
+                    scrollSpeed = Math.abs(offset - 20) / 20000 ;
+
                     orbitControls.dollyIn(1 + scrollSpeed);
-                  } 
+                  }
                   if (offset > 80){
                     scrollSpeed = Math.abs(offset - 80) / 20000;
                     orbitControls.dollyOut(1.0 + scrollSpeed);
@@ -192,7 +208,7 @@
                 orbitControls.update()
               }
               if(hand.pinchStrength > 0.8){
-                console.log('pinch'); 
+                console.log('pinch');
                 if(nextFuncReady){
                   getTweets();
                   nextFuncReady = false;
@@ -203,7 +219,7 @@
           }
         });
       }
-      
+
       var renderTweets = function(tweets){
         var i = 1;
 
