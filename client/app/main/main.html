@@ -47,7 +47,7 @@
     
       $(function(){
         $('.get-topic').on('click', function(){
-          getTweets('ebola');
+          getTweets();
         });
         $('.edges').on('click', function(){
           addEdge = !addEdge;
@@ -63,6 +63,7 @@
           // url: 'api/tweets/getTweets/' + topic,
           url: 'api/tweets/getTweets/ebola',
           success: function(data){
+            console.log('Done loading'); 
             if (data.length < 2000) {
               alert('Not enough tweets asshole!');
             } else {

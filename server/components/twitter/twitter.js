@@ -47,7 +47,7 @@ function streamTweets(topic) {
   
   var globe = ['-180', '-90', '180', '90'];
 
-  var stream = T.stream('statuses/filter', { track: topic });
+  var stream = T.stream('statuses/filter', { locations: globe });
 
   stream.on('tweet', function (tweet) {
     /* if you want to store more attributes from the tweet object, here is a great place to do it. Right now we're just storing
