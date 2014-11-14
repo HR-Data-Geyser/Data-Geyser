@@ -15,13 +15,16 @@ var Tweet = require('./tweet.model');
 var $ = require('jquery');
 
 exports.getTweets = function(req, res){
+  console.log('getting')
   Tweet.find({keyword: req.params.topic}, function(err, tweets) {
     return res.json(200, tweets);
   });
 }
 
 exports.startTweets = function(req, res){
-  twitter.streamTweets(req.params.topic);
+  twitter.streamTweets(req.params.topic, function(err, data){
+    return res.json(200, data);
+  });
   // twitter.getHistoric();
 }
 
