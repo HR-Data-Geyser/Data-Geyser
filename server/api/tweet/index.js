@@ -8,6 +8,7 @@ var router = express.Router();
 router.get('/', controller.index);
 router.get('/:id', controller.show);
 router.get('/getTweets/:topic', controller.getTweets);
+router.get('/getPhoto/', controller.getPhoto);
 router.post('/', controller.create);
 router.post('/getTweets/:topic', controller.startTweets);
 router.delete('/getTweets/:topic', controller.destroyTweets);
