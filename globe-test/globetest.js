@@ -29,6 +29,7 @@ var animate = function(){
   if (clock.running){
     while(Ebola[0] && (parseInt(Ebola[0]['timestamp_ms'])/1000 - firstTimestamp < clock.getElapsedTime() * 1000)){
       var tweet = Ebola.splice(0,1)[0];
+      console.log(Math.log(tweet['user']['followers_count']), 'seconds');
       globe.flash2({
         lat     : tweet['coordinates']['coordinates'][1],
         lon     : -tweet['coordinates']['coordinates'][0],
@@ -59,9 +60,9 @@ var animate = function(){
   render();
 };
 
-var globe = new Globe(1000);
+var globe = new Globe(100);
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 5, 100000);
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 5, 1000);
 var renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true});
 var composer = new THREE.EffectComposer(renderer);
 var renderPass = new THREE.RenderPass(scene, camera);
