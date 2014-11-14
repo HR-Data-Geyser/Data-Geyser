@@ -27,6 +27,16 @@ exports.startTweets = function(req, res){
   // twitter.getHistoric();
 }
 
+exports.destroyTweets = function(req, res){
+  Tweet.find({keyword: req.params.topic}, function(err, tweets){
+    console.log(tweets);
+    for (var i = 0; i < tweets.length; i++) {
+      tweets[i].remove();
+    }
+    return res.send(200);
+  })
+}
+
 // Get list of tweets
 exports.index = function(req, res) {
   Tweet.find(function (err, tweets) {
