@@ -177,7 +177,7 @@ Globe.prototype.flash2 = function(params){
   var lat = params['lat'] || 0;
   var lon = params['lon'] || 0;
   var alt = params['alt'] || 10;
-  var size = params['size'] || 100;
+  var size = params['size'] || this.equatorialRadius / 10;
   var duration = params['duration'] || 1;
   var color = params['color'] || 0xffffff;
   var geo = this.geoToEcef(lat, lon, alt);
@@ -210,7 +210,7 @@ Globe.prototype.flash2 = function(params){
   };
   new TWEEN.Tween({size: 0})
       .to({size: size}, 125)
-      .easing(TWEEN.Easing.Circular.Out)
+      .easing(TWEEN.Easing.Exponential.In)
       .onUpdate(updateSpark)
       .chain(new TWEEN.Tween({size: size})
         .to({size: 0}, 1000 * duration - 125)
