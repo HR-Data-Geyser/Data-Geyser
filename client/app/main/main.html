@@ -136,7 +136,7 @@
       var globe = new Globe(200);
       window.scene = new THREE.Scene();
       window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
-      vrControls = new THREE.VRControls( camera );
+      var vrControls = new THREE.VRControls( camera );
       window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
       var orbitControls = new THREE.OrbitControls(camera);
       var light = new THREE.DirectionalLight(0xffffff, 1);
