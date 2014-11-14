@@ -4,17 +4,20 @@
 <div class="term">
   <input type="text" class="topic" ng-model="topic"></br>
   <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)">
-    Choose a topic: {{topic}}
+    Start Gathering Topic: {{topic}}
   </button>
-  <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic('ebola')">
+  <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic(topic)">
     Show {{topic}}
+  </button>
+  <button type="button" class="destroy-topic btn btn-lg btn-default btn-danger" ng-click="destroyTopic(topic)">
+    Destroy {{topic}}
   </button>
   <button type="button" class="edges btn btn-lg btn-default">
     Show Edges
   </button>
-  <button type="button" class="oculus btn btn-lg btn-default">
-    Oculus
-  </button></br>
+  <button type="button" class="controls btn btn-lg btn-default">
+    Enable Controls
+  </button>
 
   <div class="row">
         <div class="col-md-8 pull-right">
@@ -43,8 +46,9 @@
 		<script src="js/globe.js"></script>
     <script src="js/orbitControls.js"></script>
     <script src="js/oculusRiftEffect.js"></script>
+    <script src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
     <script>
-    
+
       $(function(){
         $('.get-topic').on('click', function(){
           getTweets();
@@ -52,35 +56,32 @@
         $('.edges').on('click', function(){
           addEdge = !addEdge;
         });
-        $('.oculus').on('click', function(){
-          oculusIsOn = !oculusIsOn;
+        $('.controls').on('click', function(){
+          initControls();
         })
       });
-      
+
       var getTweets = function(topic){
         $.ajax({
           type: "GET",
           // url: 'api/tweets/getTweets/' + topic,
           url: 'api/tweets/getTweets/ebola',
           success: function(data){
-            console.log('Done loading'); 
-
-            if (data.length < 2000) {
-              alert('Not enough tweets asshole!');
-            } else {
-              renderTweets(data);              
-            }
+            renderTweets(data);              
           }
         });
       }
-      
+
       var addEdge = false;
       var nextFuncReady = true;
       var oculusIsOn = false;
-      
+      var oculusControl = true;
+
       var oculusW = 0;
       var oculusH = 0;
-      
+      var clock = new THREE.Clock();
+
+
       if(oculusIsOn){
         $('.panel').hide();
         $('.navbar').hide();
@@ -88,7 +89,7 @@
       } else{
         $('.display').addClass('ocOff');
       }
-      
+
       var render = function(){
         if (oculusIsOn){
           oculusVr.render(scene, camera);
@@ -97,13 +98,25 @@
           renderer.render(scene, camera);
         }
       };
-      
+
       var animate = function(){
+
+        var dt = clock.getDelta();
+        orbitControls.update(dt);
+
+        // if (that.leapOn) {
+        //   trackHands();
+        // }
+        //
+        if (oculusIsOn && oculusControl) {
+          vrControls.update();
+        }
+
         requestAnimationFrame(animate);
         TWEEN.update();
         render();
       };
-      
+
       var container = document.getElementById('container');
       var w = 0, h = 0;
       var el = container;
@@ -112,20 +125,24 @@
         h += el.offsetTop;
         el = el.offsetParent;
       }
-      
+
       if (oculusIsOn) {
         w = oculusW;
         h = oculusH;
       }
+<<<<<<< HEAD
       
+=======
+>>>>>>> 160f2b5d2ad0dd9cd1c5b1539d75634f7fc7a7ed
 
       w = window.innerWidth - w;
       h = window.innerHeight - h;
       var globe = new Globe(200);
       window.scene = new THREE.Scene();
       window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
+      var vrControls = new THREE.VRControls( camera );
       window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
-      var orbitControls = new THREE.OrbitControls(camera);
+
       var light = new THREE.DirectionalLight(0xffffff, 1);
       scene.add(new THREE.AmbientLight(0x404040));
       light.position.set(500, 0, 0);
@@ -139,14 +156,19 @@
       var oculusVr = new THREE.OculusRiftEffect(renderer);
       oculusVr.setSize(w, h);
       render();
-      animate();
-      
+
+
       var leapIsOn = true;
-      orbitControls.addEventListener( 'change', render );
-      orbitControls.minDistance = 8;
-      orbitControls.maxDistance = 8000;
-      window.orbitControls = orbitControls;
       
+      // var initControls = function(){
+        var orbitControls = new THREE.OrbitControls(camera);      
+        orbitControls.addEventListener( 'change', render );
+        orbitControls.minDistance = 8;
+        orbitControls.maxDistance = 8000;
+        window.orbitControls = orbitControls;        
+      // }
+        animate();
+        
       if (leapIsOn) {
         leapController = new Leap.Controller({ enableGestures: false });
         leapController.connect();
@@ -165,11 +187,11 @@
             var zoom = hand.palmPosition[1];
             var vel = hand.palmVelocity;
             var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
-            var scrollSpeed; 
-            var scaleZoom = zoom - 200; 
-// CLEANUP TODO: Less hard-code, more params 
+            var scrollSpeed;
+            var scaleZoom = zoom - 200;
+// CLEANUP TODO: Less hard-code, more params
             if(hand.confidence > 0.5 && v < 400){
-              if(hand.pinchStrength < 0.4){ //hand open
+              if(hand.grabStrength < 0.4){ //hand open
                 if(Math.abs(lr) > 80){
                   var direction = lr > 0 ? -1 : 1 ;
                   scrollSpeed = ( Math.abs(lr) - 80 ) / 10000;
@@ -177,16 +199,16 @@
                 }
                 if(Math.abs(ud) > 80){
                   var direction = ud > 0 ? -1 : 1 ;
-                  scrollSpeed = ( Math.abs(ud) - 80 ) / 15000; 
+                  scrollSpeed = ( Math.abs(ud) - 80 ) / 15000;
                   orbitControls.rotateUp(direction * scrollSpeed);
                 }
                 if(scaleZoom < 20 || scaleZoom > 80) {
                   var offset = scaleZoom;
                   if(offset < 20) {
-                    scrollSpeed = Math.abs(offset - 20) / 20000 ; 
- 
+                    scrollSpeed = Math.abs(offset - 20) / 20000 ;
+
                     orbitControls.dollyIn(1 + scrollSpeed);
-                  } 
+                  }
                   if (offset > 80){
                     scrollSpeed = Math.abs(offset - 80) / 20000;
                     orbitControls.dollyOut(1.0 + scrollSpeed);
@@ -194,8 +216,10 @@
                 }
                 orbitControls.update()
               }
-              if(hand.pinchStrength > 0.8){
+
+              if(hand.grabStrength > 0.8){
                 console.log('pinch'); 
+
                 if(nextFuncReady){
                   getTweets();
                   nextFuncReady = false;
@@ -206,13 +230,30 @@
           }
         });
       }
-      
-      var renderTweets = function(tweets){
-        var i = 1;
 
+      var loadTexture = function(url, cb){
+         var image = document.createElement( 'img' );
+         image.crossOrigin = '';
+         var texture = new THREE.Texture( image );
+         image.onload = function()  {
+           texture.needsUpdate = true;
+           if (typeof(cb) !== 'undefined'){
+             cb(texture);
+           }
+         };
+         image.src = url;
+      };      
+
+      var renderTweets = function(tweets){
+        
+        var i = 1;
+        var url = 'https://pbs.twimg.com/profile_images/530518957111791616/Uwx091tE_normal.png';
         var renderLoop = function(){
           var testSource = globe.getEcef(tweets[i - 1].latitude, -tweets[i - 1].longitude, 0);
           var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
+          if (i < 10) {
+            // displayPhoto(url, testTarget);  // Uncomment to enable borken displayPhoto
+          }
           if (tweets[i].in_reply_to_screen_name !== null) {
             var color = 'blue';
             // var edgeColor = 'green'
@@ -223,15 +264,45 @@
           if (addEdge) {
             globe.drawEdge(testSource, testTarget, color, true, 5);
           }
-          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });
+          globe.spark({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: 200 + Math.log(tweets[i].followers_count), color: color, duration: 2 });
+          // globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });
           setTimeout(function(){
             if (i < tweets.length) {
               renderLoop(tweets[i++]);
             }
-          }, 5);
+          }, 10);
         }
         renderLoop();
       }
+
+      var displayPhoto = function(url, node){
+        
+        
+         //loadTexture('https://pbs.twimg.com/profile_images/527443333086740480/DwGCc7Hu_normal.jpeg', function(){console.log('loaded');});
+        
+        
+        var onComplete = function(object){
+          scene.remove(object);
+          // TODO: Note: check what happens with and without render call
+          // renderer.render( scene, camera );
+        };
+        var pos = camera.position;
+        var rnd = Math.random;
+        loadTexture(url, function(texture){
+          var material = new THREE.MeshBasicMaterial( { map: texture, side:THREE.DoubleSide, transparent: true } );
+          material.opacity = 0.7;
+          var imageGeometry = new THREE.PlaneGeometry(texture.width * 100, texture.height * 100, 1, 1);
+          var image = new THREE.Mesh(imageGeometry, material);
+          image.position.set( node.position.x,node.position.y,node.position.z );
+          image.material.map.needsUpdate = true;
+          image.lookAt(camera.position);
+          scene.add(image);
+          createjs.Tween.get(image.position)
+          .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
+          .call(onComplete, [image]); // Tween hijacked .call() -> .call( callback, parameter )
+        });
+      };
+      
     </script>
 </div>
 
