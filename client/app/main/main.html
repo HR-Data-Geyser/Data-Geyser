@@ -64,6 +64,7 @@
           url: 'api/tweets/getTweets/ebola',
           success: function(data){
             console.log('Done loading'); 
+
             if (data.length < 2000) {
               alert('Not enough tweets asshole!');
             } else {
@@ -117,6 +118,7 @@
         h = oculusH;
       }
       
+
       w = window.innerWidth - w;
       h = window.innerHeight - h;
       var globe = new Globe(200);
