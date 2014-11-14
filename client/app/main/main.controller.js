@@ -25,7 +25,6 @@ angular.module('dataGeyserApp')
         }
         $scope.tweetParser.push(newBucket);
       }
-      console.log($scope.tweetParser);
       // socket.syncUpdates('tweet', $scope.awesomeTweets);
     });
 
@@ -56,6 +55,12 @@ angular.module('dataGeyserApp')
         console.log('get success');
         // callback(data);
       });
+    }
+    
+    $scope.destroyTopic = function(topic) {
+      $http.delete('/api/tweets/getTweets/' + topic).success(function(){
+        console.log('destroyed');
+      })
     }
     
   });

@@ -15,7 +15,6 @@ var Tweet = require('./tweet.model');
 var $ = require('jquery');
 
 exports.getTweets = function(req, res){
-  console.log('getting')
   Tweet.find({keyword: req.params.topic}, function(err, tweets) {
     return res.json(200, tweets);
   });
@@ -26,6 +25,16 @@ exports.startTweets = function(req, res){
     return res.json(200, data);
   });
   // twitter.getHistoric();
+}
+
+exports.destroyTweets = function(req, res){
+  Tweet.find({keyword: req.params.topic}, function(err, tweets){
+    console.log(tweets);
+    for (var i = 0; i < tweets.length; i++) {
+      tweets[i].remove();
+    }
+    return res.send(200);
+  })
 }
 
 // Get list of tweets
