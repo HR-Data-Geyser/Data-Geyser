@@ -6,8 +6,11 @@
   <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)">
     Choose a topic: {{topic}}
   </button>
-  <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic('ebola')">
+  <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic(topic)">
     Show {{topic}}
+  </button>
+  <button type="button" class="destroy-topic btn btn-lg btn-default btn-danger" ng-click="destroyTopic(topic)">
+    Destroy {{topic}}
   </button>
   <button type="button" class="edges btn btn-lg btn-default">
     Show Edges
@@ -225,9 +228,11 @@
           if (addEdge) {
             globe.drawEdge(testSource, testTarget, color, true, 5);
           }
-          globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });
+          globe.spark({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 50, color: color, duration: 2 });
+          // globe.flash({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: tweets[i].followers_count / 800, color: color });
           setTimeout(function(){
             if (i < tweets.length) {
+              console.log(i);
               renderLoop(tweets[i++]);
             }
           }, 5);

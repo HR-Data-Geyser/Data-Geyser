@@ -57,4 +57,10 @@ angular.module('dataGeyserApp')
       });
     }
     
+    $scope.destroyTopic = function(topic) {
+      $http.delete('/api/tweets/getTweets/' + topic).success(function(){
+        console.log('destroyed');
+      })
+    }
+    
   });
