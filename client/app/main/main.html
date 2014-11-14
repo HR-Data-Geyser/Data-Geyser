@@ -152,7 +152,7 @@
       var oculusVr = new THREE.OculusRiftEffect(renderer);
       oculusVr.setSize(w, h);
       render();
-      animate();
+
 
       var leapIsOn = true;
       
@@ -163,7 +163,8 @@
         orbitControls.maxDistance = 8000;
         window.orbitControls = orbitControls;        
       // }
-
+        animate();
+        
       if (leapIsOn) {
         leapController = new Leap.Controller({ enableGestures: false });
         leapController.connect();
