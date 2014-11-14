@@ -7,6 +7,7 @@ var Twit = require('twit');
 var Tweet = require('./../../api/tweet/tweet.model.js');
 var _ = require('lodash');
 var $ = require('jquery');
+var filter = require('wordfilter');
 
 // should probably put this somewhere else..
 var secrets = {
@@ -40,10 +41,6 @@ function getHistoric(){
 
 function streamTweets(topic) {
   // console.log('started', topic);
-
-  // T.get('followers/ids', { screen_name: tweets[i].screenName },  function (err, data, response) {
-  //   console.log(data);
-  // });
   
   var globe = ['-180', '-90', '180', '90'];
 
@@ -54,7 +51,7 @@ function streamTweets(topic) {
     the geolocation data, but */
     
     // Create geodata object
-    if (tweet.coordinates || tweet.geo) {
+    if ((tweet.coordinates || tweet.geo) && !wordfilter.blacklisted(tweet.user.description) {
       var geo = tweet.coordinates.coordinates;
       var newTweet = {
         id: tweet.id,
