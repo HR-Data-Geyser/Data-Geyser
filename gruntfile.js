@@ -215,12 +215,8 @@ module.exports = function (grunt) {
         ignorePath: '<%= yeoman.client %>/',
         exclude: [/bootstrap-sass-official/, /bootstrap.js/, '/json3/', '/es5-shim/'],
         overrides: {
-          ngLoading: {
-            main: 'dist/ngLoading.js'
-          }
           tweenjs: {
             main: 'build/tween.min.js',
-
             ignore: [
                 'assets/',
                 'docs/',
