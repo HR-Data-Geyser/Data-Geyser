@@ -49,14 +49,14 @@ function streamTweets(topic) {
   stream.on('tweet', function (tweet) {
     /* if you want to store more attributes from the tweet object, here is a great place to do it. Right now we're just storing
     the geolocation data, but */
-    
+    console.log(tweet);
     // Create geodata object
-    if ((tweet.coordinates || tweet.geo) && !wordfilter.blacklisted(tweet.user.description) {
+    if ((tweet.coordinates || tweet.geo) && !wordfilter.blacklisted(tweet.text)) {
       var geo = tweet.coordinates.coordinates;
       var newTweet = {
         id: tweet.id,
         created_at: tweet.created_at,
-        description: tweet.user.description,
+        description: tweet.text,
         followers_count: tweet.user.followers_count,
         in_reply_to_status_id: tweet.in_reply_to_status_id,
         in_reply_to_status_id_str: tweet.in_reply_to_status_id_str,
