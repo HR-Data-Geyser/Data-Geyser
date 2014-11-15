@@ -74,7 +74,7 @@
 
       var addEdge = false;
       var nextFuncReady = true;
-      var oculusIsOn = false;
+      var oculusIsOn = true;
       var oculusControl = true;
 
       var oculusW = 0;
@@ -137,6 +137,7 @@
       window.scene = new THREE.Scene();
       window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
       var vrControls = new THREE.VRControls( camera );
+      vrControls.enablePosition = false;
       window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
       var orbitControls = new THREE.OrbitControls(camera);
       var light = new THREE.DirectionalLight(0xffffff, 1);
@@ -155,7 +156,7 @@
       animate();
 
       var leapIsOn = true;
-      orbitControls.addEventListener( 'change', render );
+      //orbitControls.addEventListener( 'change', render );
       orbitControls.minDistance = 8;
       orbitControls.maxDistance = 8000;
       window.orbitControls = orbitControls;
