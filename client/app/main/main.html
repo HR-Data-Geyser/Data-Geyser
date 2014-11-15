@@ -12,14 +12,16 @@
   <button type="button" class="destroy-topic btn btn-lg btn-default btn-danger" ng-click="destroyTopic(topic)">
     Destroy {{topic}}
   </button>
-  <button type="button" class="edges btn btn-lg btn-default">
-    Show Edges
-  </button>
-  <button type="button" class="controls btn btn-lg btn-default">
-    Enable Controls
-  </button>
+  <div class="filters">
+    <button type="button" class="edges btn btn-lg btn-default">
+      Show Edges
+    </button>
+    <button type="button" class="show-blacklisted btn btn-lg btn-default">
+      Allow Offensive Words
+    </button>
+  </div>
   <div class="row">
-        <div class="col-md-8 pull-right">
+        <div class="col-md-8 pull-left">
           <table class="table table-bordered table-striped table-condensed">
             <thead>
               <tr>
@@ -50,18 +52,20 @@
 
       $(function(){
         $('.get-topic').on('click', function(){
-          getTweets();
+          var topic = $('.topic').val();
+          getTweets(topic);
         });
+        
         $('.edges').on('click', function(){
           addEdge = !addEdge;
         });
-        $('.controls').on('click', function(){
-          initControls();
-        })
+        
+        $('.show-blacklisted').on('click', function(){
+          showBlacklistedTweets = !showBlacklistedTweets;
+        });
       });
 
-      var getTweets = function(){
-        var topic = $('.topic').val();
+      var getTweets = function(topic){
         $.ajax({
           type: "GET",
           url: 'api/tweets/getTweets/' + topic,
@@ -70,7 +74,8 @@
           }
         });
       }
-
+      
+      var showBlacklistedTweets = false;
       var addEdge = false;
       var nextFuncReady = true;
       var oculusIsOn = false;
@@ -160,16 +165,13 @@
       oculusVr.setSize(w, h);
       render();
       
-      // var initControls = function(){
+      var orbitControls = new THREE.OrbitControls(camera, renderer.domElement);      
+      //orbitControls.addEventListener( 'change', render );
 
-        var orbitControls = new THREE.OrbitControls(camera, renderer.domElement);      
-        //orbitControls.addEventListener( 'change', render );
-
-        orbitControls.minDistance = 8;
-        orbitControls.maxDistance = 8000;
-        window.orbitControls = orbitControls;
-      // }
-        animate();
+      orbitControls.minDistance = 8;
+      orbitControls.maxDistance = 8000;
+      window.orbitControls = orbitControls;
+      animate();
         
         // Leap controls
         
