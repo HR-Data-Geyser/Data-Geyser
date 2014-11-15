@@ -148,7 +148,12 @@
       camera.position.set(0.0, 0.0, 600);
       renderer.setSize(w, h);
       globe.position.set(0.0, 0.0, 0.0);
+      var skybox = new THREE.Mesh(new THREE.SphereGeometry(3000, 72, 36), new THREE.MeshBasicMaterial({
+        map: THREE.ImageUtils.loadTexture('../assets/images/tycho3.png'),
+        side: THREE.BackSide
+      }));
       scene.add(globe);
+      scene.add(skybox);
       scene.add(light);
       container.appendChild(renderer.domElement);
       var oculusVr = new THREE.OculusRiftEffect(renderer);
