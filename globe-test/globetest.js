@@ -81,15 +81,39 @@ var textureFlare1 = THREE.ImageUtils.loadTexture('flare/lensflare1.png');
 var textureFlare2 = THREE.ImageUtils.loadTexture('flare/lensflare2.png');
 var textureFlare3 = THREE.ImageUtils.loadTexture('flare/lensflare3.png');
 
-//function addLensFlare(x,y,z,size,overrideImage,hueShift){
-//  var flareColor = new THREE.Color(0xffffff);
-//  hueShift = 1.0 - hueShift;
-//  hueShift = constrain(hueShift, 0.0, 1.0);
-//}
+light.position.set(5000, 0, 0);
 
+
+function addLensFlare(x,y,z,size,overrideImage,hueShift){
+  var flareColor = new THREE.Color(0xffffff);
+  flareColor.offsetHSL(0.08, 0.5, 0.5);
+  var lensFlare = new THREE.LensFlare(textureFlare0, 700, 0, THREE.AdditiveBlending, flareColor);
+  lensFlare.add(textureFlare1, 4096, 0.0, THREE.AdditiveBlending);
+  lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
+  lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
+  lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
+  lensFlare.customUpdateCallback = function(object){
+    var f, fl = this.lensFlares.length;
+    var flare;
+    var vecx = -this.positionScreen.x * 2;
+    var vecy = -this.positionScreen.y * 2;
+    var size = object.size || 16000;
+    var camDistance = camera.position.length();
+    for (f = 0; f < fl; f++){
+      flare = this.lensFlares[f];
+      flare.x = this.positionScreen.x + vecx * flare.distance;
+      flare.y = this.positionScreen.y + vecy * flare.distance;
+      flare.scale = size / camDistance;
+    }
+  };
+  lensFlare.position = new THREE.Vector3(x,y,z);
+  lensFlare.size = size || 16000;
+  return lensFlare;
+}
+var flare = new THREE.PointCloud
+scene.add(addLensFlare(light.position.x, light.position.y, light.position.z))
 renderer.setClearColor(0x000000);
 scene.add(new THREE.AmbientLight(0x505050));
-light.position.set(5000, 0, 0);
 camera.lookAt(scene.position);
 camera.position.set(0.0, 0.0, 4000);
 renderer.setSize(window.innerWidth, window.innerHeight);
