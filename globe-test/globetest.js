@@ -110,8 +110,8 @@ function addLensFlare(x,y,z,size,overrideImage,hueShift){
   lensFlare.size = size || 16000;
   return lensFlare;
 }
-var flare = new THREE.PointCloud
-scene.add(addLensFlare(light.position.x, light.position.y, light.position.z))
+//var flare = new THREE.PointCloud
+//scene.add(addLensFlare(light.position.x, light.position.y, light.position.z))
 renderer.setClearColor(0x000000);
 scene.add(new THREE.AmbientLight(0x505050));
 camera.lookAt(scene.position);
