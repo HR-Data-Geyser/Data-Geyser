@@ -15,6 +15,9 @@
   <button type="button" class="edges btn btn-lg btn-default">
     Show Edges
   </button>
+  <button type="button" class="show-blacklisted btn btn-lg btn-default">
+    Allow Offensive Words
+  </button>
   <button type="button" class="controls btn btn-lg btn-default">
     Enable Controls
   </button>
@@ -50,18 +53,21 @@
 
       $(function(){
         $('.get-topic').on('click', function(){
-          getTweets('ebola');
+          var topic = $('.topic').val();
+          getTweets(topic);
         });
         $('.edges').on('click', function(){
           addEdge = !addEdge;
         });
         $('.controls').on('click', function(){
           initControls();
-        })
+        });
+        $('.show-blacklisted').on('click', function(){
+          showBlacklistedTweets = !showBlacklistedTweets;
+        });
       });
 
-      var getTweets = function(){
-        var topic = $('.topic').val();
+      var getTweets = function(topic){
         $.ajax({
           type: "GET",
           url: 'api/tweets/getTweets/' + topic,
@@ -70,7 +76,8 @@
           }
         });
       }
-
+      
+      var showBlacklistedTweets = false;
       var addEdge = false;
       var nextFuncReady = true;
       var oculusIsOn = false;

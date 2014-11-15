@@ -52,9 +52,9 @@ function streamTweets(topic) {
     the geolocation data, but */
 
     // Create geodata object
-    // if ((tweet.coordinates || tweet.geo) && !wordfilter.blacklisted(tweet.text)) {
     if (tweet.coordinates || tweet.geo) {
       var geo = tweet.coordinates.coordinates;
+      var isBlacklisted = filter.blacklisted(tweet.text);
       var newTweet = {
         id: tweet.id,
         created_at: tweet.created_at,
@@ -70,6 +70,7 @@ function streamTweets(topic) {
         latitude: geo[1],
         longitude: geo[0],
         location: tweet.user.location,
+        isBlacklisted: isBlacklisted,
         keyword: topic
       };
 
