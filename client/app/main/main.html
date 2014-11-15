@@ -46,6 +46,7 @@
 		<script src="js/globe.js"></script>
     <script src="js/orbitControls.js"></script>
     <script src="js/oculusRiftEffect.js"></script>
+    <!-- // <script src="leapControls.js"></script> -->
     <script src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
     <script>
 
@@ -77,6 +78,7 @@
       var oculusIsOn = false;
       var oculusControl = true;
       var leapIsOn = true;
+      var frame; 
 
       var oculusW = 0;
       var oculusH = 0;
@@ -91,7 +93,25 @@
         $('.display').addClass('ocOff');
       }
 
-      // THREE.js globe visualization and VR
+      var onSwipe = function(gesture, direction, velocity) {
+
+        console.log('Change the world...'); 
+  // Manipulate Globe by swiping 
+        // console.log('speed: ', gesture.speed); 
+        // console.log('direction: ', gesture.direction); 
+        if (gesture.speed > 300 ) {
+          var xRotationDifference = Math.abs( gesture.startPosition[0] - gesture.position[0] ); 
+          console.log('xrotdiff: ', xRotationDifference); 
+          for (var i = 0; i < xRotationDifference;  i+=0.1) {
+            orbitControls.rotateLeft( 0.1 );
+            render(); 
+            orbitControls.update(); 
+          }
+        }
+      // orbitControls.rotateUp( gesture.direction[1] * gesture.speed);  
+      }
+
+ // THREE.js globe visualization and VR
 
       var render = function(){
         if (oculusIsOn){
@@ -120,8 +140,9 @@
         render();
       };
 
-      var container = document.getElementById('container');
+
       var w = 0, h = 0;
+      // var c = container.getContext('2d'); 
       var el = container;
       while (el){
         w += el.offsetLeft;
@@ -165,16 +186,19 @@
       // }
         animate();
         
-        // Leap controls
+//         // Leap controls
         
       if (leapIsOn) {
-        leapController = new Leap.Controller({ enableGestures: false });
+        leapController = new Leap.Controller({ enableGestures: true });
         leapController.connect();
         var dx = 0.001;
         var dy = 0.001;
         var dz = 0.001;
+
         leapController.on( 'animationFrame' , function( frame ) {
           for(var h = 0; h < frame.hands.length; h++){
+
+            frame = frame; 
             var hand = frame.hands[h];
             window.hand = hand;
             var position = hand.palmPosition;
@@ -187,28 +211,32 @@
             var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
             var scrollSpeed;
             var scaleZoom = zoom - 200;
-// CLEANUP TODO: Less hard-code, more params
+
+// // CLEANUP TODO: Less hard-code, more params
+
+// // Basic movement with neutral zone
+
             if(hand.confidence > 0.5 && v < 400){
+
               if(hand.grabStrength < 0.4){ //hand open
                 if(Math.abs(lr) > 80){
                   var direction = lr > 0 ? -1 : 1 ;
-                  scrollSpeed = ( Math.abs(lr) - 80 ) / 10000;
+                  scrollSpeed = ( Math.abs(lr) - 80 ) / 7000;
                   orbitControls.rotateLeft(direction * scrollSpeed);
                 }
                 if(Math.abs(ud) > 80){
                   var direction = ud > 0 ? -1 : 1 ;
-                  scrollSpeed = ( Math.abs(ud) - 80 ) / 15000;
+                  scrollSpeed = ( Math.abs(ud) - 80 ) / 12000;
                   orbitControls.rotateUp(direction * scrollSpeed);
                 }
                 if(scaleZoom < 20 || scaleZoom > 80) {
                   var offset = scaleZoom;
                   if(offset < 20) {
-                    scrollSpeed = Math.abs(offset - 20) / 20000 ;
-
+                    scrollSpeed = Math.abs(offset - 20) / 15000 ;
                     orbitControls.dollyIn(1 + scrollSpeed);
                   }
                   if (offset > 80){
-                    scrollSpeed = Math.abs(offset - 80) / 20000;
+                    scrollSpeed = Math.abs(offset - 80) / 15000;
                     orbitControls.dollyOut(1.0 + scrollSpeed);
                   }
                 }
@@ -223,6 +251,18 @@
                   nextFuncReady = false;
                   setTimeout(function(){nextFuncReady = true;}, 10000);
                 }
+              }
+            }
+
+// // Check for gestures
+            for (var g = 0; g < frame.gestures.length; g++) {
+              var gesture = frame.gestures[g]; 
+
+              var type = gesture.type;
+              console.log('frame gestures: ', frame.gestures); 
+
+              if (type === 'swipe') {
+                onSwipe(gesture); 
               }
             }
           }
@@ -240,7 +280,7 @@
           var testSource = globe.getEcef(tweets[i - 1].latitude, -tweets[i - 1].longitude, 0);
           var testTarget = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
           if (i % 100 === 0) {
-            displayPhoto(url, testTarget);  // Uncomment to enable borken displayPhoto
+            // displayPhoto(url, testTarget);  // Uncomment to enable borken displayPhoto
           }
           if (tweets[i].in_reply_to_screen_name !== null) {
             var color = 'blue';
