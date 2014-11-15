@@ -1,12 +1,14 @@
 'use strict';
 
 angular.module('dataGeyserApp')
-  .controller('MainCtrl', function ($scope, $http, socket) {
+
+  .controller('MainCtrl', function ($scope, $http, socket, Interceptor) {
     $scope.awesomeTweets = [];
     $scope.tweetParser = [];
     $scope.topic = "ebola";
     
     var tweetTempStorage = {};
+
     
     $http.get('/api/tweets').success(function(awesomeTweets) {
       $scope.awesomeTweets = awesomeTweets;
@@ -45,14 +47,21 @@ angular.module('dataGeyserApp')
     });
     
     $scope.chooseTopic = function(topic){
+      console.log('stream open'); 
       $http.post('/api/tweets/getTweets/' + topic).success(function(){
         console.log('post success');
       });
     }
     
     $scope.getTopic = function(topic, callback) {
-      $http.get('/api/tweets/getTweets/' + topic).success(function(data){
+      console.log('getLoading'); 
+      Interceptor.start(); 
+
+      $http.get('/api/tweets/getTweets/' + topic)
+      .success(function(data){
+
         console.log('get success');
+        Interceptor.end();
         // callback(data);
       });
     }
