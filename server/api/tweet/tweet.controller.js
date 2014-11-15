@@ -20,12 +20,6 @@ exports.getTweets = function(req, res){
   });
 }
 
-exports.getPhoto = function(req, res){
-  // var photo = req.params.url;
-  console.log(req);
-  return res.send(200);
-}
-
 exports.startTweets = function(req, res){
   twitter.streamTweets(req.params.topic, function(err, data){
     return res.json(200, data);
