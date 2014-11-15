@@ -6,6 +6,7 @@ var mongoose = require('mongoose'),
 var TweetSchema = new Schema({
   id: Number,
   created_at: Date,
+  photo: String,
   description: String,
   followers_count: Number,
   in_reply_to_status_id: Number,

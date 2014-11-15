@@ -206,6 +206,7 @@ Globe.prototype.spark = function(params){
     that.pc.material.attributes.cc.value[idx] = new THREE.Color();
     that.pc.material.attributes.cc.needsUpdate = true;
   };
+
   new TWEEN.Tween({size: 0})
       .to({size: size}, 125)
       .easing(TWEEN.Easing.Exponential.In)
@@ -221,7 +222,7 @@ Globe.prototype.spark = function(params){
 Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   fade = fade || false;
   //var distance = latlonDistance(source.position, target.position);
-  var multiplier = 1.5;
+  var multiplier = 1.7;
 
   //make a 3js line object
   var material = new THREE.LineBasicMaterial( { color: 0xCCCCCC, opacity: 0.5, linewidth: width } );
@@ -260,10 +261,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   };
   scene.add(curvedLine);
   if(fade){
-    // curvedLine.material.transparent = true;
-    // createjs.Tween.get(curvedLine.material).wait(5000).to({opacity: 0}, 5000).call(onComplete, [curvedLine]);
-    setTimeout(function(){
-      onComplete(curvedLine);
-    }, 1000);
+    curvedLine.material.transparent = true;
+    createjs.Tween.get(curvedLine.material).wait(1000).to({opacity: 0}, 1000).call(onComplete, [curvedLine]);
   }
 }

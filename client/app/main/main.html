@@ -18,7 +18,6 @@
   <button type="button" class="controls btn btn-lg btn-default">
     Enable Controls
   </button>
-
   <div class="row">
         <div class="col-md-8 pull-right">
           <table class="table table-bordered table-striped table-condensed">
@@ -74,7 +73,7 @@
 
       var addEdge = false;
       var nextFuncReady = true;
-      var oculusIsOn = true;
+      var oculusIsOn = false;
       var oculusControl = true;
       var leapIsOn = true;
 
@@ -158,7 +157,7 @@
       
       // var initControls = function(){
 
-        var orbitControls = new THREE.OrbitControls(camera);      
+        var orbitControls = new THREE.OrbitControls(camera, renderer.domElement);      
         //orbitControls.addEventListener( 'change', render );
 
         orbitControls.minDistance = 8;
@@ -239,9 +238,8 @@
       var renderTweets = function(tweets){
         
         var i = 1;
-        // var url = 'https://pbs.twimg.com/profile_images/530518957111791616/Uwx091tE_normal.png';
-        var url = '../../oculus.jpg';
         var renderLoop = function(){
+
           var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
 
           if (tweets[i].followers_count > 10000) {
@@ -251,19 +249,17 @@
               var nodeTarget = globe.getEcef(tweets[i].latitude + nodeTargetRandom(), -tweets[i].longitude + nodeTargetRandom(), 0);
               globe.drawEdge(nodeSource, nodeTarget, color, true, 5);
             }
-            displayPhoto(url, nodeTarget);  // Uncomment to enable borken displayPhoto
+            var url = tweets[i].photo;
+            // displayPhoto(url, nodeTarget);  // Uncomment to enable displayPhoto IF security disabled
           } else {
             var color = 'orange';
-          }
-          if (addEdge) {
-            globe.drawEdge(nodeSource, nodeTarget, color, true, 5);
           }
           globe.spark({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: 50, color: color, duration: 2 });
           setTimeout(function(){
             if (i < tweets.length) {
               renderLoop(tweets[i++]);
             }
-          }, 10);
+          }, 150);
         }
         renderLoop();
       }
@@ -284,7 +280,7 @@
         texture.onload = function(){
           var material = new THREE.MeshBasicMaterial( { map: new THREE.Texture(texture), side:THREE.DoubleSide, transparent: true } );
           material.opacity = 0.7;
-          var imageGeometry = new THREE.PlaneBufferGeometry(texture.width, texture.height, 1, 1);
+          var imageGeometry = new THREE.PlaneBufferGeometry(texture.width / 10, texture.height / 10, 1, 1);
           var image = new THREE.Mesh(imageGeometry, material);
           image.position.set( node.position.x,node.position.y,node.position.z );
           image.material.map.needsUpdate = true;
