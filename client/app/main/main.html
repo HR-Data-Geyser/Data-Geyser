@@ -63,16 +63,29 @@
         $('.show-blacklisted').on('click', function(){
           showBlacklistedTweets = !showBlacklistedTweets;
         });
+        
+        window.onkeydown = checkKeyPressed;
       });
 
       var getTweets = function(topic){
         $.ajax({
           type: "GET",
+          // url: 'api/tweets/getTweets/ebola',
           url: 'api/tweets/getTweets/' + topic,
           success: function(data){
             renderTweets(data);              
           }
         });
+      }
+      
+      function checkKeyPressed(e){
+        e.preventDefault();
+        if (e.keyCode === 32) {
+          vrControls.zeroSensor();
+        }
+        if (e.keyCode === 13) {
+          getTweets('ebola');
+        }
       }
       
       var showBlacklistedTweets = false;
@@ -81,7 +94,7 @@
       var oculusIsOn = false;
       var oculusControl = true;
       var leapIsOn = true;
-
+      
       var oculusW = 0;
       var oculusH = 0;
       var clock = new THREE.Clock();
