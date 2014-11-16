@@ -44,18 +44,21 @@ function streamTweets(topic) {
   
   var globe = ['-180', '-90', '180', '90'];
 
-  var stream = T.stream('statuses/filter', { track: topic });
+  var stream = T.stream('statuses/filter', { locations: globe });
+  // var stream = T.stream('statuses/filter', { track: topic });
 
   stream.on('tweet', function (tweet) {
     /* if you want to store more attributes from the tweet object, here is a great place to do it. Right now we're just storing
     the geolocation data, but */
-    console.log(tweet);
+
     // Create geodata object
-    if ((tweet.coordinates || tweet.geo) && !wordfilter.blacklisted(tweet.text)) {
+    if (tweet.coordinates || tweet.geo) {
       var geo = tweet.coordinates.coordinates;
+      var isBlacklisted = filter.blacklisted(tweet.text);
       var newTweet = {
         id: tweet.id,
         created_at: tweet.created_at,
+        photo: tweet.user.profile_image_url,
         description: tweet.text,
         followers_count: tweet.user.followers_count,
         in_reply_to_status_id: tweet.in_reply_to_status_id,
@@ -67,6 +70,7 @@ function streamTweets(topic) {
         latitude: geo[1],
         longitude: geo[0],
         location: tweet.user.location,
+        isBlacklisted: isBlacklisted,
         keyword: topic
       };
 

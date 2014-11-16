@@ -64,10 +64,10 @@ button {
 
 table {
   position: relative;
-  float: right;
+  float: left;
   padding-right: 0px;
   margin-right: 0px;
-  clear: right;
+  clear: left;
 }
 
 hr {
