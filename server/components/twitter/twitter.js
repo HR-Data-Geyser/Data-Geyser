@@ -1,6 +1,5 @@
 module.exports = {
-  streamTweets: streamTweets,
-  getHistoric: getHistoric
+  streamTweets: streamTweets
 };
 
 var Twit = require('twit');
@@ -31,12 +30,6 @@ function getTweets(topic){
       $('.display').append(tweets[i].screenName);
     }
   });
-}
-
-function getHistoric(){
-  T.get('search/tweets', {q: 'ebola until:2014-11-01', count: 100}, function(err, data, response){
-    console.log(data);
-  })
 }
 
 function streamTweets(topic) {

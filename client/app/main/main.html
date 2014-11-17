@@ -52,6 +52,18 @@
     <script>
 
       $(function(){
+        
+        // mouseenter and mouseleave adjust listeners to allow typing in input box while mouse is over
+        $('.topic').mouseenter(function(){
+          orbitControls.enabled = false;
+          window.onkeydown = null;
+        });
+        
+        $('.topic').mouseleave(function(){
+          orbitControls.enabled = true;
+          window.onkeydown = checkKeyPressed;
+        })
+        
         $('.get-topic').on('click', function(){
           var topic = $('.topic').val();
           getTweets(topic);
@@ -64,9 +76,11 @@
         $('.show-blacklisted').on('click', function(){
           showBlacklistedTweets = !showBlacklistedTweets;
         });
+        
       });
 
-      var getTweets = function(topic){
+      var getTweets = function(){
+        var topic = $('.topic').val();
         $.ajax({
           type: "GET",
           url: 'api/tweets/getTweets/' + topic,
@@ -76,19 +90,32 @@
         });
       }
       
+      // keypress events to trigger tweets and return vr view to home
+      function checkKeyPressed(e){
+        console.log('pressed')
+        e.preventDefault();
+        if (e.keyCode === 32) {
+          vrControls.zeroSensor();
+        }
+        if (e.keyCode === 13) {
+          getTweets('ebola');
+        }
+      }
+      
+      
+      //////////// Options Flags //////////////
       var showBlacklistedTweets = false;
-      var addEdge = false;
+      var addEdge = true;
       var nextFuncReady = true;
       var oculusIsOn = false;
       var oculusControl = true;
       var leapIsOn = true;
-      var frame; 
 
       var oculusW = 0;
       var oculusH = 0;
       var clock = new THREE.Clock();
 
-
+      // Removes sidebar and navbar to resize oculus window
       if(oculusIsOn){
         $('.panel').hide();
         $('.navbar').hide();
@@ -133,14 +160,9 @@
       };
 
       var animate = function(){
-
         var dt = clock.getDelta();
         orbitControls.update(dt);
 
-        // if (that.leapOn) {
-        //   trackHands();
-        // }
-        //
         if (oculusIsOn && oculusControl) {
           vrControls.update();
         }
@@ -154,17 +176,19 @@
       var w = 0, h = 0;
       // var c = container.getContext('2d'); 
       var el = container;
+      
       while (el){
         w += el.offsetLeft;
         h += el.offsetTop;
         el = el.offsetParent;
       }
-
+      
+      // overrides w & h if oculus headset is flagged on
       if (oculusIsOn) {
         w = oculusW;
         h = oculusH;
       }
-
+      
       w = window.innerWidth - w;
       h = window.innerHeight - h;
       var globe = new Globe(200);
@@ -180,10 +204,12 @@
       camera.position.set(0.0, 0.0, 600);
       renderer.setSize(w, h);
       globe.position.set(0.0, 0.0, 0.0);
+      
       var skybox = new THREE.Mesh(new THREE.SphereGeometry(3000, 72, 36), new THREE.MeshBasicMaterial({
         map: THREE.ImageUtils.loadTexture('../assets/images/tycho3.png'),
         side: THREE.BackSide
       }));
+      
       scene.add(globe);
       scene.add(skybox);
       scene.add(light);
@@ -192,19 +218,22 @@
       oculusVr.setSize(w, h);
       render();
       
+      // sets up orbitcontrols and limits mouse inputs to container element
       var orbitControls = new THREE.OrbitControls(camera, renderer.domElement);      
-      //orbitControls.addEventListener( 'change', render );
-
       orbitControls.minDistance = 8;
       orbitControls.maxDistance = 8000;
       window.orbitControls = orbitControls;
+
       animate();
         
-//         // Leap controls
+
+        /////////// Leap controls ////////////
+
         
       if (leapIsOn) {
         leapController = new Leap.Controller({ enableGestures: true });
         leapController.connect();
+        
         var dx = 0.001;
         var dy = 0.001;
         var dz = 0.001;
@@ -256,9 +285,7 @@
                 }
                 orbitControls.update()
               }
-
               if(hand.grabStrength > 0.8){
-                console.log('pinch'); 
 
                 if(nextFuncReady){
                   getTweets();
@@ -283,11 +310,13 @@
         });
       }
       
+      // simple function to calculate random value between -20 and 20 for fountain offset
       var nodeTargetRandom = function(){
         return Math.random() * (20 - (-20)) + (-20);
       }
-      // renders tweets in order gathered from DB
-
+      
+      ////////////// renders tweets in order gathered from DB ////////////////
+      
       var renderTweets = function(tweets){
         
         var i = 1;
@@ -295,7 +324,7 @@
 
           var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
 
-          if (tweets[i].followers_count > 10000) {
+          if (tweets[i].followers_count > 10000 && addEdge) {
             var multi = Math.ceil(tweets[i].followers_count / 10000);
             var color = 'blue';
             for (var j = 0; j < multi; j++) {              
@@ -312,24 +341,22 @@
             if (i < tweets.length) {
               renderLoop(tweets[i++]);
             }
-          }, 150);
+          }, 150);  // sets 150ms interval between tweets
         }
         renderLoop();
       }
 
-      // displays photos flying into space
+      ////////////////// displays photos flying into space //////////////////
 
       var displayPhoto = function(url, node){
         
         var onComplete = function(object){
           scene.remove(object);
-          // TODO: Note: check what happens with and without render call
-          // renderer.render( scene, camera );
         };
         var pos = camera.position;
         var rnd = Math.random;
         var texture = new Image();
-        texture.crossOrigin = "anonymous";
+        texture.crossOrigin = "";
         texture.onload = function(){
           var material = new THREE.MeshBasicMaterial( { map: new THREE.Texture(texture), side:THREE.DoubleSide, transparent: true } );
           material.opacity = 0.7;
@@ -341,10 +368,9 @@
           scene.add(image);
           createjs.Tween.get(image.position)
           .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
-          .call(onComplete, [image]); // Tween hijacked .call() -> .call( callback, parameter )
+          .call(onComplete, [image]); 
         };
         texture.src = url;
-        
       };
 
     </script>

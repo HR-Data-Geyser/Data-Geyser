@@ -190,11 +190,13 @@ Globe.prototype.spark = function(params){
   this.pc.material.attributes.cc.value[idx] = new THREE.Color(color);
   this.pc.material.attributes.cc.needsUpdate = true;
   var that = this;
+  
   var updateSpark = function(){
     var idx = that.pc.geometry.vertices.indexOf(vertex);
     that.pc.material.attributes.flashSize.value[idx] = this.size;
     that.pc.material.attributes.flashSize.needsUpdate = true;
   };
+  
   var killSpark = function(){
     var idx = that.pc.geometry.vertices.indexOf(vertex);
     that.pc.geometry.vertices[idx] = new THREE.Vector3();
@@ -256,9 +258,11 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   //create curved line and add to scene
   var curvedLine = new THREE.Line(path.createPointsGeometry(100), curveMaterial);
   curvedLine.lookAt(scene.position);
+  
   var onComplete = function(curvedLine){
     scene.remove(curvedLine);
   };
+  
   scene.add(curvedLine);
   if(fade){
     curvedLine.material.transparent = true;
