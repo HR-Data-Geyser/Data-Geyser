@@ -6,6 +6,7 @@ angular.module('dataGeyserApp')
     $scope.awesomeTweets = [];
     $scope.tweetParser = [];
     $scope.topic = "ebola";
+    
     window.onkeydown = checkKeyPressed;
     
     var tweetTempStorage = {};
@@ -59,20 +60,15 @@ angular.module('dataGeyserApp')
     });
     
     $scope.chooseTopic = function(topic){
-      console.log('stream open'); 
       $http.post('/api/tweets/getTweets/' + topic).success(function(){
         console.log('post success');
       });
     }
     
     $scope.getTopic = function(topic, callback) {
-      console.log('getLoading'); 
       Interceptor.start(); 
-
       $http.get('/api/tweets/getTweets/' + topic)
       .success(function(data){
-
-        console.log('get success');
         Interceptor.end();
         renderTweets(data);
       });
@@ -80,7 +76,7 @@ angular.module('dataGeyserApp')
     
     $scope.destroyTopic = function(topic) {
       $http.delete('/api/tweets/getTweets/' + topic).success(function(){
-        console.log('destroyed');
+        console.log(topic, 'destroyed');
       })
     }
     
@@ -97,6 +93,9 @@ var nodeTargetRandom = function(){
 var renderTweets = function(tweets){
   
   var i = 1;
+  // if (i === 1) {
+  //   postText(tweets[i].description, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));
+  // }
   var renderLoop = function(){
 
     var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
@@ -109,7 +108,8 @@ var renderTweets = function(tweets){
         globe.drawEdge(nodeSource, nodeTarget, color, true, 5);
       }
       var url = tweets[i].photo;
-      // displayPhoto(url, nodeTarget);  // Uncomment to enable displayPhoto IF security disabled
+      // postText(tweets[i].description, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));
+      // displayPhoto(url, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));  // Uncomment to enable displayPhoto IF security disabled
     } else {
       var color = 'orange';
     }
@@ -122,6 +122,40 @@ var renderTweets = function(tweets){
   }
   renderLoop();
 }
+
+var postText = function(text, node){
+  var pos = camera.position;
+  var rnd = Math.random;
+
+  var onComplete = function(object){
+    scene.remove(object);
+    // renderer.render( scene, camera );
+  };
+  if(text !== undefined) {
+    var materialFront = new THREE.MeshBasicMaterial( { color: 'white' } );
+    var textGeom = new THREE.TextGeometry( text, {
+      size: 30, height: 4, curveSegments: 3,
+      font: "helvetiker", weight: "bold", style: "normal",
+      bevelEnabled: false, material: 0
+      });
+
+    var textMesh = new THREE.Mesh(textGeom, materialFront );
+
+    textGeom.computeBoundingBox();
+    var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
+
+    textMesh.position.set( node.position.x, node.position.y, node.position.z );
+    textMesh.lookAt(camera.position);
+    textMesh.data = 'TEXT';
+    scene.add(textMesh);
+    var toPos = this.displace(pos, 3000);
+    createjs.Tween.get(textMesh.position)
+      .to({x: toPos.x, y: toPos.y, z: toPos.z}, 10000).call(onComplete, [textMesh]);
+    // createjs.Tween.get(textMesh.position).to({x: pos.x*(2+rnd()), y: pos.y*(2+rnd()), z: pos.z*(2+rnd())}, 15000).call(onComplete, [textMesh]);
+  }
+}
+
+
 
 ////////////////// displays photos flying into space //////////////////
 

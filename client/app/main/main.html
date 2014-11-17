@@ -14,7 +14,7 @@
   </button>
   <div class="filters">
     <button type="button" class="edges btn btn-lg btn-default">
-      Show Edges
+      Show Fountains
     </button>
     <button type="button" class="show-blacklisted btn btn-lg btn-default">
       Allow Offensive Words
@@ -77,10 +77,11 @@
           showBlacklistedTweets = !showBlacklistedTweets;
         });
         
-        window.addEventListener('resize', init, false);
+        window.addEventListener('resize', onWindowResize, false);
       });
       
       //////////// Options Flags //////////////
+      
       var showBlacklistedTweets = false;
       var addEdge = true;
       var nextFuncReady = true;
@@ -90,7 +91,13 @@
       
       var topic;
 
-      var clock = new THREE.Clock();
+      var clock = new THREE.Clock();      
+      
+      ////////////// Re-init on resize of window ///////////
+      
+      function onWindowResize(){
+        init();
+      }
 
       ///////////// Removes sidebar and navbar to resize oculus window /////////////
       
@@ -190,8 +197,6 @@
         animate();  
         
       }
-      
-        
         /////////// Leap controls ////////////
         
       if (leapIsOn) {
