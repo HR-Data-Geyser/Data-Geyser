@@ -19,8 +19,11 @@
     <button type="button" class="show-blacklisted btn btn-lg btn-default">
       Allow Offensive Words
     </button>
-    <button type="button" class="oculus-on btn btn-lg btn-default">
-      Turn on Oculus
+    <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
+      Turn on FullScreen (Oculus)
+    </button>
+    <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
+      Turn on FullScreen (No Oculus)
     </button>
   </div>
   <div class="row">
@@ -68,9 +71,13 @@
           addEdge = !addEdge;
         });
         
-        $('.oculus-on').on('click', function(){
+        $('.fullscreen-oculus-on').on('click', function(){
           oculusIsOn = true;
-          toggleOculus();
+          toggleFullscreen();
+        });
+        
+        $('.fullscreen-oculus-off').on('click', function(){
+          toggleFullscreen();
         })
         
         $('.show-blacklisted').on('click', function(){
@@ -101,15 +108,13 @@
 
       ///////////// Removes sidebar and navbar to resize oculus window /////////////
       
-      var toggleOculus = function(){
+      var toggleFullscreen = function(){
         topic = $('.topic').val();
-        if(oculusIsOn){
-          $('.panel').remove();
-          $('.navbar').remove();
-          $('.footer').remove();
-          $('.display').removeClass('ocOff');
-          init();
-        } 
+        $('.panel').hide();
+        $('.navbar').hide();
+        $('.footer').hide();
+        $('.display').removeClass('ocOff');
+        init();
       }
     
       ///////////// THREE.js globe visualization and VR ////////////////
@@ -194,8 +199,8 @@
         orbitControls.maxDistance = 8000;
 
         animate();  
-        
       }
+      
       init();
     </script>
 </div>
