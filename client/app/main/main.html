@@ -124,30 +124,6 @@
         $('.display').addClass('ocOff');
       }
 
-      var onSwipe = function(gesture, direction, velocity) {
-
-        console.log('speed ', gesture.speed); 
-        velocity = gesture.speed; 
-
-  // Manipulate Globe by swiping 
-  // TweenJS takes care of timing of this rotation
-
-        orbitControls.autoRotate = true; 
-
-        var tween = new TWEEN.Tween({ speed: velocity / 15 })
- // TODO: play with velocity scales
-          .to({speed: 0}, 10000)
-          .easing(TWEEN.Easing.Circular.Out)
-          .onUpdate(function() {
-            orbitControls.autoRotateSpeed = this.speed;
-          })
-          .onComplete(function() {
-
-            orbitControls.autoRotate = false;
-          })
-          .start(); 
-      }
-
  // THREE.js globe visualization and VR
 
       var render = function(){
@@ -226,90 +202,7 @@
 
       animate();
         
-
-        /////////// Leap controls ////////////
-
-        
-      if (leapIsOn) {
-        leapController = new Leap.Controller({ enableGestures: true });
-        leapController.connect();
-        
-        var dx = 0.001;
-        var dy = 0.001;
-        var dz = 0.001;
-
-        leapController.on( 'animationFrame' , function( frame ) {
-          for(var h = 0; h < frame.hands.length; h++){
-
-            frame = frame; 
-            var hand = frame.hands[h];
-            window.hand = hand;
-            var position = hand.palmPosition;
-            var direction = hand.direction;
-            var timer = new Date().getTime() * 0.0005;
-            var lr = hand.palmPosition[0];
-            var ud = hand.palmPosition[2];
-            var zoom = hand.palmPosition[1];
-            var vel = hand.palmVelocity;
-            var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
-            var scrollSpeed;
-            var scaleZoom = zoom - 200;
-
-// // CLEANUP TODO: Less hard-code, more params
-
-// // Basic movement with neutral zone
-
-            if(hand.confidence > 0.5 && v < 400){
-
-              if(hand.grabStrength < 0.4){ //hand open
-                if(Math.abs(lr) > 80){
-                  var direction = lr > 0 ? -1 : 1 ;
-                  scrollSpeed = ( Math.abs(lr) - 80 ) / 7000;
-                  orbitControls.rotateLeft(direction * scrollSpeed);
-                }
-                if(Math.abs(ud) > 80){
-                  var direction = ud > 0 ? -1 : 1 ;
-                  scrollSpeed = ( Math.abs(ud) - 80 ) / 12000;
-                  orbitControls.rotateUp(direction * scrollSpeed);
-                }
-                if(scaleZoom < 20 || scaleZoom > 80) {
-                  var offset = scaleZoom;
-                  if(offset < 20) {
-                    scrollSpeed = Math.abs(offset - 20) / 15000 ;
-                    orbitControls.dollyIn(1 + scrollSpeed);
-                  }
-                  if (offset > 80){
-                    scrollSpeed = Math.abs(offset - 80) / 15000;
-                    orbitControls.dollyOut(1.0 + scrollSpeed);
-                  }
-                }
-                orbitControls.update()
-              }
-              if(hand.grabStrength > 0.8){
-
-                if(nextFuncReady){
-                  getTweets();
-                  nextFuncReady = false;
-                  setTimeout(function(){nextFuncReady = true;}, 10000);
-                }
-              }
-            }
-
-// // Check for gestures
-            for (var g = 0; g < frame.gestures.length; g++) {
-              var gesture = frame.gestures[g]; 
-
-              var type = gesture.type;
-              console.log('frame gestures: ', frame.gestures); 
-
-              if (type === 'swipe') {
-                onSwipe(gesture); 
-              }
-            }
-          }
-        });
-      }
-      
+            
       // simple function to calculate random value between -20 and 20 for fountain offset
       var nodeTargetRandom = function(){
         return Math.random() * (20 - (-20)) + (-20);

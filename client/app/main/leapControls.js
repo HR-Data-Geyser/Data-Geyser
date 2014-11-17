@@ -1,71 +1,118 @@
-// $(function() {
-// 	var container = document.getElementById('container');
-// 	console.log(container);
-// 	var width = document.width; 
-// 	var height = document.height; 
+        /////////// Leap controls ////////////
 
-// 	var leapToScene = function (leapPos) {
-// 		// Gets the interaction box of the current frame
-// 		var iBox = frame.interactionBox;
+var leapIsOn = true; 
+if (leapIsOn) {
+  var leapController = new Leap.Controller({ enableGestures: true });
+  var leapIsOn = true; 
 
-// 		// Gets the left border and top border of the box
-// 		// In order to convert the position to the proper
-// 		// location for the canvas
-// 		var left = iBox.center[0] - iBox.size[0]/2;
-// 		var top = iBox.center[1] + iBox.size[1]/2;
+  leapController.connect();
+  
+  var dx = 0.001;
+  var dy = 0.001;
+  var dz = 0.001;
 
-// 		// Takes our leap coordinates, and changes them so
-// 		// that the origin is in the top left corner 
-// 		var x = leapPos[0] - left;
-// 		var y = leapPos[1] - top;
+  leapController.on( 'animationFrame' , function( frame ) {
+    for(var h = 0; h < frame.hands.length; h++){
 
-// 		// Divides the position by the size of the box
-// 		// so that x and y values will range from 0 to 1
-// 		// as they lay within the interaction box
-// 		x /= iBox.size[0];
-// 		y /= iBox.size[1];
+      frame = frame; 
+      var hand = frame.hands[h];
+      window.hand = hand;
+      var position = hand.palmPosition;
+      var direction = hand.direction;
+      var timer = new Date().getTime() * 0.0005;
+      var lr = hand.palmPosition[0];
+      var ud = hand.palmPosition[2];
+      var zoom = hand.palmPosition[1];
+      var vel = hand.palmVelocity;
+      var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
+      var scrollSpeed;
+      var scaleZoom = zoom - 200;
 
-// 		// Uses the height and width of the canvas to scale
-// 		// the x and y coordinates in a way that they 
-// 		// take up the entire canvas
-// 		x *= width;
-// 		y *= height;
+      var leapScales = {}; 
+      if (oculusIsOn) {
+        leapScales.lr = 5000;
+        leapScales.ud = 10000;
+        leapScales.zoom = 12000;
+      } else {
+        leapScales.lr = 7000;
+        leapScales.ud = 12000;
+        leapScales.zoom = 15000;
+      }
 
-// 		// Returns the values, making sure to negate the sign 
-// 		// of the y coordinate, because the y basis in canvas 
-// 		// points down instead of up
-// 		return [ x , -y ];
+// // CLEANUP TODO: Less hard-code, more params
 
-// 	}
+// // Basic movement with neutral zone
 
-// 	var onSwipe = function(gesture) {
-// 		var startPos = leapToScene( gesture.startPosition ); 
-// 		var pos = leapToScene( gesture.position); 
+      if(hand.confidence > 0.5 && v < 500){
 
-// 		console.log('Change the world...'); 
-// 		// Manipulate Globe by swiping 
+        if(hand.grabStrength < 0.4){ //hand open
+          if(Math.abs(lr) > 80){
+            var direction = lr > 0 ? -1 : 1 ;
+            scrollSpeed = ( Math.abs(lr) - 80 ) / leapScales.lr;
+            orbitControls.rotateLeft(direction * scrollSpeed);
+          }
+          if(Math.abs(ud) > 80){
+            var direction = ud > 0 ? -1 : 1 ;
+            scrollSpeed = ( Math.abs(ud) - 80 ) / leapScales.ud;
+            orbitControls.rotateUp(direction * scrollSpeed);
+          }
+          if(scaleZoom < 20 || scaleZoom > 80) {
+            var offset = scaleZoom;
+            if(offset < 20) {
+              scrollSpeed = Math.abs(offset - 20) / leapScales.zoom ;
+              orbitControls.dollyIn(1 + scrollSpeed);
+            }
+            if (offset > 80){
+              scrollSpeed = Math.abs(offset - 80) / leapScales.zoom ;
+              orbitControls.dollyOut(1.0 + scrollSpeed);
+            }
+          }
+          orbitControls.update()
+        }
+        if(hand.grabStrength > 0.8){
 
-// 	}
+          if(nextFuncReady){
+            getTweets();
+            nextFuncReady = false;
+            setTimeout(function(){nextFuncReady = true;}, 10000);
+          }
+        }
+      }
 
-// 	var leapController = new Leap.Controller({
-// 		enableGestures: true
-// 	})
-// 	leapController.on( 'animationFrame' , function( frame ) {
-// 	  for(var h = 0; h < frame.hands.length; h++){
-// 	    var hand = frame.hands[h];
+// // Check for gestures
+      for (var g = 0; g < frame.gestures.length; g++) {
+        var gesture = frame.gestures[g]; 
 
-// 	    var swipeHandPos = leapToScene( frame );
+        var type = gesture.type;
+        console.log('frame gestures: ', frame.gestures); 
 
-// 	    for (var g = 0; g < frame.gestures.length; g++) {
-// 	      var gesture = frame.gestures[g]; 
+        if (type === 'swipe') {
+          onSwipe(gesture); 
+        }
+      }
+    }
+  });
+  var onSwipe = function(gesture, direction, velocity) {
 
-// 	      var type = gesture.type;
-// 	      console.log('frame gestures: ', frame.gestures); 
+    console.log('speed ', gesture.speed); 
+    velocity = gesture.speed; 
 
-// 	      if (type === 'swipe') {
-// 	      	onSwipe(gesture); 
-// 	      }
-// 	    }
-// 	  }
-// 	}); 
-// }); 
+  // Manipulate Globe by swiping 
+  // TweenJS takes care of timing of this rotation
+
+    orbitControls.autoRotate = true; 
+
+  // TODO: play with velocity scales
+    var tween = new TWEEN.Tween({ speed: velocity / 15 })
+      .to({speed: 0}, 10000)
+      .easing(TWEEN.Easing.Circular.Out)
+      .onUpdate(function() {
+        orbitControls.autoRotateSpeed = this.speed;
+      })
+      .onComplete(function() {
+
+        // orbitControls.autoRotate = false;  // 
+      })
+      .start(); 
+  }
+}
