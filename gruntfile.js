@@ -215,6 +215,9 @@ module.exports = function (grunt) {
         ignorePath: '<%= yeoman.client %>/',
         exclude: [/bootstrap-sass-official/, /bootstrap.js/, '/json3/', '/es5-shim/'],
         overrides: {
+          'leapjs-plugins': {
+            main: 'main/leap-plugins-0.1.6.js'
+          },
           tweenjs: {
             main: 'build/tween.min.js',
             ignore: [

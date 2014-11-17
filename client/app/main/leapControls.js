@@ -3,7 +3,6 @@
 var leapIsOn = true; 
 if (leapIsOn) {
   var leapController = new Leap.Controller({ enableGestures: true });
-  var leapIsOn = true; 
 
   leapController.connect();
   
