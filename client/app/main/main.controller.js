@@ -69,6 +69,7 @@ angular.module('dataGeyserApp')
       Interceptor.start(); 
       $http.get('/api/tweets/getTweets/' + topic)
       .success(function(data){
+
         Interceptor.end();
         renderTweets(data);
       });
