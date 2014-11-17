@@ -128,6 +128,7 @@
       
       var topic;
 
+
       var clock = new THREE.Clock();
 
       // Removes sidebar and navbar to resize oculus window
@@ -164,8 +165,7 @@
         requestAnimationFrame(animate);
         TWEEN.update();
         render();
-      };
-      
+      };      
       
       //////////////// Initializes globe at appropriate settings based on oculus flag ///////////////////////
       
@@ -229,70 +229,7 @@
       }
       
         
-        /////////// Leap controls ////////////
-        
-      if (leapIsOn) {
-        leapController = new Leap.Controller({ enableGestures: false });
-        leapController.connect();
-        
-        var dx = 0.001;
-        var dy = 0.001;
-        var dz = 0.001;
-        
-        leapController.on( 'animationFrame' , function( frame ) {
-          for(var h = 0; h < frame.hands.length; h++){
-            var hand = frame.hands[h];
-            window.hand = hand;
-            var position = hand.palmPosition;
-            var direction = hand.direction;
-            var timer = new Date().getTime() * 0.0005;
-            var lr = hand.palmPosition[0];
-            var ud = hand.palmPosition[2];
-            var zoom = hand.palmPosition[1];
-            var vel = hand.palmVelocity;
-            var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
-            var scrollSpeed;
-            var scaleZoom = zoom - 200;
-// CLEANUP TODO: Less hard-code, more params
-            if(hand.confidence > 0.5 && v < 400){
-              if(hand.grabStrength < 0.4){ //hand open
-                if(Math.abs(lr) > 80){
-                  var direction = lr > 0 ? -1 : 1 ;
-                  scrollSpeed = ( Math.abs(lr) - 80 ) / 10000;
-                  orbitControls.rotateLeft(direction * scrollSpeed);
-                }
-                if(Math.abs(ud) > 80){
-                  var direction = ud > 0 ? -1 : 1 ;
-                  scrollSpeed = ( Math.abs(ud) - 80 ) / 15000;
-                  orbitControls.rotateUp(direction * scrollSpeed);
-                }
-                if(scaleZoom < 20 || scaleZoom > 80) {
-                  var offset = scaleZoom;
-                  if(offset < 20) {
-                    scrollSpeed = Math.abs(offset - 20) / 20000 ;
-
-                    orbitControls.dollyIn(1 + scrollSpeed);
-                  }
-                  if (offset > 80){
-                    scrollSpeed = Math.abs(offset - 80) / 20000;
-                    orbitControls.dollyOut(1.0 + scrollSpeed);
-                  }
-                }
-                orbitControls.update()
-              }
-              if(hand.grabStrength > 0.8){
-
-                if(nextFuncReady){
-                  getTweets();
-                  nextFuncReady = false;
-                  setTimeout(function(){nextFuncReady = true;}, 10000);
-                }
-              }
-            }
-          }
-        });
-      }
-      
+            
       // simple function to calculate random value between -20 and 20 for fountain offset
       var nodeTargetRandom = function(){
         return Math.random() * (20 - (-20)) + (-20);

@@ -60,8 +60,8 @@ angular.module('dataGeyserApp')
       $http.get('/api/tweets/getTweets/' + topic)
       .success(function(data){
 
-        console.log('get success');
         Interceptor.end();
+        console.log('get success');
         // callback(data);
       });
     }
