@@ -67,6 +67,8 @@
           orbitControls.enabled = true;
         })
         
+        //////// optional views and filters /////////
+        
         $('.edges').on('click', function(){
           addEdge = !addEdge;
         });
@@ -94,7 +96,6 @@
       var nextFuncReady = true;
       var oculusIsOn = false;
       var oculusControl = true;
-      var leapIsOn = true;
       
       var topic;
 
@@ -106,7 +107,7 @@
         init();
       }
 
-      ///////////// Removes sidebar and navbar to resize oculus window /////////////
+      ///////////// Removes sidebar and navbar to resize fullscreen window /////////////
       
       var toggleFullscreen = function(){
         topic = $('.topic').val();

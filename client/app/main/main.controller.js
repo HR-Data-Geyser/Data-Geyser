@@ -10,9 +10,10 @@ angular.module('dataGeyserApp')
     window.onkeydown = checkKeyPressed;
     
     var tweetTempStorage = {};
-
+    
+    ///////// keydown event listener function //////////////
+    
     function checkKeyPressed(e){
-
       if (e.keyCode === 32) {
         e.preventDefault();
         vrControls.zeroSensor();
@@ -22,6 +23,8 @@ angular.module('dataGeyserApp')
         $scope.getTopic($scope.topic);
       }
     }
+    
+    ////////// scope methods ///////////
     
     $http.get('/api/tweets').success(function(awesomeTweets) {
       $scope.awesomeTweets = awesomeTweets;
@@ -94,27 +97,31 @@ var nodeTargetRandom = function(){
 var renderTweets = function(tweets){
   
   var i = 1;
+  var followerThreshold = 10000;
   // if (i === 1) {
   //   postText(tweets[i].description, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));
   // }
   var renderLoop = function(){
-
     var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
 
-    if (tweets[i].followers_count > 10000 && addEdge) {
-      var multi = Math.ceil(tweets[i].followers_count / 10000);
+    // fires fountains if tweet has more than n followers
+    if (tweets[i].followers_count > followerThreshold && addEdge) {
+      var numSprouts = Math.ceil(tweets[i].followers_count / followerThreshold);
       var color = 'blue';
-      for (var j = 0; j < multi; j++) {              
+      for (var j = 0; j < numSprouts; j++) {              
         var nodeTarget = globe.getEcef(tweets[i].latitude + nodeTargetRandom(), -tweets[i].longitude + nodeTargetRandom(), 0);
         globe.drawEdge(nodeSource, nodeTarget, color, true, 5);
       }
       var url = tweets[i].photo;
       // postText(tweets[i].description, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));
       // displayPhoto(url, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));  // Uncomment to enable displayPhoto IF security disabled
+      
     } else {
       var color = 'orange';
     }
+    
     globe.spark({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: 50, color: color, duration: 2 });
+    
     setTimeout(function(){
       if (i < tweets.length) {
         renderLoop(tweets[i++]);
@@ -123,6 +130,8 @@ var renderTweets = function(tweets){
   }
   renderLoop();
 }
+
+///////////////// displays tweets flying into space ////////////////
 
 var postText = function(text, node){
   var pos = camera.position;
