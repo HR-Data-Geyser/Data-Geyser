@@ -7,6 +7,7 @@ var Tweet = require('./../../api/tweet/tweet.model.js');
 var _ = require('lodash');
 var $ = require('jquery');
 var filter = require('wordfilter');
+var extractor = require('keyword-extractor');
 
 // should probably put this somewhere else..
 var secrets = {
@@ -46,6 +47,7 @@ function streamTweets(topic) {
 
     // Create geodata object
     if (tweet.coordinates || tweet.geo) {
+      var extractedWords = extractor.extract(tweet.text, { language:"english", return_changed_case:true }).join(' ');
       var geo = tweet.coordinates.coordinates;
       var isBlacklisted = filter.blacklisted(tweet.text);
       var newTweet = {
@@ -53,6 +55,7 @@ function streamTweets(topic) {
         created_at: tweet.created_at,
         photo: tweet.user.profile_image_url,
         description: tweet.text,
+        text_keywords: extractedWords,
         followers_count: tweet.user.followers_count,
         in_reply_to_status_id: tweet.in_reply_to_status_id,
         in_reply_to_status_id_str: tweet.in_reply_to_status_id_str,
