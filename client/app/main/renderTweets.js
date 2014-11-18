@@ -68,7 +68,7 @@ var postText = function(text, blacklist, node){
   
   context.font = '8pt Calibri';
   
-  if (blacklist) {
+  if (blacklist && showBlacklistedTweets) {
     context.fillStyle = 'red';    
   } else {
     context.fillStyle = 'white';
