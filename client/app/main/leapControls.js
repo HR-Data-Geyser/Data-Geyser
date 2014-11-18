@@ -1,9 +1,19 @@
         /////////// Leap controls ////////////
 
-var leapIsOn = true; 
-if (leapIsOn) {
-  var leapController = new Leap.Controller({ enableGestures: true });
+// var leapIsOn = false; 
+var leapController = new Leap.Controller({ enableGestures: true });
 
+var leapIsOn = true; 
+leapController.on('connect', function() {
+  console.log('InConnect');
+  // leapIsOn = true; 
+});
+leapController.on('ready', function () { dispatch.trigger('LeapControl:reconnect'); console.log('ready');  });
+console.log(leapIsOn); 
+
+if (leapIsOn) {
+
+  console.log('LEEAAAPP'); 
   leapController.connect();
   
   var dx = 0.001;
@@ -25,44 +35,59 @@ if (leapIsOn) {
       var vel = hand.palmVelocity;
       var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
       var scrollSpeed;
+
+      var leapBoxLimits = {}; 
+      if ( oculusIsOn ) {
+        leapBoxLimits.lr = 40; 
+        leapBoxLimits.ud = 40;
+        leapBoxLimits.zoomIn = 20;
+        leapBoxLimits.zoomOut = 50;
+      } else {
+        leapBoxLimits.lr = 80; 
+        leapBoxLimits.ud = 70;
+        leapBoxLimits.zoomIn = 20;
+        leapBoxLimits.zoomOut = 70;
+      }
       var scaleZoom = zoom - 200;
 
-      var leapScales = {}; 
-      if (oculusIsOn) {
-        leapScales.lr = 5000;
-        leapScales.ud = 10000;
-        leapScales.zoom = 12000;
+      var leapSpeed = {}; 
+      if ( oculusIsOn ) {
+        leapSpeed.lr = 5000;
+        leapSpeed.ud = 10000;
+        leapSpeed.zoom = 12000;
       } else {
-        leapScales.lr = 7000;
-        leapScales.ud = 12000;
-        leapScales.zoom = 15000;
+        leapSpeed.lr = 7000;
+        leapSpeed.ud = 12000;
+        leapSpeed.zoom = 15000;
       }
 
 // // CLEANUP TODO: Less hard-code, more params
 
 // // Basic movement with neutral zone
 
+      console.log('position: ', hand.palmPosition); 
+
       if(hand.confidence > 0.5 && v < 500){
 
         if(hand.grabStrength < 0.4){ //hand open
-          if(Math.abs(lr) > 80){
+          if( Math.abs(lr) > leapBoxLimits.lr ){
             var direction = lr > 0 ? -1 : 1 ;
-            scrollSpeed = ( Math.abs(lr) - 80 ) / leapScales.lr;
+            scrollSpeed = ( Math.abs(lr) - 80 ) / leapSpeed.lr;
             orbitControls.rotateLeft(direction * scrollSpeed);
           }
-          if(Math.abs(ud) > 80){
+          if( Math.abs(ud) > leapBoxLimits.ud ){
             var direction = ud > 0 ? -1 : 1 ;
-            scrollSpeed = ( Math.abs(ud) - 80 ) / leapScales.ud;
+            scrollSpeed = ( Math.abs(ud) - 80 ) / leapSpeed.ud;
             orbitControls.rotateUp(direction * scrollSpeed);
           }
-          if(scaleZoom < 20 || scaleZoom > 80) {
+          if( scaleZoom < leapBoxLimits.zoomIn || scaleZoom > leapBoxLimits.zoomOut ) {
             var offset = scaleZoom;
             if(offset < 20) {
-              scrollSpeed = Math.abs(offset - 20) / leapScales.zoom ;
+              scrollSpeed = Math.abs(offset - 20) / leapSpeed.zoom ;
               orbitControls.dollyIn(1 + scrollSpeed);
             }
             if (offset > 80){
-              scrollSpeed = Math.abs(offset - 80) / leapScales.zoom ;
+              scrollSpeed = Math.abs(offset - 80) / leapSpeed.zoom ;
               orbitControls.dollyOut(1.0 + scrollSpeed);
             }
           }
