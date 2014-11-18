@@ -98,15 +98,13 @@ var renderTweets = function(tweets){
   
   var i = 1;
   var followerThreshold = 1000;
-  
-  // if (i === 1) {
-  // }
+  var wordThreshold = 10;
   
   var renderLoop = function(){
     var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
-    if (i % 10 === 0) {
+    
+    if (i % wordThreshold === 0) {
       postText(tweets[i].text_keywords, nodeSource);
-      
     }
 
     // fires fountains if tweet has more than n followers
@@ -118,7 +116,6 @@ var renderTweets = function(tweets){
         globe.drawEdge(nodeSource, nodeTarget, color, true, 5);
       }
       var url = tweets[i].photo;
-      // postText(tweets[i].description, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));
       // displayPhoto(url, nodeSource);  // Uncomment to enable displayPhoto IF security disabled
       
     } else {
@@ -139,8 +136,7 @@ var renderTweets = function(tweets){
 ///////////////// displays tweets flying into space ////////////////
 
 var postText = function(text, node){
-  console.log(text);
-  
+
   var canvas = document.createElement("canvas");
   var context = canvas.getContext('2d');
   
@@ -161,7 +157,6 @@ var postText = function(text, node){
   });
   
   var geo = new THREE.PlaneBufferGeometry(canvas.width, canvas.height, 1, 1);  
-
   var textMesh = new THREE.Mesh(geo, material);
   
   textMesh.position.set( node.position.x, node.position.y, node.position.z );
@@ -176,10 +171,7 @@ var postText = function(text, node){
   createjs.Tween.get(textMesh.position)
   .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
   .call(onComplete, [textMesh]); 
-
 }
-
-
 
 ////////////////// displays photos flying into space //////////////////
 
