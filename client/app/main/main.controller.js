@@ -97,12 +97,17 @@ var nodeTargetRandom = function(){
 var renderTweets = function(tweets){
   
   var i = 1;
-  var followerThreshold = 10000;
+  var followerThreshold = 1000;
+  
   // if (i === 1) {
-  //   postText(tweets[i].description, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));
   // }
+  
   var renderLoop = function(){
     var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
+    if (i % 10 === 0) {
+      postText(tweets[i].text_keywords, nodeSource);
+      
+    }
 
     // fires fountains if tweet has more than n followers
     if (tweets[i].followers_count > followerThreshold && addEdge) {
@@ -114,7 +119,7 @@ var renderTweets = function(tweets){
       }
       var url = tweets[i].photo;
       // postText(tweets[i].description, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));
-      // displayPhoto(url, globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0));  // Uncomment to enable displayPhoto IF security disabled
+      // displayPhoto(url, nodeSource);  // Uncomment to enable displayPhoto IF security disabled
       
     } else {
       var color = 'orange';
@@ -134,35 +139,44 @@ var renderTweets = function(tweets){
 ///////////////// displays tweets flying into space ////////////////
 
 var postText = function(text, node){
+  console.log(text);
+  
+  var canvas = document.createElement("canvas");
+  var context = canvas.getContext('2d');
+  
+  context.font = '10pt Calibri';
+  context.fillStyle = 'white';
+  context.fillText(text, 150, 100);
+  
   var pos = camera.position;
   var rnd = Math.random;
+  
+  var texture = new THREE.Texture(canvas);
+  texture.needsUpdate = true;
+  
+  var material = new THREE.MeshBasicMaterial({
+    side: THREE.DoubleSide,
+    transparent: true,
+    map: texture
+  });
+  
+  var geo = new THREE.PlaneBufferGeometry(canvas.width, canvas.height, 1, 1);  
+
+  var textMesh = new THREE.Mesh(geo, material);
+  
+  textMesh.position.set( node.position.x, node.position.y, node.position.z );
+  textMesh.lookAt(camera.position);
+  
+  scene.add(textMesh);
 
   var onComplete = function(object){
     scene.remove(object);
-    // renderer.render( scene, camera );
   };
-  if(text !== undefined) {
-    var materialFront = new THREE.MeshBasicMaterial( { color: 'white' } );
-    var textGeom = new THREE.TextGeometry( text, {
-      size: 30, height: 4, curveSegments: 3,
-      font: "helvetiker", weight: "bold", style: "normal",
-      bevelEnabled: false, material: 0
-      });
+  
+  createjs.Tween.get(textMesh.position)
+  .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
+  .call(onComplete, [textMesh]); 
 
-    var textMesh = new THREE.Mesh(textGeom, materialFront );
-
-    textGeom.computeBoundingBox();
-    var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
-
-    textMesh.position.set( node.position.x, node.position.y, node.position.z );
-    textMesh.lookAt(camera.position);
-    textMesh.data = 'TEXT';
-    scene.add(textMesh);
-    var toPos = this.displace(pos, 3000);
-    createjs.Tween.get(textMesh.position)
-      .to({x: toPos.x, y: toPos.y, z: toPos.z}, 10000).call(onComplete, [textMesh]);
-    // createjs.Tween.get(textMesh.position).to({x: pos.x*(2+rnd()), y: pos.y*(2+rnd()), z: pos.z*(2+rnd())}, 15000).call(onComplete, [textMesh]);
-  }
 }
 
 
