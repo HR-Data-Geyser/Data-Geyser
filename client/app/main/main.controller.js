@@ -98,7 +98,7 @@ var renderTweets = function(tweets){
   
   var i = 1;
   var followerThreshold = 1000;
-  var wordThreshold = 10;
+  var wordThreshold = 21;
   
   var renderLoop = function(){
     var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
@@ -136,6 +136,11 @@ var renderTweets = function(tweets){
 ///////////////// displays tweets flying into space ////////////////
 
 var postText = function(text, node){
+
+  var msg = new SpeechSynthesisUtterance(text);
+  console.log(msg);
+  window.speechSynthesis.speak(msg);
+
 
   var canvas = document.createElement("canvas");
   var context = canvas.getContext('2d');
