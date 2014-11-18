@@ -18,6 +18,7 @@ angular.module('dataGeyserApp')
         e.preventDefault();
         vrControls.zeroSensor();
       }
+      
       if (e.keyCode === 13) {
         e.preventDefault();
         $scope.getTopic($scope.topic);
