@@ -80,7 +80,9 @@ angular.module('dataGeyserApp')
     }
     
     $scope.destroyTopic = function(topic) {
+      Interceptor.start();
       $http.delete('/api/tweets/getTweets/' + topic).success(function(){
+        Interceptor.end();
         console.log(topic, 'destroyed');
       })
     }

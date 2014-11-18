@@ -19,6 +19,7 @@ var TweetSchema = new Schema({
   keyword: String,
   latitude: Number,
   longitude: Number,
+  isBlacklisted: Boolean,
   location: String
 });
 

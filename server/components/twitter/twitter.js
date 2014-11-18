@@ -44,7 +44,7 @@ function streamTweets(topic) {
   stream.on('tweet', function (tweet) {
     /* if you want to store more attributes from the tweet object, here is a great place to do it. Right now we're just storing
     the geolocation data, but */
-    console.log(tweet)
+    
     // Create geodata object
     if (tweet.coordinates || tweet.geo) {
       var extractedWords = extractor.extract(tweet.text, { language:"english", return_changed_case:true }).join(' ');

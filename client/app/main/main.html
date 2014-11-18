@@ -20,10 +20,10 @@
       Allow Offensive Words
     </button>
     <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
-      Turn on FullScreen (Oculus)
+      FullScreen (Oculus)
     </button>
     <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
-      Turn on FullScreen (No Oculus)
+      FullScreen (No Oculus)
     </button>
   </div>
   <div class="row">
@@ -96,6 +96,7 @@
       var nextFuncReady = true;
       var oculusIsOn = false;
       var oculusControl = true;
+      var showPhotos = false;
       
       var topic;
 
@@ -163,11 +164,13 @@
           wInit = 0;
           hInit = 0;
         }
+        
+        var earth_radius = 200;
 
         w = window.innerWidth - wInit;
         h = window.innerHeight - hInit;
 
-        window.globe = new Globe(200);
+        window.globe = new Globe(earth_radius);
         window.scene = new THREE.Scene();
         window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
         window.vrControls = new THREE.VRControls( camera );
@@ -187,9 +190,9 @@
         }));
         
         //clouds object
-        var earth_radius = 200;
         var cloud_scale = 1.02;
         var cloudsGeometry = new THREE.SphereGeometry(earth_radius*cloud_scale, 40, 40);
+        
         var cloudsMaterial  = new THREE.MeshLambertMaterial({
           map: THREE.ImageUtils.loadTexture( '../../assets/images/clouds.jpg' ),
           transparent: true,
@@ -197,15 +200,17 @@
           blendSrc: THREE.SrcAlphaFactor,
           blendDst: THREE.OneMinusSrcColorFactor,
           blendEquation: THREE.AddEquation
-          // bumpScale: earthTextureScale
         });
+        
         window.clouds = clouds = new THREE.Mesh( cloudsGeometry, cloudsMaterial );
+        
+        // create scene
         scene.add(clouds);
-      
         scene.add(globe);
         scene.add(skybox);
         scene.add(light);
         container.appendChild(renderer.domElement);
+        
         window.oculusVr = new THREE.OculusRiftEffect(renderer);
         oculusVr.setSize(w, h);
         render();
