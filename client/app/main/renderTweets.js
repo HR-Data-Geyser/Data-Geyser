@@ -1,4 +1,4 @@
-//////// simple function to calculate random value between -20 and 20 for fountain offset ////////
+//////// simple function to calculate random value between range and -range  ////////
 
 var nodeTargetRandom = function(range){
   return Math.random() * (range - (-range)) + (-range);
@@ -8,21 +8,21 @@ var nodeTargetRandom = function(range){
 
 var renderTweets = function(tweets){
   
-  var i = 1;
+  var i = 0;
   var followerThreshold = 1000;
   var wordThreshold = 1;
   var speechThreshold = 30;
   
   var renderLoop = function(){
     var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
-    
+
     if (i % wordThreshold === 0) {
       postText(tweets[i].text_keywords, tweets[i].isBlacklisted, nodeSource);
     }
     
     // trigger speech synth    
     if (i % speechThreshold === 0) {
-      var msg = new SpeechSynthesisUtterance(tweets[i].text);
+      var msg = new SpeechSynthesisUtterance(tweets[i].text_keywords);
       window.speechSynthesis.speak(msg);
     }
 
@@ -34,8 +34,11 @@ var renderTweets = function(tweets){
         var nodeTarget = globe.getEcef(tweets[i].latitude + nodeTargetRandom(20), -tweets[i].longitude + nodeTargetRandom(20), 0);
         globe.drawEdge(nodeSource, nodeTarget, color, true, 5);
       }
-      var url = tweets[i].photo;
-      // displayPhoto(url, nodeSource);  // Uncomment to enable displayPhoto IF security disabled
+      
+      if (showPhotos) {
+        var url = tweets[i].photo;
+        displayPhoto(url, nodeSource);  
+      }
       
     } else if (tweets[i].in_reply_to_status_id !== null) {
       var color = 'green';
@@ -45,11 +48,13 @@ var renderTweets = function(tweets){
     
     globe.spark({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: 50, color: color, duration: 2 });
     
+    // sets 150ms interval between tweets
     setTimeout(function(){
       if (i < tweets.length) {
         renderLoop(tweets[i++]);
       }
-    }, 150);  // sets 150ms interval between tweets
+    }, 150);  
+    
   }
   renderLoop();
 }
@@ -62,11 +67,13 @@ var postText = function(text, blacklist, node){
   var context = canvas.getContext('2d');
   
   context.font = '8pt Calibri';
+  
   if (blacklist) {
     context.fillStyle = 'red';    
   } else {
     context.fillStyle = 'white';
   }
+  
   context.fillText(text, 150, 100);
   
   var pos = camera.position;
@@ -94,7 +101,7 @@ var postText = function(text, blacklist, node){
   };
   
   createjs.Tween.get(textMesh.position)
-  .to({x: nodeTargetRandom(600)*(0.9+(rnd()*0.4)), y: nodeTargetRandom(600)*(0.9+(rnd()*0.4)), z: nodeTargetRandom(600)*(0.9+(rnd()*0.4))}, 8000)
+  .to({x: nodeTargetRandom(800)*(0.9+(rnd()*0.4)), y: nodeTargetRandom(800)*(0.9+(rnd()*0.4)), z: nodeTargetRandom(800)*(0.9+(rnd()*0.4))}, 8000)
   .call(onComplete, [textMesh]); 
 }
 
