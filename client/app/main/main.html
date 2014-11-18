@@ -48,7 +48,7 @@
         </div>
       </div>
 </div>
-
+<div id="debug"></div>
 </div><div class="display ocOff"><div id="container"></div>
 		<script src="js/globe.js"></script>
     <script src="js/orbitControls.js"></script>
@@ -185,6 +185,22 @@
           map: THREE.ImageUtils.loadTexture('../assets/images/tycho3.png'),
           side: THREE.BackSide
         }));
+        
+        //clouds object
+        var earth_radius = 200;
+        var cloud_scale = 1.02;
+        var cloudsGeometry = new THREE.SphereGeometry(earth_radius*cloud_scale, 40, 40);
+        var cloudsMaterial  = new THREE.MeshLambertMaterial({
+          map: THREE.ImageUtils.loadTexture( '../../assets/images/clouds.jpg' ),
+          transparent: true,
+          blending: THREE.CustomBlending,
+          blendSrc: THREE.SrcAlphaFactor,
+          blendDst: THREE.OneMinusSrcColorFactor,
+          blendEquation: THREE.AddEquation
+          // bumpScale: earthTextureScale
+        });
+        window.clouds = clouds = new THREE.Mesh( cloudsGeometry, cloudsMaterial );
+        scene.add(clouds);
       
         scene.add(globe);
         scene.add(skybox);
