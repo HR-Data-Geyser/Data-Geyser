@@ -3,8 +3,11 @@
 <div class="panel">
 <div class="term">
   <input type="text" class="topic" ng-model="topic"></br>
-  <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)">
+  <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)" ng-show="!streaming">
     Start Gathering Topic: {{topic}}
+  </button>
+  <button type="button" class="btn btn-lg btn-default" ng-click="stopTopic(topic, true)" ng-show="streaming">
+    Stop Gathering
   </button>
   <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic(topic)">
     Show {{topic}}
@@ -18,6 +21,9 @@
     </button>
     <button type="button" class="show-blacklisted btn btn-lg btn-default">
       Allow Offensive Words
+    </button>
+    <button type="button" class="show-photos btn btn-lg btn-default">
+      Show Photos
     </button>
     <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
       FullScreen (Oculus)
@@ -85,6 +91,10 @@
         $('.show-blacklisted').on('click', function(){
           showBlacklistedTweets = !showBlacklistedTweets;
         });
+        
+        $('.show-photos').on('click', function(){
+          showPhotos = !showPhotos;
+        })
         
         window.addEventListener('resize', onWindowResize, false);
       });
