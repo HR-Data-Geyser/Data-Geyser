@@ -14,28 +14,30 @@ var twitter = require('./../../components/twitter/twitter.js');
 var Tweet = require('./tweet.model');
 var $ = require('jquery');
 
+// gets list of tweets matching topic
 exports.getTweets = function(req, res){
   Tweet.find({keyword: req.params.topic}, function(err, tweets) {
     return res.json(200, tweets);
   });
 }
 
+// stops twitter stream
 exports.stopTweets = function(req, res) {
   twitter.stopTweets(req.params.topic, function(err, data){
     return res.send(200);
   });
 }
 
+// starts twitter stream
 exports.startTweets = function(req, res){
   twitter.streamTweets(req.params.topic, function(err, data){
     return res.json(200, data);
   });
-  // twitter.getHistoric();
 }
 
+// destroys tweets matching topic in DB
 exports.destroyTweets = function(req, res){
   Tweet.find({keyword: req.params.topic}, function(err, tweets){
-    console.log(tweets);
     for (var i = 0; i < tweets.length; i++) {
       tweets[i].remove();
     }
@@ -43,7 +45,7 @@ exports.destroyTweets = function(req, res){
   })
 }
 
-// Get list of tweets
+// Get list of all tweets
 exports.index = function(req, res) {
   Tweet.find(function (err, tweets) {
     if(err) { return handleError(res, err); }

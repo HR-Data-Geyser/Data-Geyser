@@ -15,6 +15,8 @@ var renderTweets = function(tweets){
   var speechThreshold = 30; // frequency of tweets that trigger speech synth
   
   var renderLoop = function(){
+    
+    // converts tweet lat/long to [x, y, z] coordinates 
     var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
 
     if (i % wordThreshold === 0) {
@@ -29,9 +31,13 @@ var renderTweets = function(tweets){
 
     // fires fountains if tweet has more than n followers
     if (tweets[i].followers_count > followerThreshold && addEdge) {
+      
+      // adds sprout to fountain for each multiple of followerThreshold
       var numSprouts = Math.ceil(tweets[i].followers_count / followerThreshold);
       var color = 'blue';
       for (var j = 0; j < numSprouts; j++) {              
+        
+        // sets random target coordinates within 20 lat long of source
         var nodeTarget = globe.getEcef(tweets[i].latitude + nodeTargetRandom(20), -tweets[i].longitude + nodeTargetRandom(20), 0);
         globe.drawEdge(nodeSource, nodeTarget, color, true, 5);
       }
@@ -70,6 +76,7 @@ var postText = function(text, blacklist, node){
 
   context.font = '8pt Calibri';
   
+  // checks text for offensive words and highlights red if showBlacklisted is active
   if (blacklist && showBlacklistedTweets) {
     context.fillStyle = 'red';    
   } else {
@@ -125,12 +132,12 @@ var displayPhoto = function(url, node){
     material.opacity = 0.7;
     var imageGeometry = new THREE.PlaneBufferGeometry(texture.width / 10, texture.height / 10, 1, 1);
     var image = new THREE.Mesh(imageGeometry, material);
-    image.position.set( node.position.x,node.position.y,node.position.z );
+    image.position.set( node.position.x, node.position.y, node.position.z );
     image.material.map.needsUpdate = true;
     image.lookAt(camera.position);
     scene.add(image);
     createjs.Tween.get(image.position)
-    .to({x: nodeTargetRandom(600)*(0.9+(rnd()*0.4)), y: nodeTargetRandom(600)*(0.9+(rnd()*0.4)), z: nodeTargetRandom(600)*(0.9+(rnd()*0.4))}, 8000)
+    .to({x: nodeTargetRandom(800), y: nodeTargetRandom(800), z: nodeTargetRandom(800)}, 8000)
     .call(onComplete, [image]); 
   };
   

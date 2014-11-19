@@ -26,16 +26,6 @@ var T = new Twit({
 
 var stream;
 
-// not currently being used
-function getTweets(topic){
-  Tweet.find({keyword: topic}, function(err, tweets) {
-    for (var i = 0; i < tweets.length; i++) {
-      console.log(tweets[i].screenName);
-      $('.display').append(tweets[i].screenName);
-    }
-  });
-}
-
 function stopTweets(topic) {
   stream.stop();
 }
