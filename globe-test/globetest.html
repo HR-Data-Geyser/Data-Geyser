@@ -5,6 +5,7 @@
   <title></title>
   <style>
     body {
+      background-color: black;
       padding: 0;
       margin: 0;
       overflow: hidden;
@@ -19,6 +20,20 @@
       text-align: left;
       z-index: 100;
     }
+    #loader-parent {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 100;
+    }
+    #loader-child{
+      width: 250px;
+      margin: 0 auto;
+      color: #ffffff;
+      text-align: center;
+      font-family: monospace;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -32,6 +47,7 @@
   <script src="three.js/examples/js/shaders/BleachBypassShader.js"></script>
   <script src="three.js/examples/js/shaders/FilmShader.js"></script>
   <script src="three.js/examples/js/shaders/LuminosityShader.js"></script>
+  <script src="AtmosphereShader.js"></script>
   <script src="three.js/examples/js/postprocessing/MaskPass.js"></script>
   <script src="three.js/examples/js/postprocessing/ShaderPass.js"></script>
   <script src="three.js/examples/js/postprocessing/RenderPass.js"></script>
@@ -41,5 +57,10 @@
   <script src="ebola.js"></script>
   <script src="globe.js"></script>
   <script src="globetest.js"></script>
+  <div id="loader-parent">
+    <div id="loader-child">
+      Loading....
+    </div>
+  </div>
 </body>
 </html>
