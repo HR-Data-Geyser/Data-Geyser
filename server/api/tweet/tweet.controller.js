@@ -60,14 +60,6 @@ exports.show = function(req, res) {
   });
 };
 
-// Creates a new tweet in the DB.
-exports.create = function(req, res) {
-  Tweet.create(req.body, function(err, tweet) {
-    if(err) { return handleError(res, err); }
-    return res.json(201, tweet);
-  });
-};
-
 // Updates an existing tweet in the DB.
 exports.update = function(req, res) {
   if(req.body._id) { delete req.body._id; }
@@ -78,18 +70,6 @@ exports.update = function(req, res) {
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.json(200, tweet);
-    });
-  });
-};
-
-// Deletes a tweet from the DB.
-exports.destroy = function(req, res) {
-  Tweet.findById(req.params.id, function (err, tweet) {
-    if(err) { return handleError(res, err); }
-    if(!tweet) { return res.send(404); }
-    tweet.remove(function(err) {
-      if(err) { return handleError(res, err); }
-      return res.send(204);
     });
   });
 };

@@ -54,18 +54,6 @@ angular.module('dataGeyserApp')
       // socket.syncUpdates('tweet', $scope.awesomeTweets);
     });
 
-    $scope.addTweet = function() {
-      if($scope.newTweet === '') {
-        return;
-      }
-      $http.post('/api/tweets', { name: $scope.newTweet });
-      $scope.newTweet = '';
-    };
-
-    $scope.deleteTweet = function(tweet) {
-      $http.delete('/api/tweets/' + tweet._id);
-    };
-
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('tweet');
     });
