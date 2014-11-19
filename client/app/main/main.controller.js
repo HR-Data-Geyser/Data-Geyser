@@ -54,18 +54,6 @@ angular.module('dataGeyserApp')
       // socket.syncUpdates('tweet', $scope.awesomeTweets);
     });
 
-    $scope.addTweet = function() {
-      if($scope.newTweet === '') {
-        return;
-      }
-      $http.post('/api/tweets', { name: $scope.newTweet });
-      $scope.newTweet = '';
-    };
-
-    $scope.deleteTweet = function(tweet) {
-      $http.delete('/api/tweets/' + tweet._id);
-    };
-
     $scope.$on('$destroy', function () {
       socket.unsyncUpdates('tweet');
     });
@@ -78,6 +66,7 @@ angular.module('dataGeyserApp')
       });
     }
     
+    // stops twitter stream
     $scope.stopTopic = function(topic){
       $scope.streaming = false;
       $http.put('/api/tweets/getTweets/' + topic).success(function(){
@@ -85,6 +74,7 @@ angular.module('dataGeyserApp')
       });
     }
     
+    // fetches tweets matching topic from DB
     $scope.getTopic = function(topic) {
       Interceptor.start(); 
       $http.get('/api/tweets/getTweets/' + topic)
@@ -95,6 +85,7 @@ angular.module('dataGeyserApp')
       });
     }
     
+    // destroys all tweets matching topic in DB
     $scope.destroyTopic = function(topic) {
       Interceptor.start();
       $http.delete('/api/tweets/getTweets/' + topic).success(function(){
