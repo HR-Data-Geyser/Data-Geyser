@@ -1,4 +1,7 @@
 dependencies:
+  override: 
+    - grunt build:dist:
+        timeout: 300
   pre:
     - wget http://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-0.7.5/optipng-0.7.5.tar.gz
     - tar xvf optipng-0.7.5.tar.gz

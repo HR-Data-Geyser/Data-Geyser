@@ -1,6 +1,6 @@
 module.exports = {
   streamTweets: streamTweets,
-  getHistoric: getHistoric
+  stopTweets: stopTweets
 };
 
 var Twit = require('twit');
@@ -8,8 +8,8 @@ var Tweet = require('./../../api/tweet/tweet.model.js');
 var _ = require('lodash');
 var $ = require('jquery');
 var filter = require('wordfilter');
+var extractor = require('keyword-extractor');
 
-// should probably put this somewhere else..
 var secrets = {
   consumerKey: process.env['TWITTER_CONSUMER_KEY'],
   consumerSecret: process.env['TWITTER_CONSUMER_SECRET'],
@@ -24,19 +24,10 @@ var T = new Twit({
   access_token_secret: secrets.accessTokenSecret
 });
 
-function getTweets(topic){
-  Tweet.find({keyword: topic}, function(err, tweets) {
-    for (var i = 0; i < tweets.length; i++) {
-      console.log(tweets[i].screenName);
-      $('.display').append(tweets[i].screenName);
-    }
-  });
-}
+var stream;
 
-function getHistoric(){
-  T.get('search/tweets', {q: 'ebola until:2014-11-01', count: 100}, function(err, data, response){
-    console.log(data);
-  })
+function stopTweets(topic) {
+  stream.stop();
 }
 
 function streamTweets(topic) {
@@ -44,22 +35,26 @@ function streamTweets(topic) {
   
   var globe = ['-180', '-90', '180', '90'];
 
-  var stream = T.stream('statuses/filter', { locations: globe });
-  // var stream = T.stream('statuses/filter', { track: topic });
-
+  stream = T.stream('statuses/filter', { locations: globe }); // filter tweets with geo data only
+  // var stream = T.stream('statuses/filter', { track: topic }); // filter tweets with keyword 
   stream.on('tweet', function (tweet) {
-    /* if you want to store more attributes from the tweet object, here is a great place to do it. Right now we're just storing
-    the geolocation data, but */
-
-    // Create geodata object
+    // Create tweet object with geo data
     if (tweet.coordinates || tweet.geo) {
+      
+      // keyword filter to extract and join keywords
+      var extractedWords = extractor.extract(tweet.text, { language:"english", return_changed_case:true }).join(' ');
+      
       var geo = tweet.coordinates.coordinates;
+      
+      // filter to check if offensive words are in tweet text
       var isBlacklisted = filter.blacklisted(tweet.text);
+      
       var newTweet = {
         id: tweet.id,
         created_at: tweet.created_at,
         photo: tweet.user.profile_image_url,
         description: tweet.text,
+        text_keywords: extractedWords,
         followers_count: tweet.user.followers_count,
         in_reply_to_status_id: tweet.in_reply_to_status_id,
         in_reply_to_status_id_str: tweet.in_reply_to_status_id_str,
