@@ -20,6 +20,12 @@ exports.getTweets = function(req, res){
   });
 }
 
+exports.stopTweets = function(req, res) {
+  twitter.stopTweets(req.params.topic, function(err, data){
+    return res.send(200);
+  });
+}
+
 exports.startTweets = function(req, res){
   twitter.streamTweets(req.params.topic, function(err, data){
     return res.json(200, data);

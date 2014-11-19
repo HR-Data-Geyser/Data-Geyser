@@ -10,6 +10,7 @@ router.get('/:id', controller.show);
 router.get('/getTweets/:topic', controller.getTweets);
 router.post('/', controller.create);
 router.post('/getTweets/:topic', controller.startTweets);
+router.put('/getTweets/:topic', controller.stopTweets);
 router.delete('/getTweets/:topic', controller.destroyTweets);
 router.put('/:id', controller.update);
 router.patch('/:id', controller.update);
