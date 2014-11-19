@@ -9,7 +9,6 @@ var $ = require('jquery');
 var filter = require('wordfilter');
 var extractor = require('keyword-extractor');
 
-// should probably put this somewhere else..
 var secrets = {
   consumerKey: process.env['TWITTER_CONSUMER_KEY'],
   consumerSecret: process.env['TWITTER_CONSUMER_SECRET'],
@@ -38,14 +37,12 @@ function streamTweets(topic) {
   
   var globe = ['-180', '-90', '180', '90'];
 
-  var stream = T.stream('statuses/filter', { locations: globe });
-  // var stream = T.stream('statuses/filter', { track: topic });
+  var stream = T.stream('statuses/filter', { locations: globe }); // filter by tweets with geo data only
+  // var stream = T.stream('statuses/filter', { track: topic }); // filter by tweets with keyword 
 
   stream.on('tweet', function (tweet) {
-    /* if you want to store more attributes from the tweet object, here is a great place to do it. Right now we're just storing
-    the geolocation data, but */
     
-    // Create geodata object
+    // Create tweet object with geo data
     if (tweet.coordinates || tweet.geo) {
       var extractedWords = extractor.extract(tweet.text, { language:"english", return_changed_case:true }).join(' ');
       var geo = tweet.coordinates.coordinates;

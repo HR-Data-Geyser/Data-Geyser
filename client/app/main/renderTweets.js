@@ -65,7 +65,7 @@ var postText = function(text, blacklist, node){
 
   var canvas = document.createElement("canvas");
   var context = canvas.getContext('2d');
-  
+
   context.font = '8pt Calibri';
   
   if (blacklist && showBlacklistedTweets) {
@@ -101,7 +101,7 @@ var postText = function(text, blacklist, node){
   };
   
   createjs.Tween.get(textMesh.position)
-  .to({x: nodeTargetRandom(800)*(0.9+(rnd()*0.4)), y: nodeTargetRandom(800)*(0.9+(rnd()*0.4)), z: nodeTargetRandom(800)*(0.9+(rnd()*0.4))}, 8000)
+  .to({x: nodeTargetRandom(800), y: nodeTargetRandom(800), z: nodeTargetRandom(800)}, 8000)
   .call(onComplete, [textMesh]); 
 }
 

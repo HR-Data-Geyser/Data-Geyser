@@ -19,6 +19,9 @@
     <button type="button" class="show-blacklisted btn btn-lg btn-default">
       Allow Offensive Words
     </button>
+    <button type="button" class="show-photos btn btn-lg btn-default">
+      Show Photos
+    </button>
     <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
       FullScreen (Oculus)
     </button>
@@ -85,6 +88,10 @@
         $('.show-blacklisted').on('click', function(){
           showBlacklistedTweets = !showBlacklistedTweets;
         });
+        
+        $('.show-photos').on('click', function(){
+          showPhotos = !showPhotos;
+        })
         
         window.addEventListener('resize', onWindowResize, false);
       });
