@@ -3,8 +3,11 @@
 <div class="panel">
 <div class="term">
   <input type="text" class="topic" ng-model="topic"></br>
-  <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)">
+  <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)" ng-show="!streaming">
     Start Gathering Topic: {{topic}}
+  </button>
+  <button type="button" class="btn btn-lg btn-default" ng-click="stopTopic(topic, true)" ng-show="streaming">
+    Stop Gathering
   </button>
   <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic(topic)">
     Show {{topic}}

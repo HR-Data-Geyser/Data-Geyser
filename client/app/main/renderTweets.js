@@ -9,9 +9,10 @@ var nodeTargetRandom = function(range){
 var renderTweets = function(tweets){
   
   var i = 0;
-  var followerThreshold = 1000;
-  var wordThreshold = 1;
-  var speechThreshold = 30;
+  
+  var followerThreshold = 1000; // number of followers needed to trigger a fountain
+  var wordThreshold = 1; // frequency of tweets that trigger flying text determined via %
+  var speechThreshold = 30; // frequency of tweets that trigger speech synth
   
   var renderLoop = function(){
     var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
@@ -46,6 +47,7 @@ var renderTweets = function(tweets){
       var color = 'orange';
     }
     
+    // places spark on globe at correct lat/long coordinates
     globe.spark({lat: tweets[i].latitude, lon: -tweets[i].longitude, size: 50, color: color, duration: 2 });
     
     // sets 150ms interval between tweets

@@ -1,5 +1,6 @@
 module.exports = {
-  streamTweets: streamTweets
+  streamTweets: streamTweets,
+  stopTweets: stopTweets
 };
 
 var Twit = require('twit');
@@ -23,6 +24,9 @@ var T = new Twit({
   access_token_secret: secrets.accessTokenSecret
 });
 
+var stream;
+
+// not currently being used
 function getTweets(topic){
   Tweet.find({keyword: topic}, function(err, tweets) {
     for (var i = 0; i < tweets.length; i++) {
@@ -32,21 +36,31 @@ function getTweets(topic){
   });
 }
 
+function stopTweets(topic) {
+  console.log('stopping');
+  stream.stop();
+}
+
 function streamTweets(topic) {
   // console.log('started', topic);
   
   var globe = ['-180', '-90', '180', '90'];
 
-  var stream = T.stream('statuses/filter', { locations: globe }); // filter by tweets with geo data only
-  // var stream = T.stream('statuses/filter', { track: topic }); // filter by tweets with keyword 
+  stream = T.stream('statuses/filter', { locations: globe }); // filter tweets with geo data only
+  // var stream = T.stream('statuses/filter', { track: topic }); // filter tweets with keyword 
 
   stream.on('tweet', function (tweet) {
-    
     // Create tweet object with geo data
     if (tweet.coordinates || tweet.geo) {
+      
+      // keyword filter to extract and join keywords
       var extractedWords = extractor.extract(tweet.text, { language:"english", return_changed_case:true }).join(' ');
+      
       var geo = tweet.coordinates.coordinates;
+      
+      // filter to check if offensive words are in tweet text
       var isBlacklisted = filter.blacklisted(tweet.text);
+      
       var newTweet = {
         id: tweet.id,
         created_at: tweet.created_at,
