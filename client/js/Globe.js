@@ -190,13 +190,13 @@ Globe.prototype.spark = function(params){
   this.pc.material.attributes.cc.value[idx] = new THREE.Color(color);
   this.pc.material.attributes.cc.needsUpdate = true;
   var that = this;
-  
+
   var updateSpark = function(){
     var idx = that.pc.geometry.vertices.indexOf(vertex);
     that.pc.material.attributes.flashSize.value[idx] = this.size;
     that.pc.material.attributes.flashSize.needsUpdate = true;
   };
-  
+
   var killSpark = function(){
     var idx = that.pc.geometry.vertices.indexOf(vertex);
     that.pc.geometry.vertices[idx] = new THREE.Vector3();
@@ -227,7 +227,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   var multiplier = 1.7;
 
   //make a 3js line object
-  var material = new THREE.LineBasicMaterial( { color: 0xCCCCCC, opacity: 0.5, linewidth: width } );
+  // var material = new THREE.LineBasicMaterial( { color: 0xCCCCCC, opacity: 0.5, linewidth: width } );
 
   //cache the coordinates of the source and target nodes
   var sourceXy = source.position;
@@ -238,8 +238,8 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   var AvgY = (sourceXy.y + targetXy.y)/2;
   var AvgZ = (sourceXy.z + targetXy.z)/2;
   //get difference between source and target
-  var diffX = Math.abs(sourceXy.x - targetXy.x);
-  var diffY = Math.abs(sourceXy.y - targetXy.y);
+  // var diffX = Math.abs(sourceXy.x - targetXy.x);
+  // var diffY = Math.abs(sourceXy.y - targetXy.y);
   //set middle point to average(x/y) and average(z + sum of difference(x/y))
   var middle = [ AvgX * multiplier, AvgY * multiplier, AvgZ * multiplier ];
 
@@ -252,18 +252,213 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
   //create material for our line
   var curveMaterial = new THREE.LineBasicMaterial({
-    color: color, linewidth: 2, transparent: true
+    // color: color, linewidth: 10, transparent: true
+    color: new THREE.Color(0xff0000), linewidth: 0, transparent: true
   });
 
+
+
+
+
+
+
+  function constrain(v, min, max){
+  	if( v < min )
+  		v = min;
+  	else
+  	if( v > max )
+  		v = max;
+  	return v;
+  }
+
+
+
+
+
+
+
+
+  var linesGeo = new THREE.Geometry();
+	// var lineColors = [];
+
+	// var lineColor = new THREE.Color(0x0000ff);
+
+	// var lastColor;
+	// //	grab the colors from the vertices
+	// for( s in set.lineGeometry.vertices ){
+	// 	var v = set.lineGeometry.vertices[s];
+	// 	lineColors.push(lineColor);
+	// 	lastColor = lineColor;
+	// }
+
+	//	merge it all together
+	linesGeo.merge(path.createPointsGeometry(10));
+  //console.log("linesGeo.size: ", linesGeo.size);
+
+
+  var particlesGeo = new THREE.Geometry();
+	var particleColors = [];
+
+	var particleColor = new THREE.Color(0xff0000);
+
+	// var points = set.lineGeometry.vertices;
+  var points = linesGeo.vertices;
+
+
+	// console.log(points);
+	// var particleCount = Math.floor(set.v / 8000 / set.lineGeometry.vertices.length) + 1;
+  // var particleCount = Math.floor(set.v / 8000 / linesGeo.vertices.length) + 1;
+  var particleCount = 100;  //  <- This determines how heavy the sprites show up.  Higher number -> Denser image
+	// particleCount = constrain(particleCount,1,100);
+	// var particleSize = set.lineGeometry.size;
+  var particleSize = 10;
+	for( var s=0; s<particleCount; s++ ){
+		// var rIndex = Math.floor( Math.random() * points.length );
+		// var rIndex = Math.min(s,points.length-1);
+
+		var desiredIndex = s / particleCount * points.length;
+		var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
+
+		var point = points[rIndex];
+		var particle = point.clone();
+		particle.moveIndex = rIndex;
+		particle.nextIndex = rIndex+1;
+		if(particle.nextIndex >= points.length )
+			particle.nextIndex = 0;
+		particle.lerpN = 0;
+		particle.path = points;
+		particlesGeo.vertices.push( particle );
+		particle.size = particleSize;
+		particleColors.push( particleColor );
+	}
+
+
+
+
+
+
+
+
+
+
   //create curved line and add to scene
-  var curvedLine = new THREE.Line(path.createPointsGeometry(100), curveMaterial);
-  curvedLine.lookAt(scene.position);
-  
+  // var curvedLine = new THREE.Line(path.createPointsGeometry(100), curveMaterial);
+  var curvedLine = new THREE.Line( linesGeo, new THREE.LineBasicMaterial({ // these are the skinny lines
+		                              	               color: 0xffffff,
+                                                   opacity: 1.0,
+                                                   blending: THREE.AdditiveBlending,
+                                                   transparent:true, // <- this is the transparency of the globe !?
+			                                             depthWrite: false,
+                                                   vertexColors: true,
+			                                             linewidth: 1 })
+	                     );
+
+	curvedLine.renderDepth = false;
+  //curvedLine.lookAt(scene.position);
+
+
+
+
+
+
+
+
+
+  attributes = {
+		size: {	type: 'f', value: [] },
+		customColor: { type: 'c', value: [] }
+	};
+
+	uniforms = {
+		amplitude: { type: "f", value: 1.0 },
+		color:     { type: "c", value: new THREE.Color( 0xffffff ) },  // these are the clouds
+		texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( "../assets/images/particleA.png" ) },
+	};
+
+	var shaderMaterial = new THREE.ShaderMaterial( {
+
+		uniforms: 		uniforms,
+		attributes:     attributes,
+		vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+
+		blending: 		THREE.AdditiveBlending,
+		depthTest: 		true,
+		depthWrite: 	false, // <- if true, does not blend sprites
+		transparent:	true // <- if true, does not blend sprites
+		// sizeAttenuation: true,
+	});
+
+
+
+
+
+
+
+
+
+
+
+  var particleGraphic = THREE.ImageUtils.loadTexture("../assets/images/map_mask.png");
+	var particleMat = new THREE.PointCloudMaterial( {
+                          map: particleGraphic,
+                          color: 0xffffff,
+                          size: 60,
+													blending: THREE.NormalBlending,
+                          transparent:true,
+													depthWrite: false,
+                          vertexColors: true,
+													sizeAttenuation: true
+                     } );
+	// particlesGeo.colors = particleColor; // particleColors;
+	var pSystem = new THREE.PointCloud( particlesGeo, shaderMaterial );
+	pSystem.dynamic = true;
+	curvedLine.add( pSystem );
+
+	var vertices = pSystem.geometry.vertices;
+	var values_size = attributes.size.value;
+	var values_color = attributes.customColor.value;
+
+	for( var v = 0; v < vertices.length; v++ ) {
+		values_size[ v ] = pSystem.geometry.vertices[v].size;
+		values_color[ v ] = particleColors[v];
+	}
+
+	pSystem.update = function(){
+		// var time = Date.now()
+		for( var i in this.geometry.vertices ){
+			var particle = this.geometry.vertices[i];
+			var path = particle.path;
+			var moveLength = path.length;
+
+			particle.lerpN += 0.05;
+			if(particle.lerpN > 1){
+				particle.lerpN = 0;
+				particle.moveIndex = particle.nextIndex;
+				particle.nextIndex++;
+				if( particle.nextIndex >= path.length ){
+					particle.moveIndex = 0;
+					particle.nextIndex = 1;
+				}
+			}
+
+			var currentPoint = path[particle.moveIndex];
+			var nextPoint = path[particle.nextIndex];
+
+
+			particle.copy( currentPoint );
+			particle.lerp( nextPoint, particle.lerpN );
+		}
+		this.geometry.verticesNeedUpdate = true;
+	};
+
   var onComplete = function(curvedLine){
     scene.remove(curvedLine);
   };
-  
+
+  curvedLine.material.transparent = true;
   scene.add(curvedLine);
+
   if(fade){
     curvedLine.material.transparent = true;
     createjs.Tween.get(curvedLine.material).wait(1000).to({opacity: 0}, 1000).call(onComplete, [curvedLine]);
