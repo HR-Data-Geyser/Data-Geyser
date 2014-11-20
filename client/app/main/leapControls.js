@@ -6,11 +6,29 @@ if (leapIsOn) {
 
   leapController.connect();
   
+  
+  // are these being used?
   var dx = 0.001;
   var dy = 0.001;
   var dz = 0.001;
 
   leapController.on( 'animationFrame' , function( frame ) {
+
+
+      ////////////// Autopilot command will go here //////////////////
+    // if (frame.hands.length === 2) {
+    //   var handOne = frame.hands[0];
+    //   var handTwo = frame.hands[1];
+    //
+    //   var directionOne = handOne.direction;
+    //   var directionTwo = handTwo.direction;
+    //
+    //   if ((Math.abs(directionOne[0]) + Math.abs(directionTwo[0])) > 0.5) {
+    //     console.log((Math.abs(directionOne[0]) + Math.abs(directionTwo[0])));
+    //   }
+    //
+    // }
+
     for(var h = 0; h < frame.hands.length; h++){
 
       frame = frame; 
@@ -18,7 +36,7 @@ if (leapIsOn) {
       window.hand = hand;
       var position = hand.palmPosition;
       var direction = hand.direction;
-      var timer = new Date().getTime() * 0.0005;
+      var timer = new Date().getTime() * 0.0005; // is this being used?
       var lr = hand.palmPosition[0];
       var ud = hand.palmPosition[2];
       var zoom = hand.palmPosition[1];
@@ -71,7 +89,7 @@ if (leapIsOn) {
         if(hand.grabStrength > 0.8){
 
           if(nextFuncReady){
-            getTweets();
+            // getTweets();
             nextFuncReady = false;
             setTimeout(function(){nextFuncReady = true;}, 10000);
           }
@@ -83,9 +101,9 @@ if (leapIsOn) {
         var gesture = frame.gestures[g]; 
 
         var type = gesture.type;
-        console.log('frame gestures: ', frame.gestures); 
+        // console.log('frame gestures: ', frame.gestures); 
 
-        if (type === 'swipe') {
+        if (type === 'swipe') { 
           onSwipe(gesture); 
         }
       }
@@ -93,7 +111,7 @@ if (leapIsOn) {
   });
   var onSwipe = function(gesture, direction, velocity) {
 
-    console.log('speed ', gesture.speed); 
+    // console.log('speed ', gesture.speed); 
     velocity = gesture.speed; 
 
   // Manipulate Globe by swiping 

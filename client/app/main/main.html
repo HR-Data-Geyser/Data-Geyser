@@ -3,8 +3,11 @@
 <div class="panel">
 <div class="term">
   <input type="text" class="topic" ng-model="topic"></br>
-  <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)">
+  <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)" ng-show="!streaming">
     Start Gathering Topic: {{topic}}
+  </button>
+  <button type="button" class="btn btn-lg btn-default" ng-click="stopTopic(topic, true)" ng-show="streaming">
+    Stop Gathering
   </button>
   <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic(topic)">
     Show {{topic}}
@@ -19,11 +22,14 @@
     <button type="button" class="show-blacklisted btn btn-lg btn-default">
       Allow Offensive Words
     </button>
+    <button type="button" class="show-photos btn btn-lg btn-default">
+      Show Photos
+    </button>
     <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
-      Turn on FullScreen (Oculus)
+      FullScreen (Oculus)
     </button>
     <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
-      Turn on FullScreen (No Oculus)
+      FullScreen (No Oculus)
     </button>
   </div>
   <div class="row">
@@ -119,6 +125,10 @@
           showBlacklistedTweets = !showBlacklistedTweets;
         });
 
+        $('.show-photos').on('click', function(){
+          showPhotos = !showPhotos;
+        })
+
         window.addEventListener('resize', onWindowResize, false);
       });
 
@@ -129,6 +139,7 @@
       var nextFuncReady = true;
       var oculusIsOn = false;
       var oculusControl = true;
+      var showPhotos = false;
 
       var topic;
 
@@ -204,10 +215,12 @@
           hInit = 0;
         }
 
+        var earth_radius = 200;
+
         w = window.innerWidth - wInit;
         h = window.innerHeight - hInit;
 
-        window.globe = new Globe(200);
+        window.globe = new Globe(earth_radius);
         window.scene = new THREE.Scene();
         window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
         window.vrControls = new THREE.VRControls( camera );
@@ -226,16 +239,36 @@
           side: THREE.BackSide
         }));
 
+        //clouds object
+        var cloud_scale = 1.02;
+        var cloudsGeometry = new THREE.SphereGeometry(earth_radius*cloud_scale, 40, 40);
+
+        var cloudsMaterial  = new THREE.MeshLambertMaterial({
+          map: THREE.ImageUtils.loadTexture( '../../assets/images/clouds.jpg' ),
+          transparent: true,
+          blending: THREE.CustomBlending,
+          blendSrc: THREE.SrcAlphaFactor,
+          blendDst: THREE.OneMinusSrcColorFactor,
+          blendEquation: THREE.AddEquation
+        });
+
+        window.clouds = clouds = new THREE.Mesh( cloudsGeometry, cloudsMaterial );
+
+        // create scene
+        scene.add(clouds);
         scene.add(globe);
         scene.add(skybox);
         scene.add(light);
         container.appendChild(renderer.domElement);
+
         window.oculusVr = new THREE.OculusRiftEffect(renderer);
         oculusVr.setSize(w, h);
         render();
 
         // sets up orbitcontrols and limits mouse inputs to container element
         window.orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+        orbitControls.minPolarAngle = Math.PI/6;
+        orbitControls.maxPolarAngle = 5*Math.PI/6;
         orbitControls.minDistance = 8;
         orbitControls.maxDistance = 8000;
 
