@@ -103,7 +103,7 @@ if (leapIsOn) {
         var type = gesture.type;
         // console.log('frame gestures: ', frame.gestures); 
 
-        if (type === 'swipe') {
+        if (type === 'swipe') { 
           onSwipe(gesture); 
         }
       }
