@@ -67,7 +67,7 @@
 
 				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 
-				gl_PointSize = size;
+				gl_PointSize = size * 300.0 / length(mvPosition.xyz);
 
 				gl_Position = projectionMatrix * mvPosition;
 
@@ -212,7 +212,7 @@
         window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
         window.vrControls = new THREE.VRControls( camera );
         vrControls.enablePosition = false;
-        window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
+        window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true, alpha: true});
         var light = new THREE.DirectionalLight(0xffffff, 1);
         scene.add(new THREE.AmbientLight(0x404040));
         light.position.set(500, 0, 0);

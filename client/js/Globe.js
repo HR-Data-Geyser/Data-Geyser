@@ -33,18 +33,15 @@ var Globe = function (r) {
   var mesh = new THREE.Mesh(geo, mat);
   this.add(mesh);
 
-
-  var attributes = {
-    flashSize: {type: 'f', value: []},
-    cc: {type: 'c', value: []}
-  };
-  var uniforms = {
-    color: {type: 'c', value: new THREE.Color(0xffffff)},
-    texture: {type: 't', value: THREE.ImageUtils.loadTexture('../assets/images/spark.png')}
-  };
   var pc_mat = new THREE.ShaderMaterial({
-    uniforms: uniforms,
-    attributes: attributes,
+    uniforms: {
+      color: {type: 'c', value: new THREE.Color(0xffffff)},
+      texture: {type: 't', value: THREE.ImageUtils.loadTexture('../assets/images/spark.png')}
+    },
+    attributes: {
+      flashSize: {type: 'f', value: []},
+      cc: {type: 'c', value: []}
+    },
     vertexShader: [
       'attribute float flashSize;',
       'attribute vec3 cc;',
@@ -72,8 +69,8 @@ var Globe = function (r) {
   var pc_geo = new THREE.Geometry();
   for (var i = 0; i < 1000; i++){
     pc_geo.vertices.push(new THREE.Vector3());
-    attributes.cc.value.push(new THREE.Color());
-    attributes.flashSize.value.push(0);
+    pc_mat.attributes.cc.value.push(new THREE.Color());
+    pc_mat.attributes.flashSize.value.push(0);
   }
   //for ( var i = 0; i < 100; i ++ ) {
   //
@@ -224,7 +221,7 @@ Globe.prototype.spark = function(params){
 Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   fade = fade || false;
   //var distance = latlonDistance(source.position, target.position);
-  var multiplier = 1.7;
+  var multiplier = 2.3;
 
   //make a 3js line object
   // var material = new THREE.LineBasicMaterial( { color: 0xCCCCCC, opacity: 0.5, linewidth: width } );
@@ -247,16 +244,22 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   var curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(sourceXy.x, sourceXy.y, sourceXy.z), new THREE.Vector3(middle[0], middle[1], middle[2]), new THREE.Vector3(targetXy.x, targetXy.y, targetXy.z));
 
   //make a curve path and add the bezier curve to it
-  var path = new THREE.CurvePath();
-  path.add(curve);
+  // var path = new THREE.CurvePath();
+  // path.add(curve);
 
-  //create material for our line
-  var curveMaterial = new THREE.LineBasicMaterial({
-    // color: color, linewidth: 10, transparent: true
-    color: new THREE.Color(0xff0000), linewidth: 0, transparent: true
-  });
+  var points = curve.getPoints(5);
 
+  THREE.Curve.Utils.createLineGeometry = function( points ) {
+  	var geometry = new THREE.Geometry();
+  	for( var i = 0; i < points.length; i ++ ) {
+  		geometry.vertices.push( points[i] );
+  	}
+  	return geometry;
+  };
 
+  var curveGeometry = THREE.Curve.Utils.createLineGeometry( points );
+
+  curveGeometry.size = 30;
 
 
 
@@ -292,26 +295,26 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 	// }
 
 	//	merge it all together
-	linesGeo.merge(path.createPointsGeometry(10));
+	linesGeo.merge(curveGeometry);
   //console.log("linesGeo.size: ", linesGeo.size);
 
 
   var particlesGeo = new THREE.Geometry();
 	var particleColors = [];
 
-	var particleColor = new THREE.Color(0xff0000);
+	var particleColor = new THREE.Color(0xdd380c);
 
 	// var points = set.lineGeometry.vertices;
-  var points = linesGeo.vertices;
+  var points = curveGeometry.vertices;
 
 
 	// console.log(points);
 	// var particleCount = Math.floor(set.v / 8000 / set.lineGeometry.vertices.length) + 1;
   // var particleCount = Math.floor(set.v / 8000 / linesGeo.vertices.length) + 1;
-  var particleCount = 100;  //  <- This determines how heavy the sprites show up.  Higher number -> Denser image
+  var particleCount = 50;  //  <- This determines how heavy the sprites show up.  Higher number -> Denser image
 	// particleCount = constrain(particleCount,1,100);
 	// var particleSize = set.lineGeometry.size;
-  var particleSize = 10;
+  var particleSize = curveGeometry.size;
 	for( var s=0; s<particleCount; s++ ){
 		// var rIndex = Math.floor( Math.random() * points.length );
 		// var rIndex = Math.min(s,points.length-1);
@@ -337,7 +340,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
 
 
-
+  linesGeo.colors = new THREE.Color(0xdd380c);
 
 
 
@@ -346,8 +349,8 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   var curvedLine = new THREE.Line( linesGeo, new THREE.LineBasicMaterial({ // these are the skinny lines
 		                              	               color: 0xffffff,
                                                    opacity: 1.0,
-                                                   blending: THREE.AdditiveBlending,
-                                                   transparent:true, // <- this is the transparency of the globe !?
+                                                   blending: THREE.NormalBlending,
+                                                   transparent:true, // no discernable effect
 			                                             depthWrite: false,
                                                    vertexColors: true,
 			                                             linewidth: 1 })
@@ -358,27 +361,17 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
 
 
-
-
-
-
-
-
-  attributes = {
-		size: {	type: 'f', value: [] },
-		customColor: { type: 'c', value: [] }
-	};
-
-	uniforms = {
-		amplitude: { type: "f", value: 1.0 },
-		color:     { type: "c", value: new THREE.Color( 0xffffff ) },  // these are the clouds
-		texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( "../assets/images/particleA.png" ) },
-	};
-
 	var shaderMaterial = new THREE.ShaderMaterial( {
 
-		uniforms: 		uniforms,
-		attributes:     attributes,
+		uniforms: 		{
+      amplitude: { type: "f", value: 1.0 },
+      color:     { type: "c", value: new THREE.Color( 0xffffff ) },  // these are the clouds
+      texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( "../assets/images/particleA.png" ) },
+    },
+		attributes:     {
+      size: {	type: 'f', value: [] },
+      customColor: { type: 'c', value: [] }
+    },
 		vertexShader:   document.getElementById( 'vertexshader' ).textContent,
 		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
 
@@ -399,30 +392,24 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
 
 
-  var particleGraphic = THREE.ImageUtils.loadTexture("../assets/images/map_mask.png");
-	var particleMat = new THREE.PointCloudMaterial( {
-                          map: particleGraphic,
-                          color: 0xffffff,
-                          size: 60,
-													blending: THREE.NormalBlending,
-                          transparent:true,
-													depthWrite: false,
-                          vertexColors: true,
-													sizeAttenuation: true
-                     } );
-	// particlesGeo.colors = particleColor; // particleColors;
+  //var particleGraphic = THREE.ImageUtils.loadTexture("../assets/images/map_mask.png");
+
+	particlesGeo.colors = particleColor; // particleColors;
 	var pSystem = new THREE.PointCloud( particlesGeo, shaderMaterial );
 	pSystem.dynamic = true;
 	curvedLine.add( pSystem );
 
 	var vertices = pSystem.geometry.vertices;
-	var values_size = attributes.size.value;
-	var values_color = attributes.customColor.value;
+	var values_size = shaderMaterial.attributes.size.value;
+	var values_color = shaderMaterial.attributes.customColor.value;
 
 	for( var v = 0; v < vertices.length; v++ ) {
 		values_size[ v ] = pSystem.geometry.vertices[v].size;
-		values_color[ v ] = particleColors[v];
+		values_color[ v ] = new THREE.Color(0xdd380c)// particleColors[v];
 	}
+
+  shaderMaterial.attributes.size.needsUpdate = true;
+  shaderMaterial.attributes.customColor.needsUpdate = true;
 
 	pSystem.update = function(){
 		// var time = Date.now()
@@ -431,7 +418,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 			var path = particle.path;
 			var moveLength = path.length;
 
-			particle.lerpN += 0.05;
+			particle.lerpN += 0.005;
 			if(particle.lerpN > 1){
 				particle.lerpN = 0;
 				particle.moveIndex = particle.nextIndex;
@@ -456,7 +443,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
     scene.remove(curvedLine);
   };
 
-  curvedLine.material.transparent = true;
+  //curvedLine.material.transparent = true;
   scene.add(curvedLine);
 
   if(fade){
