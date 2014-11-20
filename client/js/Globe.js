@@ -220,11 +220,7 @@ Globe.prototype.spark = function(params){
 
 Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   fade = fade || false;
-  //var distance = latlonDistance(source.position, target.position);
   var multiplier = 2.3;
-
-  //make a 3js line object
-  // var material = new THREE.LineBasicMaterial( { color: 0xCCCCCC, opacity: 0.5, linewidth: width } );
 
   //cache the coordinates of the source and target nodes
   var sourceXy = source.position;
@@ -234,20 +230,13 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   var AvgX = (sourceXy.x + targetXy.x)/2;
   var AvgY = (sourceXy.y + targetXy.y)/2;
   var AvgZ = (sourceXy.z + targetXy.z)/2;
-  //get difference between source and target
-  // var diffX = Math.abs(sourceXy.x - targetXy.x);
-  // var diffY = Math.abs(sourceXy.y - targetXy.y);
-  //set middle point to average(x/y) and average(z + sum of difference(x/y))
+
   var middle = [ AvgX * multiplier, AvgY * multiplier, AvgZ * multiplier ];
 
   //make quadratic bezier out of the three points
   var curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(sourceXy.x, sourceXy.y, sourceXy.z), new THREE.Vector3(middle[0], middle[1], middle[2]), new THREE.Vector3(targetXy.x, targetXy.y, targetXy.z));
 
-  //make a curve path and add the bezier curve to it
-  // var path = new THREE.CurvePath();
-  // path.add(curve);
-
-  var points = curve.getPoints(5);
+  var points = curve.getPoints(30);
 
   THREE.Curve.Utils.createLineGeometry = function( points ) {
   	var geometry = new THREE.Geometry();
@@ -259,12 +248,6 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
   var curveGeometry = THREE.Curve.Utils.createLineGeometry( points );
 
-  curveGeometry.size = 30;
-
-
-
-
-
   function constrain(v, min, max){
   	if( v < min )
   		v = min;
@@ -274,30 +257,8 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   	return v;
   }
 
-
-
-
-
-
-
-
   var linesGeo = new THREE.Geometry();
-	// var lineColors = [];
-
-	// var lineColor = new THREE.Color(0x0000ff);
-
-	// var lastColor;
-	// //	grab the colors from the vertices
-	// for( s in set.lineGeometry.vertices ){
-	// 	var v = set.lineGeometry.vertices[s];
-	// 	lineColors.push(lineColor);
-	// 	lastColor = lineColor;
-	// }
-
-	//	merge it all together
 	linesGeo.merge(curveGeometry);
-  //console.log("linesGeo.size: ", linesGeo.size);
-
 
   var particlesGeo = new THREE.Geometry();
 	var particleColors = [];
@@ -306,22 +267,11 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
 	// var points = set.lineGeometry.vertices;
   var points = curveGeometry.vertices;
-
-
-	// console.log(points);
-	// var particleCount = Math.floor(set.v / 8000 / set.lineGeometry.vertices.length) + 1;
-  // var particleCount = Math.floor(set.v / 8000 / linesGeo.vertices.length) + 1;
-  var particleCount = 50;  //  <- This determines how heavy the sprites show up.  Higher number -> Denser image
-	// particleCount = constrain(particleCount,1,100);
-	// var particleSize = set.lineGeometry.size;
-  var particleSize = curveGeometry.size;
+  var particleCount = 100;  //  <- This determines how heavy the sprites show up.  Higher number -> Denser image
+  var particleSize = 10; // curveGeometry.size;
 	for( var s=0; s<particleCount; s++ ){
-		// var rIndex = Math.floor( Math.random() * points.length );
-		// var rIndex = Math.min(s,points.length-1);
-
 		var desiredIndex = s / particleCount * points.length;
 		var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
-
 		var point = points[rIndex];
 		var particle = point.clone();
 		particle.moveIndex = rIndex;
@@ -335,29 +285,20 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 		particleColors.push( particleColor );
 	}
 
-
-
-
-
-
   linesGeo.colors = new THREE.Color(0xdd380c);
-
-
-
   //create curved line and add to scene
-  // var curvedLine = new THREE.Line(path.createPointsGeometry(100), curveMaterial);
   var curvedLine = new THREE.Line( linesGeo, new THREE.LineBasicMaterial({ // these are the skinny lines
-		                              	               color: 0xffffff,
-                                                   opacity: 1.0,
+		                              	               color: 0xdd380c,
+                                                   opacity: 0.3,
                                                    blending: THREE.NormalBlending,
                                                    transparent:true, // no discernable effect
-			                                             depthWrite: false,
+			                                             depthWrite: true,
                                                    vertexColors: true,
-			                                             linewidth: 1 })
+			                                             linewidth: 10 })
 	                     );
 
 	curvedLine.renderDepth = false;
-  //curvedLine.lookAt(scene.position);
+  // curvedLine.lookAt(scene.position);
 
 
 
@@ -366,7 +307,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 		uniforms: 		{
       amplitude: { type: "f", value: 1.0 },
       color:     { type: "c", value: new THREE.Color( 0xffffff ) },  // these are the clouds
-      texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( "../assets/images/particleA.png" ) },
+      texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "../assets/images/particleA.png" ) },
     },
 		attributes:     {
       size: {	type: 'f', value: [] },
@@ -381,18 +322,6 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 		transparent:	true // <- if true, does not blend sprites
 		// sizeAttenuation: true,
 	});
-
-
-
-
-
-
-
-
-
-
-
-  //var particleGraphic = THREE.ImageUtils.loadTexture("../assets/images/map_mask.png");
 
 	particlesGeo.colors = particleColor; // particleColors;
 	var pSystem = new THREE.PointCloud( particlesGeo, shaderMaterial );
@@ -418,7 +347,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 			var path = particle.path;
 			var moveLength = path.length;
 
-			particle.lerpN += 0.005;
+			particle.lerpN += 0.025;
 			if(particle.lerpN > 1){
 				particle.lerpN = 0;
 				particle.moveIndex = particle.nextIndex;
