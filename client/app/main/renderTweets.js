@@ -23,11 +23,11 @@ var renderTweets = function(tweets){
       postText(tweets[i].text_keywords, tweets[i].isBlacklisted, nodeSource);
     }
     
-    // trigger speech synth    
-    if (i % speechThreshold === 0) {
-      var msg = new SpeechSynthesisUtterance(tweets[i].text_keywords);
-      window.speechSynthesis.speak(msg);
-    }
+    // // trigger speech synth
+    // if (i % speechThreshold === 0) {
+    //   var msg = new SpeechSynthesisUtterance(tweets[i].text_keywords);
+    //   window.speechSynthesis.speak(msg);
+    // }
 
     // fires fountains if tweet has more than n followers
     if (tweets[i].followers_count > followerThreshold && addEdge) {
@@ -137,7 +137,7 @@ var displayPhoto = function(url, node){
     image.lookAt(camera.position);
     scene.add(image);
     createjs.Tween.get(image.position)
-    .to({x: nodeTargetRandom(800), y: nodeTargetRandom(800), z: nodeTargetRandom(800)}, 8000)
+      .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
     .call(onComplete, [image]); 
   };
   
