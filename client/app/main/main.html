@@ -81,9 +81,11 @@
         
       var GuiParams = function() {
         // render options
-
+        
         this.followerThreshold = 1000;
         this.wordThreshold = 1;
+        this.particleSize = 10;
+        this.particleFrequency = 30;
         this.addEdge = function() { addEdge = !addEdge };
         this.showOffensive = function() { showBlacklistedTweets = !showBlacklistedTweets };
         this.showPhotos = function() { showPhotos = !showPhotos };
@@ -96,6 +98,8 @@
       gui.domElement.id = 'gui';
       gui.add(params, 'followerThreshold').min(100).max(10000).step(100);
       gui.add(params, 'wordThreshold').min(1).max(100).step(1);
+      gui.add(params, 'particleSize').min(2).max(50).step(2);
+      gui.add(params, 'particleFrequency').min(10).max(50).step(5);
       gui.add(params, 'addEdge');
       gui.add(params, 'showOffensive');
       gui.add(params, 'showPhotos');
@@ -236,7 +240,7 @@
         orbitControls.maxPolarAngle = 5*Math.PI/6;     
         orbitControls.minDistance = 250;
         orbitControls.maxDistance = 2000;
-
+        orbitControls.autoRotate = true;
         animate();  
       }
       
