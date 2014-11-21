@@ -16,15 +16,6 @@
       Destroy {{topic}}
     </button>
     <div class="filters">
-      <button type="button" class="edges btn btn-lg btn-default">
-        Show Fountains
-      </button>
-      <button type="button" class="show-blacklisted btn btn-lg btn-default">
-        Allow Offensive Words
-      </button>
-      <button type="button" class="show-photos btn btn-lg btn-default">
-        Show Photos
-      </button>
       <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
         FullScreen (Oculus)
       </button>
@@ -78,10 +69,6 @@
 
     //////// optional views and filters /////////
 
-    $('.edges').on('click', function () {
-      addEdge = !addEdge;
-    });
-
     $('.fullscreen-oculus-on').on('click', function () {
       oculusIsOn = true;
       toggleFullscreen();
@@ -91,53 +78,58 @@
       toggleFullscreen();
     });
 
-    $('.show-blacklisted').on('click', function () {
-      showBlacklistedTweets = !showBlacklistedTweets;
-    });
     window.addEventListener('resize', onWindowResize, false);
-
-    $('.show-photos').on('click', function () {
-      showPhotos = !showPhotos;
-    });
   });
-    ///////////////// Dat GUI ////////////////////
-    var GuiParams = function () {
-      // render options
+  ///////////////// Dat GUI ////////////////////
+    
+  var GuiParams = function() {
+    // render options
+    
+    this.followerThreshold = 1000;
+    this.wordThreshold = 1;
+    this.particleSize = 10;
+    this.particleFrequency = 30;
+    this.timeMultiplier = 1;
+    
+    this.addEdge = true;
+    this.showOffensive = false;
+    this.showPhotos = false;
+    
+    this.rotationSpeed = 2;
+    this.updateRotation = function() { init(); };
+    
+    this.toggleFullscreen = function() { console.log('toggled') };
+  };
 
-      this.followerThreshold = 1000;
-      this.wordThreshold = 1;
-      this.particleSize = 10;
-      this.particleFrequency = 30;
-      this.addEdge = function () { addEdge = !addEdge };
-      this.showOffensive = function () { showBlacklistedTweets = !showBlacklistedTweets };
-      this.showPhotos = function () { showPhotos = !showPhotos };
-    };
+  window.params = new GuiParams();   
+  var gui = new dat.GUI();
+  
+  // set gui params
+  gui.domElement.id = 'gui';
+  gui.add(params, 'followerThreshold').min(100).max(10000).step(100);
+  gui.add(params, 'wordThreshold').min(1).max(100).step(1);
+  gui.add(params, 'particleSize').min(2).max(50).step(2);
+  gui.add(params, 'particleFrequency').min(10).max(50).step(5);
 
-    window.params = new GuiParams();
-    var gui = new dat.GUI();
-
-    // set gui params
-    gui.domElement.id = 'gui';
-    gui.add(params, 'followerThreshold').min(100).max(10000).step(100);
-    gui.add(params, 'wordThreshold').min(1).max(100).step(1);
-    gui.add(params, 'particleSize').min(2).max(50).step(2);
-    gui.add(params, 'particleFrequency').min(10).max(50).step(5);
-    gui.add(params, 'addEdge');
-    gui.add(params, 'showOffensive');
-    gui.add(params, 'showPhotos');
+  gui.add(params, 'timeMultiplier').min(1).max(10).step(1);
+  gui.add(params, 'addEdge');
+  gui.add(params, 'showOffensive');
+  gui.add(params, 'showPhotos');
+  gui.add(params, 'rotationSpeed').min(0).max(5).step(0.1); 
+  gui.add(params, 'updateRotation');
+  gui.add(params, 'toggleFullscreen');
 
     //////////// Options Flags //////////////
 
-    var showBlacklistedTweets = false;
-    var addEdge = true;
-    var nextFuncReady = true;
-    var oculusIsOn = false;
-    var oculusControl = true;
-    var showPhotos = false;
-    var earth_radius = 200;
-    var topic;
+  var nextFuncReady = true;
+  var oculusIsOn = false;
+  var oculusControl = true;
+  var earth_radius = 200;
+  
+  var topic;
 
-    var clock = new THREE.Clock();
+  var clock = new THREE.Clock();
+
     ////////////// Re-init on resize of window ///////////
 
     function onWindowResize() {
@@ -299,7 +291,7 @@
         blendDst     : THREE.OneMinusSrcColorFactor,
         blendEquation: THREE.AddEquation
       });
-
+      
       window.clouds = clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
 
       // create scene
@@ -318,6 +310,7 @@
       orbitControls.minDistance = 250;
       orbitControls.maxDistance = 2000;
       orbitControls.autoRotate = true;
+      orbitControls.autoRotateSpeed = params.rotationSpeed;
       animate();
     };
 

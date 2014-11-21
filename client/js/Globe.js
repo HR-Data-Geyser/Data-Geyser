@@ -238,7 +238,17 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
   /////////// sets number of lines in curve and corresponds to number of particles //////////////
 
-  var curveGeometry = THREE.CurvePath.prototype.createGeometry( curve.getPoints(30) );
+  var points = curve.getPoints(params.particleFrequency); 
+
+  THREE.Curve.Utils.createLineGeometry = function( points ) {
+  	var geometry = new THREE.Geometry();
+  	for( var i = 0; i < points.length; i ++ ) {
+  		geometry.vertices.push( points[i] );
+  	}
+  	return geometry;
+  };
+
+  var curveGeometry = THREE.Curve.Utils.createLineGeometry( points );
 
   function constrain(v, min, max){
   	if( v < min )
@@ -262,7 +272,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   
   var particleCount = 100;  //  <- This determines how heavy the sprites show up.  Higher number -> Denser image
   
-  var particleSize = 10; // curveGeometry.size;
+  var particleSize = params.particleSize; // curveGeometry.size;
   
 	for( var s=0; s<particleCount; s++ ){
 		var desiredIndex = s / particleCount * points.length;
