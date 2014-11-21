@@ -2,26 +2,32 @@
 
 <div class="panel">
   <div class="term">
-    <input type="text" class="topic" ng-model="topic"></br>
+  </p><label>Enter topic:&nbsp;</label>
+    <input type="text" class="topic" ng-model="topic"></p>
+    <p>
     <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)" ng-show="!streaming">
       Start Gathering Topic: {{topic}}
     </button>
     <button type="button" class="btn btn-lg btn-default" ng-click="stopTopic(topic, true)" ng-show="streaming">
       Stop Gathering
     </button>
+  </p>
+  <p>
     <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic(topic)">
       Show {{topic}}
     </button>
     <button type="button" class="destroy-topic btn btn-lg btn-default btn-danger" ng-click="destroyTopic(topic)">
       Destroy {{topic}}
-    </button>
+    </button></p>
+    <p>
     <div class="filters">
       <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
-        FullScreen (Oculus)
+        Oculus
       </button>
       <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
-        FullScreen (No Oculus)
+        FullScreen
       </button>
+    </p>
     </div>
     <div class="row">
       <div class="col-md-8 pull-left">
@@ -81,10 +87,10 @@
     window.addEventListener('resize', onWindowResize, false);
   });
   ///////////////// Dat GUI ////////////////////
-    
+
   var GuiParams = function() {
     // render options
-    
+
     this.followerThreshold = 1000;
     this.wordThreshold = 1;
     this.particleSize = 10;
@@ -92,21 +98,21 @@
     this.fountainHeight = 2.3;
     this.timeMultiplier = 1;
     this.cloudSpeed = 0.0000003;
-    
+
     // this.renderedDate = now;
-    
+
     this.addEdge = true;
     this.showOffensive = false;
     this.showPhotos = false;
     
     this.rotationSpeed = 0.6;
-    
+
     this.toggleFullscreen = function() { console.log('toggled') };
   };
 
-  window.params = new GuiParams();   
+  window.params = new GuiParams();
   var gui = new dat.GUI();
-  
+
   // set slider gui params
   gui.domElement.id = 'gui';
   gui.add(params, 'followerThreshold').min(100).max(10000).step(100);
@@ -116,20 +122,20 @@
   gui.add(params, 'fountainHeight').min(1).max(5).step(0.1);
   gui.add(params, 'timeMultiplier').min(1).max(1000000).step(1);
   gui.add(params, 'cloudSpeed').min(0.0000001).max(0.01).step(0.0000001)
-  
+
   // gui.add(params, 'renderedDate');
-  
+
   // set filter gui params
   gui.add(params, 'addEdge');
   gui.add(params, 'showOffensive');
   gui.add(params, 'showPhotos');
-  
+
   // set rotation gui params
   gui.add(params, 'rotationSpeed').min(0).max(5).step(0.1)
     .onFinishChange(function(){
       orbitControls.autoRotateSpeed = params.rotationSpeed;
-    }); 
-  
+    });
+
   // toggle fullscreen
   gui.add(params, 'toggleFullscreen');
 
@@ -139,7 +145,7 @@
   var oculusIsOn = false;
   var oculusControl = true;
   var earth_radius = 200;
-  
+
   var topic;
 
   var clock = new THREE.Clock();
@@ -174,13 +180,13 @@
       renderer.render(scene, camera);
     }
   };
-  
+
   var now = new Date();
-  
+
   var updateSunAndEarth = function (delta) {
     var k = params.timeMultiplier;
     now.setUTCMilliseconds(now.getUTCMilliseconds() + Math.floor(delta * 1000) * k);
-    
+
     clouds.rotation.y += params.cloudSpeed * k;
     globe.rotation.y = THREE.Math.degToRad(globe.siderealTime(now));
     var solar = globe.solarCoordinates(now);
@@ -237,14 +243,14 @@
     window.camera = new THREE.PerspectiveCamera(65, w / h, 5, 50000 * earth_radius);
     window.vrControls = new THREE.VRControls(camera);
     vrControls.enablePosition = false;
-    
+
     window.renderer = new THREE.WebGLRenderer({
       precision   : 'highp',
       //preserveDrawingBuffer: true,
       antialiasing: true,
       alpha       : true
     });
-    
+
     renderer.clearColor = new THREE.Color(0x000000, 1.0);
     renderer.clear();
 
@@ -309,7 +315,7 @@
       blendDst     : THREE.OneMinusSrcColorFactor,
       blendEquation: THREE.AddEquation
     });
-    
+
     window.clouds = clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
 
     // create scene
