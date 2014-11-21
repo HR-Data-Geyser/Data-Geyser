@@ -99,7 +99,6 @@
     this.showPhotos = false;
     
     this.rotationSpeed = 2;
-    this.updateRotation = function() { init(); };
     
     this.toggleFullscreen = function() { console.log('toggled') };
   };
@@ -124,8 +123,10 @@
   gui.add(params, 'showPhotos');
   
   // set rotation gui params
-  gui.add(params, 'rotationSpeed').min(0).max(5).step(0.1); 
-  gui.add(params, 'updateRotation');
+  gui.add(params, 'rotationSpeed').min(0).max(5).step(0.1)
+    .onFinishChange(function(){
+      orbitControls.autoRotateSpeed = params.rotationSpeed;
+    }); 
   
   // toggle fullscreen
   gui.add(params, 'toggleFullscreen');
