@@ -8,6 +8,7 @@
     "compression": "~1.0.1",
     "connect-mongo": "^0.4.1",
     "cookie-parser": "~1.0.1",
+    "cors": "^2.5.2",
     "ejs": "~0.8.4",
     "errorhandler": "~1.0.0",
     "express": "~4.0.0",
@@ -15,6 +16,8 @@
     "express-session": "~1.0.2",
     "jquery": "^2.1.1",
     "jsonwebtoken": "^0.3.0",
+    "keyword-extractor": "0.0.10",
+    "leapjs": "^0.6.2",
     "lodash": "~2.4.1",
     "method-override": "~1.0.0",
     "mongoose": "~3.8.8",
@@ -27,7 +30,8 @@
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6",
     "socketio-jwt": "^2.0.2",
-    "twit": "^1.1.18"
+    "twit": "^1.1.18",
+    "wordfilter": "^0.1.7"
   },
   "devDependencies": {
     "connect-livereload": "~0.4.0",

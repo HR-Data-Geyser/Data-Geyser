@@ -11,6 +11,8 @@ TODO: Describe the installation process
 
 TODO: Write usage instructions
 
+To launch browser without security: open -a Chromium --args --disable-web-security
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).

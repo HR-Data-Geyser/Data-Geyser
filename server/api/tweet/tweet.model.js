@@ -6,7 +6,9 @@ var mongoose = require('mongoose'),
 var TweetSchema = new Schema({
   id: Number,
   created_at: Date,
+  photo: String,
   description: String,
+  text_keywords: String,
   followers_count: Number,
   in_reply_to_status_id: Number,
   in_reply_to_status_id_str: String,
@@ -17,6 +19,7 @@ var TweetSchema = new Schema({
   keyword: String,
   latitude: Number,
   longitude: Number,
+  isBlacklisted: Boolean,
   location: String
 });
 
