@@ -220,7 +220,7 @@ Globe.prototype.spark = function(params){
 
 Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   fade = fade || false;
-  var multiplier = 2.3;
+  var multiplier = params.fountainHeight;
 
   //cache the coordinates of the source and target nodes
   var sourceXy = source.position;
