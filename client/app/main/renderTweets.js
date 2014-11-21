@@ -31,7 +31,7 @@ var renderTweets = function(tweets){
     // }
 
     // fires fountains if tweet has more than n followers
-    if (tweets[i].followers_count > followerThreshold && addEdge) {
+    if (tweets[i].followers_count > followerThreshold && params.addEdge) {
       
       // adds sprout to fountain for each multiple of followerThreshold
       var numSprouts = Math.ceil(tweets[i].followers_count / followerThreshold);
@@ -43,7 +43,7 @@ var renderTweets = function(tweets){
         globe.drawEdge(nodeSource, nodeTarget, color, true, 5);
       }
       
-      if (showPhotos) {
+      if (params.showPhotos) {
         var url = tweets[i].photo;
         displayPhoto(url, nodeSource);  
       }
@@ -78,7 +78,7 @@ var postText = function(text, blacklist, node){
   context.font = '8pt Calibri';
   
   // checks text for offensive words and highlights red if showBlacklisted is active
-  if (blacklist && showBlacklistedTweets) {
+  if (blacklist && params.showOffensive) {
     context.fillStyle = 'red';    
   } else {
     context.fillStyle = 'white';
