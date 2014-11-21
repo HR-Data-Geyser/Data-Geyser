@@ -90,6 +90,9 @@
     this.particleSize = 10;
     this.particleFrequency = 30;
     this.timeMultiplier = 1;
+    this.cloudSpeed = 0.0000003;
+    
+    // this.renderedDate = now;
     
     this.addEdge = true;
     this.showOffensive = false;
@@ -104,22 +107,30 @@
   window.params = new GuiParams();   
   var gui = new dat.GUI();
   
-  // set gui params
+  // set slider gui params
   gui.domElement.id = 'gui';
   gui.add(params, 'followerThreshold').min(100).max(10000).step(100);
   gui.add(params, 'wordThreshold').min(1).max(100).step(1);
   gui.add(params, 'particleSize').min(2).max(50).step(2);
   gui.add(params, 'particleFrequency').min(10).max(50).step(5);
-
-  gui.add(params, 'timeMultiplier').min(1).max(10).step(1);
+  gui.add(params, 'timeMultiplier').min(1).max(1000000).step(1);
+  gui.add(params, 'cloudSpeed').min(0.0000001).max(0.01).step(0.0000001)
+  
+  // gui.add(params, 'renderedDate');
+  
+  // set filter gui params
   gui.add(params, 'addEdge');
   gui.add(params, 'showOffensive');
   gui.add(params, 'showPhotos');
+  
+  // set rotation gui params
   gui.add(params, 'rotationSpeed').min(0).max(5).step(0.1); 
   gui.add(params, 'updateRotation');
+  
+  // toggle fullscreen
   gui.add(params, 'toggleFullscreen');
 
-    //////////// Options Flags //////////////
+    ////////////////////////// Options Flags //////////////////////////
 
   var nextFuncReady = true;
   var oculusIsOn = false;
@@ -130,191 +141,195 @@
 
   var clock = new THREE.Clock();
 
-    ////////////// Re-init on resize of window ///////////
+  /////////////////// Re-init on resize of window ///////////////////////
 
-    function onWindowResize() {
-      init();
+  function onWindowResize() {
+    init();
+  }
+
+  ///////////// Removes sidebar and navbar to resize fullscreen window /////////////
+
+  var toggleFullscreen = function () {
+    topic = $('.topic').val();
+    $('.panel').hide();
+    $('.navbar').hide();
+    $('.footer').hide();
+    $('.display').removeClass('ocOff');
+    if(oculusIsOn) {
+      $('#gui').hide();
+    }
+    init();
+  };
+
+///////////// THREE.js globe visualization and VR ////////////////
+
+  var render = function () {
+    if(oculusIsOn) {
+      oculusVr.render(scene, camera);
+    } else {
+      renderer.autoClear = true;
+      renderer.render(scene, camera);
+    }
+  };
+  
+  var now = new Date();
+  
+  var updateSunAndEarth = function (delta) {
+    var k = params.timeMultiplier;
+    now.setUTCMilliseconds(now.getUTCMilliseconds() + Math.floor(delta * 1000) * k);
+    
+    clouds.rotation.y += params.cloudSpeed * k;
+    globe.rotation.y = THREE.Math.degToRad(globe.siderealTime(now));
+    var solar = globe.solarCoordinates(now);
+    var vec = globe.geoToEcef(solar.δ, -solar.α, solar.R * 23454.791 * earth_radius);
+    sun.position.copy(vec);
+    lensFlare.position.copy(vec);
+  };
+
+  var animate = function () {
+    var dt = clock.getDelta();
+    orbitControls.update(dt);
+    if(oculusIsOn && oculusControl) {
+      vrControls.update();
+    }
+    updateSunAndEarth(dt);
+    scene.traverse(function (mesh) {
+      if(mesh.update !== undefined) {
+        mesh.update();
+      }
+    });
+
+    requestAnimationFrame(animate);
+    TWEEN.update();
+    render();
+  };
+
+  //////////////// Initializes globe at appropriate settings based on oculus flag ///////////////////////
+
+  var init = function () {
+
+    $('#container').empty();
+
+    var container = document.getElementById('container');
+    var wInit = 0, hInit = 0;
+    var el = container;
+
+    while (el) {
+      wInit += el.offsetLeft;
+      hInit += el.offsetTop;
+      el = el.offsetParent;
     }
 
-    ///////////// Removes sidebar and navbar to resize fullscreen window /////////////
+    // overrides w & h if oculus headset is flagged on
+    if(oculusIsOn) {
+      wInit = 0;
+      hInit = 0;
+    }
 
-    var toggleFullscreen = function () {
-      topic = $('.topic').val();
-      $('.panel').hide();
-      $('.navbar').hide();
-      $('.footer').hide();
-      $('.display').removeClass('ocOff');
-      if(oculusIsOn) {
-        $('#gui').hide();
+    var w = window.innerWidth - wInit;
+    var h = window.innerHeight - hInit;
+
+    window.globe = new Globe(earth_radius);
+    window.scene = new THREE.Scene();
+    window.camera = new THREE.PerspectiveCamera(65, w / h, 5, 50000 * earth_radius);
+    window.vrControls = new THREE.VRControls(camera);
+    vrControls.enablePosition = false;
+    
+    window.renderer = new THREE.WebGLRenderer({
+      precision   : 'highp',
+      //preserveDrawingBuffer: true,
+      antialiasing: true,
+      alpha       : true
+    });
+    
+    renderer.clearColor = new THREE.Color(0x000000, 1.0);
+    renderer.clear();
+
+    renderer.gammaInput = true;
+    renderer.gammaOutput = true;
+
+    scene.add(new THREE.AmbientLight(0x404040));
+
+    window.sun = new THREE.DirectionalLight(0xffffff, 1.5);
+    sun.position.set(0, 0, 0);
+    scene.add(sun);
+
+    var textureFlare0 = THREE.ImageUtils.loadTexture("../assets/images/lensflare0.png");
+    var textureFlare2 = THREE.ImageUtils.loadTexture("../assets/images/lensflare2.png");
+    var textureFlare3 = THREE.ImageUtils.loadTexture("../assets/images/lensflare3.png");
+    window.lensFlare = new THREE.LensFlare(textureFlare0, 700, 0, THREE.AdditiveBlending, new THREE.Color(0xffffff));
+    lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
+    lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
+    lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
+    lensFlare.add(textureFlare3, 60, 0.6, THREE.AdditiveBlending);
+    lensFlare.add(textureFlare3, 70, 0.7, THREE.AdditiveBlending);
+    lensFlare.add(textureFlare3, 120, 0.9, THREE.AdditiveBlending);
+    lensFlare.add(textureFlare3, 70, 1.0, THREE.AdditiveBlending);
+    lensFlare.customUpdateCallback = function (obj) {
+      var f, fl = obj.lensFlares.length;
+      var flare;
+      var vecx = -obj.positionScreen.x * 2;
+      var vecy = -obj.positionScreen.y * 2;
+      for(f = 0; f < fl; f++) {
+        flare = obj.lensFlares[f];
+        flare.x = obj.positionScreen.x + vecx * flare.distance;
+        flare.y = obj.positionScreen.y + vecy * flare.distance;
+        flare.rotation = 0;
       }
-      init();
+      obj.lensFlares[2].y += 0.025;
+      obj.lensFlares[3].rotation = obj.positionScreen.x * 0.5 + THREE.Math.degToRad(45);
     };
+    lensFlare.position.copy(sun.position);
+    scene.add(lensFlare);
 
-    ///////////// THREE.js globe visualization and VR ////////////////
+    camera.lookAt(scene.position);
+    camera.position.set(0.0, 0.0, 600);
+    renderer.setSize(w, h);
+    globe.position.set(0.0, 0.0, 0.0);
 
-    var render = function () {
-      if(oculusIsOn) {
-        oculusVr.render(scene, camera);
-      } else {
-        renderer.autoClear = true;
-        renderer.render(scene, camera);
-      }
-    };
-    var now = new Date();
-    var k = 1;
-    var updateSunAndEarth = function (delta) {
-      now.setUTCMilliseconds(now.getUTCMilliseconds() + Math.floor(delta * 1000) * k);
-      clouds.rotation.y += 0.0000003 * k;
-      globe.rotation.y = THREE.Math.degToRad(globe.siderealTime(now));
-      var solar = globe.solarCoordinates(now);
-      var vec = globe.geoToEcef(solar.δ, -solar.α, solar.R * 23454.791 * earth_radius);
-      sun.position.copy(vec);
-      lensFlare.position.copy(vec);
-    };
+    var skybox = new THREE.Mesh(new THREE.SphereGeometry(25000 * earth_radius, 72, 36), new THREE.MeshBasicMaterial({
+      map : THREE.ImageUtils.loadTexture('../assets/images/tycho3.png'),
+      side: THREE.BackSide
+    }));
 
-    var animate = function () {
-      var dt = clock.getDelta();
-      orbitControls.update(dt);
-      if(oculusIsOn && oculusControl) {
-        vrControls.update();
-      }
-      updateSunAndEarth(dt);
-      scene.traverse(function (mesh) {
-            if(mesh.update !== undefined) {
-              mesh.update();
-            }
-          }
-      );
+    //clouds object
+    var cloud_scale = 1.02;
+    var cloudsGeometry = new THREE.SphereGeometry(earth_radius * cloud_scale, 40, 40);
+    var cloudsTexture = THREE.ImageUtils.loadTexture('../assets/images/clouds.png');
+    cloudsTexture.anisotropy = renderer.getMaxAnisotropy();
+    cloudsTexture.wrapS = THREE.RepeatWrapping;
+    var cloudsMaterial = new THREE.MeshLambertMaterial({
+      map          : cloudsTexture,
+      transparent  : true,
+      blending     : THREE.CustomBlending,
+      blendSrc     : THREE.SrcAlphaFactor,
+      blendDst     : THREE.OneMinusSrcColorFactor,
+      blendEquation: THREE.AddEquation
+    });
+    
+    window.clouds = clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
 
-      requestAnimationFrame(animate);
-      TWEEN.update();
-      render();
-    };
+    // create scene
+    globe.add(clouds);
+    scene.add(globe);
+    scene.add(skybox);
+    container.appendChild(renderer.domElement);
 
-    //////////////// Initializes globe at appropriate settings based on oculus flag ///////////////////////
+    window.oculusVr = new THREE.OculusRiftEffect(renderer);
+    oculusVr.setSize(w, h);
 
-    var init = function () {
+    // sets up orbitcontrols and limits mouse inputs to container element
+    window.orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.minPolarAngle = Math.PI / 6;
+    orbitControls.maxPolarAngle = 5 * Math.PI / 6;
+    orbitControls.minDistance = 250;
+    orbitControls.maxDistance = 2000;
+    orbitControls.autoRotate = true;
+    orbitControls.autoRotateSpeed = params.rotationSpeed;
+    animate();
+  };
 
-      $('#container').empty();
-
-      var container = document.getElementById('container');
-      var wInit = 0, hInit = 0;
-      var el = container;
-
-      while (el) {
-        wInit += el.offsetLeft;
-        hInit += el.offsetTop;
-        el = el.offsetParent;
-      }
-
-      // overrides w & h if oculus headset is flagged on
-      if(oculusIsOn) {
-        wInit = 0;
-        hInit = 0;
-      }
-
-      var w = window.innerWidth - wInit;
-      var h = window.innerHeight - hInit;
-
-      window.globe = new Globe(earth_radius);
-      window.scene = new THREE.Scene();
-      window.camera = new THREE.PerspectiveCamera(65, w / h, 5, 50000 * earth_radius);
-      window.vrControls = new THREE.VRControls(camera);
-      vrControls.enablePosition = false;
-      window.renderer = new THREE.WebGLRenderer({
-        precision   : 'highp',
-        //preserveDrawingBuffer: true,
-        antialiasing: true,
-        alpha       : true
-      });
-      renderer.clearColor = new THREE.Color(0x000000, 1.0);
-      renderer.clear();
-
-      renderer.gammaInput = true;
-      renderer.gammaOutput = true;
-
-      scene.add(new THREE.AmbientLight(0x404040));
-
-      window.sun = new THREE.DirectionalLight(0xffffff, 1.5);
-      sun.position.set(0, 0, 0);
-      scene.add(sun);
-
-      var textureFlare0 = THREE.ImageUtils.loadTexture("../assets/images/lensflare0.png");
-      var textureFlare2 = THREE.ImageUtils.loadTexture("../assets/images/lensflare2.png");
-      var textureFlare3 = THREE.ImageUtils.loadTexture("../assets/images/lensflare3.png");
-      window.lensFlare = new THREE.LensFlare(textureFlare0, 700, 0, THREE.AdditiveBlending, new THREE.Color(0xffffff));
-      lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
-      lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
-      lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
-      lensFlare.add(textureFlare3, 60, 0.6, THREE.AdditiveBlending);
-      lensFlare.add(textureFlare3, 70, 0.7, THREE.AdditiveBlending);
-      lensFlare.add(textureFlare3, 120, 0.9, THREE.AdditiveBlending);
-      lensFlare.add(textureFlare3, 70, 1.0, THREE.AdditiveBlending);
-      lensFlare.customUpdateCallback = function (obj) {
-        var f, fl = obj.lensFlares.length;
-        var flare;
-        var vecx = -obj.positionScreen.x * 2;
-        var vecy = -obj.positionScreen.y * 2;
-        for(f = 0; f < fl; f++) {
-          flare = obj.lensFlares[f];
-          flare.x = obj.positionScreen.x + vecx * flare.distance;
-          flare.y = obj.positionScreen.y + vecy * flare.distance;
-          flare.rotation = 0;
-        }
-        obj.lensFlares[2].y += 0.025;
-        obj.lensFlares[3].rotation = obj.positionScreen.x * 0.5 + THREE.Math.degToRad(45);
-      };
-      lensFlare.position.copy(sun.position);
-      scene.add(lensFlare);
-
-      camera.lookAt(scene.position);
-      camera.position.set(0.0, 0.0, 600);
-      renderer.setSize(w, h);
-      globe.position.set(0.0, 0.0, 0.0);
-
-      var skybox = new THREE.Mesh(new THREE.SphereGeometry(25000 * earth_radius, 72, 36), new THREE.MeshBasicMaterial({
-        map : THREE.ImageUtils.loadTexture('../assets/images/tycho3.png'),
-        side: THREE.BackSide
-      }));
-
-      //clouds object
-      var cloud_scale = 1.02;
-      var cloudsGeometry = new THREE.SphereGeometry(earth_radius * cloud_scale, 40, 40);
-      var cloudsTexture = THREE.ImageUtils.loadTexture('../assets/images/clouds.png');
-      cloudsTexture.anisotropy = renderer.getMaxAnisotropy();
-      cloudsTexture.wrapS = THREE.RepeatWrapping;
-      var cloudsMaterial = new THREE.MeshLambertMaterial({
-        map          : cloudsTexture,
-        transparent  : true,
-        blending     : THREE.CustomBlending,
-        blendSrc     : THREE.SrcAlphaFactor,
-        blendDst     : THREE.OneMinusSrcColorFactor,
-        blendEquation: THREE.AddEquation
-      });
-      
-      window.clouds = clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
-
-      // create scene
-      globe.add(clouds);
-      scene.add(globe);
-      scene.add(skybox);
-      container.appendChild(renderer.domElement);
-
-      window.oculusVr = new THREE.OculusRiftEffect(renderer);
-      oculusVr.setSize(w, h);
-
-      // sets up orbitcontrols and limits mouse inputs to container element
-      window.orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
-      orbitControls.minPolarAngle = Math.PI / 6;
-      orbitControls.maxPolarAngle = 5 * Math.PI / 6;
-      orbitControls.minDistance = 250;
-      orbitControls.maxDistance = 2000;
-      orbitControls.autoRotate = true;
-      orbitControls.autoRotateSpeed = params.rotationSpeed;
-      animate();
-    };
-
-    init();
+  init();
   </script>
 </div>
 
