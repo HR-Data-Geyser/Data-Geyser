@@ -15,23 +15,12 @@
   <button type="button" class="destroy-topic btn btn-lg btn-default btn-danger" ng-click="destroyTopic(topic)">
     Destroy {{topic}}
   </button>
-  <div class="filters">
-    <button type="button" class="edges btn btn-lg btn-default">
-      Show Fountains
-    </button>
-    <button type="button" class="show-blacklisted btn btn-lg btn-default">
-      Allow Offensive Words
-    </button>
-    <button type="button" class="show-photos btn btn-lg btn-default">
-      Show Photos
-    </button>
-    <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
-      FullScreen (Oculus)
-    </button>
-    <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
-      FullScreen (No Oculus)
-    </button>
-  </div>
+  <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
+    FullScreen (Oculus)
+  </button>
+  <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
+    FullScreen (No Oculus)
+  </button>
   <div class="row">
         <div class="col-md-8 pull-left">
           <table class="table table-bordered table-striped table-condensed">
@@ -60,6 +49,7 @@
     <script src="js/orbitControls.js"></script>
     <script src="js/oculusRiftEffect.js"></script>
     <script src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
     <script type="x-shader/x-vertex" id="vertexshader">
 			uniform float amplitude;
 			attribute float size;
@@ -108,9 +98,6 @@
 
         //////// optional views and filters /////////
 
-        $('.edges').on('click', function(){
-          addEdge = !addEdge;
-        });
 
         $('.fullscreen-oculus-on').on('click', function(){
           oculusIsOn = true;
@@ -120,17 +107,36 @@
         $('.fullscreen-oculus-off').on('click', function(){
           toggleFullscreen();
         })
-
-        $('.show-blacklisted').on('click', function(){
-          showBlacklistedTweets = !showBlacklistedTweets;
-        });
-
-        $('.show-photos').on('click', function(){
-          showPhotos = !showPhotos;
-        })
-
+        
         window.addEventListener('resize', onWindowResize, false);
       });
+      
+      ///////////////// Dat GUI ////////////////////
+        
+      var GuiParams = function() {
+        // render options
+        
+        this.followerThreshold = 1000;
+        this.wordThreshold = 1;
+        this.particleSize = 10;
+        this.particleFrequency = 30;
+        this.addEdge = function() { addEdge = !addEdge };
+        this.showOffensive = function() { showBlacklistedTweets = !showBlacklistedTweets };
+        this.showPhotos = function() { showPhotos = !showPhotos };
+      };
+    
+      window.params = new GuiParams();   
+      var gui = new dat.GUI();
+      
+      // set gui params
+      gui.domElement.id = 'gui';
+      gui.add(params, 'followerThreshold').min(100).max(10000).step(100);
+      gui.add(params, 'wordThreshold').min(1).max(100).step(1);
+      gui.add(params, 'particleSize').min(2).max(50).step(2);
+      gui.add(params, 'particleFrequency').min(10).max(50).step(5);
+      gui.add(params, 'addEdge');
+      gui.add(params, 'showOffensive');
+      gui.add(params, 'showPhotos');
 
       //////////// Options Flags //////////////
 
@@ -159,6 +165,9 @@
         $('.navbar').hide();
         $('.footer').hide();
         $('.display').removeClass('ocOff');
+        if (oculusIsOn) {
+          $('#gui').hide();          
+        }
         init();
       }
 
@@ -268,11 +277,12 @@
         // sets up orbitcontrols and limits mouse inputs to container element
         window.orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
         orbitControls.minPolarAngle = Math.PI/6;
-        orbitControls.maxPolarAngle = 5*Math.PI/6;
-        orbitControls.minDistance = 8;
-        orbitControls.maxDistance = 8000;
+        orbitControls.maxPolarAngle = 5*Math.PI/6;     
+        orbitControls.minDistance = 250;
+        orbitControls.maxDistance = 2000;
+        orbitControls.autoRotate = true;
+        animate();  
 
-        animate();
       }
 
       init();

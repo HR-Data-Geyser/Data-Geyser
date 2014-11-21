@@ -75,7 +75,10 @@ angular.module('dataGeyserApp')
 
     // fetches tweets matching topic from DB
     $scope.getTopic = function(topic) {
-      Interceptor.start();
+
+      Interceptor.start(); 
+      // $('#gui').hide();
+
       $http.get('/api/tweets/getTweets/' + topic)
       .success(function(data){
 

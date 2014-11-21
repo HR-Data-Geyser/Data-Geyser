@@ -6,15 +6,16 @@ var nodeTargetRandom = function(range){
 
 ////////////// renders tweets in order gathered from DB ////////////////
 
+
 var renderTweets = function(tweets){
   
   var i = 0;
   
-  var followerThreshold = 1000; // number of followers needed to trigger a fountain
-  var wordThreshold = 1; // frequency of tweets that trigger flying text determined via %
   var speechThreshold = 30; // frequency of tweets that trigger speech synth
   
   var renderLoop = function(){
+    var followerThreshold = window.params.followerThreshold; // number of followers needed to trigger a fountain
+    var wordThreshold = window.params.wordThreshold; // frequency of tweets that trigger flying text determined via %
     
     // converts tweet lat/long to [x, y, z] coordinates 
     var nodeSource = globe.getEcef(tweets[i].latitude, -tweets[i].longitude, 0);
