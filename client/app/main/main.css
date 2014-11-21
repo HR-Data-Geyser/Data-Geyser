@@ -56,11 +56,11 @@
   vertical-align: middle;
 }
 
-button {
+/*button {
   float:left;
   text-align:center;
   clear: left;
-}
+}*/
 
 table {
   position: relative;
