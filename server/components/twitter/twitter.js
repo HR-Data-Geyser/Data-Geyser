@@ -26,18 +26,7 @@ var T = new Twit({
 
 var stream;
 
-// not currently being used
-function getTweets(topic){
-  Tweet.find({keyword: topic}, function(err, tweets) {
-    for (var i = 0; i < tweets.length; i++) {
-      console.log(tweets[i].screenName);
-      $('.display').append(tweets[i].screenName);
-    }
-  });
-}
-
 function stopTweets(topic) {
-  console.log('stopping');
   stream.stop();
 }
 
@@ -48,7 +37,6 @@ function streamTweets(topic) {
 
   stream = T.stream('statuses/filter', { locations: globe }); // filter tweets with geo data only
   // var stream = T.stream('statuses/filter', { track: topic }); // filter tweets with keyword 
-
   stream.on('tweet', function (tweet) {
     // Create tweet object with geo data
     if (tweet.coordinates || tweet.geo) {

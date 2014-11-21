@@ -38,7 +38,7 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div ui-view=""></div>
+    <div class="mainview" ui-view=""></div>
 
     <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
@@ -56,12 +56,15 @@
       <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
       <script src="bower_components/leapjs/leap-0.6.2.js"></script>
       <script src="bower_components/tweenjs/build/tween.min.js"></script>
+      <script src="bower_components/numeral/numeral.js"></script>
       <script src="bower_components/leapjs-plugins/main/leap-plugins-0.1.6.js"></script>
       <script src="bower_components/threejs/build/three.js"></script>
       <script src="bower_components/leapjs-rigged-hand/build/leap.rigged-hand-0.1.4.js"></script>
+      <script src="bower_components/dat.gui/dat.gui.js"></script>
       <!-- endbower -->
       <script src="socket.io-client/socket.io.js"></script>
     <!-- endbuild -->
+        <script src="js/ShaderExtras.js"></script>
 
         <!-- build:js({.tmp,client}) app/app.js -->
         <script src="app/app.js"></script>
