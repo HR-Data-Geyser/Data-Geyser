@@ -15,23 +15,12 @@
   <button type="button" class="destroy-topic btn btn-lg btn-default btn-danger" ng-click="destroyTopic(topic)">
     Destroy {{topic}}
   </button>
-  <div class="filters">
-    <button type="button" class="edges btn btn-lg btn-default">
-      Show Fountains
-    </button>
-    <button type="button" class="show-blacklisted btn btn-lg btn-default">
-      Allow Offensive Words
-    </button>
-    <button type="button" class="show-photos btn btn-lg btn-default">
-      Show Photos
-    </button>
-    <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
-      FullScreen (Oculus)
-    </button>
-    <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
-      FullScreen (No Oculus)
-    </button>
-  </div>
+  <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
+    FullScreen (Oculus)
+  </button>
+  <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
+    FullScreen (No Oculus)
+  </button>
   <div class="row">
         <div class="col-md-8 pull-left">
           <table class="table table-bordered table-striped table-condensed">
@@ -60,75 +49,128 @@
     <script src="js/orbitControls.js"></script>
     <script src="js/oculusRiftEffect.js"></script>
     <script src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+    <script type="x-shader/x-vertex" id="vertexshader">
+			uniform float amplitude;
+			attribute float size;
+			attribute vec3 customColor;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				vColor = customColor;
+
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+				gl_PointSize = size * 300.0 / length(mvPosition.xyz);
+
+				gl_Position = projectionMatrix * mvPosition;
+
+			}
+		</script>
+
+		<script type="x-shader/x-fragment" id="fragmentshader">
+			uniform vec3 color;
+			uniform sampler2D texture;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				gl_FragColor = vec4( color * vColor, 1.0 );
+				gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+
+			}
+		</script>
     <script>
 
       $(function(){
-        
+
         // mouseenter and mouseleave adjust listeners to allow typing in input box while mouse is over
         $('.topic').mouseenter(function(){
           orbitControls.enabled = false;
         });
-        
+
         $('.topic').mouseleave(function(){
           orbitControls.enabled = true;
         })
-        
+
         //////// optional views and filters /////////
-        
-        $('.edges').on('click', function(){
-          addEdge = !addEdge;
-        });
-        
+
+
         $('.fullscreen-oculus-on').on('click', function(){
           oculusIsOn = true;
           toggleFullscreen();
         });
-        
+
         $('.fullscreen-oculus-off').on('click', function(){
           toggleFullscreen();
-        })
-        
-        $('.show-blacklisted').on('click', function(){
-          showBlacklistedTweets = !showBlacklistedTweets;
-        });
-        
-        $('.show-photos').on('click', function(){
-          showPhotos = !showPhotos;
         })
         
         window.addEventListener('resize', onWindowResize, false);
       });
       
-      //////////// Options Flags //////////////
+      ///////////////// Dat GUI ////////////////////
+        
+      var GuiParams = function() {
+        // render options
+        
+        this.followerThreshold = 1000;
+        this.wordThreshold = 1;
+        this.particleSize = 10;
+        this.particleFrequency = 30;
+        this.addEdge = function() { addEdge = !addEdge };
+        this.showOffensive = function() { showBlacklistedTweets = !showBlacklistedTweets };
+        this.showPhotos = function() { showPhotos = !showPhotos };
+      };
+    
+      window.params = new GuiParams();   
+      var gui = new dat.GUI();
       
+      // set gui params
+      gui.domElement.id = 'gui';
+      gui.add(params, 'followerThreshold').min(100).max(10000).step(100);
+      gui.add(params, 'wordThreshold').min(1).max(100).step(1);
+      gui.add(params, 'particleSize').min(2).max(50).step(2);
+      gui.add(params, 'particleFrequency').min(10).max(50).step(5);
+      gui.add(params, 'addEdge');
+      gui.add(params, 'showOffensive');
+      gui.add(params, 'showPhotos');
+
+      //////////// Options Flags //////////////
+
       var showBlacklistedTweets = false;
       var addEdge = true;
       var nextFuncReady = true;
       var oculusIsOn = false;
       var oculusControl = true;
       var showPhotos = false;
-      
+
       var topic;
 
-      var clock = new THREE.Clock();      
-      
+      var clock = new THREE.Clock();
+
       ////////////// Re-init on resize of window ///////////
-      
+
       function onWindowResize(){
         init();
       }
 
       ///////////// Removes sidebar and navbar to resize fullscreen window /////////////
-      
+
       var toggleFullscreen = function(){
         topic = $('.topic').val();
         $('.panel').hide();
         $('.navbar').hide();
         $('.footer').hide();
         $('.display').removeClass('ocOff');
+        if (oculusIsOn) {
+          $('#gui').hide();          
+        }
         init();
       }
-    
+
       ///////////// THREE.js globe visualization and VR ////////////////
 
       var render = function(){
@@ -148,33 +190,40 @@
           vrControls.update();
         }
 
+        scene.traverse( function(mesh) {
+      			if (mesh.update !== undefined) {
+      				mesh.update();
+      			}
+      		}
+      	);
+
         requestAnimationFrame(animate);
         TWEEN.update();
         render();
-      };      
-      
+      };
+
       //////////////// Initializes globe at appropriate settings based on oculus flag ///////////////////////
-      
+
       var init = function(){
-        
-        $('#container').empty();        
-        
+
+        $('#container').empty();
+
         var container = document.getElementById('container');
         var wInit = 0, hInit = 0;
         var el = container;
-      
+
         while (el){
           wInit += el.offsetLeft;
           hInit += el.offsetTop;
           el = el.offsetParent;
         }
-      
+
         // overrides w & h if oculus headset is flagged on
         if (oculusIsOn) {
           wInit = 0;
           hInit = 0;
         }
-        
+
         var earth_radius = 200;
 
         w = window.innerWidth - wInit;
@@ -185,7 +234,7 @@
         window.camera = new THREE.PerspectiveCamera(90, w / h, 5, 5000);
         window.vrControls = new THREE.VRControls( camera );
         vrControls.enablePosition = false;
-        window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: true});
+        window.renderer = new THREE.WebGLRenderer({precision: 'highp', preserveDrawingBuffer: true, antialiasing: false, alpha: true});
         var light = new THREE.DirectionalLight(0xffffff, 1);
         scene.add(new THREE.AmbientLight(0x404040));
         light.position.set(500, 0, 0);
@@ -193,16 +242,16 @@
         camera.position.set(0.0, 0.0, 600);
         renderer.setSize(w, h);
         globe.position.set(0.0, 0.0, 0.0);
-      
+
         var skybox = new THREE.Mesh(new THREE.SphereGeometry(3000, 72, 36), new THREE.MeshBasicMaterial({
           map: THREE.ImageUtils.loadTexture('../assets/images/tycho3.png'),
           side: THREE.BackSide
         }));
-        
+
         //clouds object
         var cloud_scale = 1.02;
         var cloudsGeometry = new THREE.SphereGeometry(earth_radius*cloud_scale, 40, 40);
-        
+
         var cloudsMaterial  = new THREE.MeshLambertMaterial({
           map: THREE.ImageUtils.loadTexture( '../../assets/images/clouds.jpg' ),
           transparent: true,
@@ -211,30 +260,31 @@
           blendDst: THREE.OneMinusSrcColorFactor,
           blendEquation: THREE.AddEquation
         });
-        
+
         window.clouds = clouds = new THREE.Mesh( cloudsGeometry, cloudsMaterial );
-        
+
         // create scene
         scene.add(clouds);
         scene.add(globe);
         scene.add(skybox);
         scene.add(light);
         container.appendChild(renderer.domElement);
-        
+
         window.oculusVr = new THREE.OculusRiftEffect(renderer);
         oculusVr.setSize(w, h);
         render();
-      
+
         // sets up orbitcontrols and limits mouse inputs to container element
-        window.orbitControls = new THREE.OrbitControls(camera, renderer.domElement); 
+        window.orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
         orbitControls.minPolarAngle = Math.PI/6;
         orbitControls.maxPolarAngle = 5*Math.PI/6;     
-        orbitControls.minDistance = 8;
-        orbitControls.maxDistance = 8000;
-
+        orbitControls.minDistance = 250;
+        orbitControls.maxDistance = 2000;
+        orbitControls.autoRotate = true;
         animate();  
+
       }
-      
+
       init();
     </script>
 </div>
