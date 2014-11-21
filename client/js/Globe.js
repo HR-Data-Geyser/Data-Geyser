@@ -238,17 +238,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
   /////////// sets number of lines in curve and corresponds to number of particles //////////////
 
-  var points = curve.getPoints(30); 
-
-  THREE.Curve.Utils.createLineGeometry = function( points ) {
-  	var geometry = new THREE.Geometry();
-  	for( var i = 0; i < points.length; i ++ ) {
-  		geometry.vertices.push( points[i] );
-  	}
-  	return geometry;
-  };
-
-  var curveGeometry = THREE.Curve.Utils.createLineGeometry( points );
+  var curveGeometry = THREE.CurvePath.prototype.createGeometry( curve.getPoints(30) );
 
   function constrain(v, min, max){
   	if( v < min )
@@ -312,15 +302,33 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 		uniforms: 		{
       amplitude: { type: "f", value: 1.0 },
       color:     { type: "c", value: new THREE.Color( 0xffffff ) },  // these are the clouds
-      texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "../assets/images/particleA.png" ) },
+      texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "../assets/images/particleA.png" ) }
     },
 		attributes:     {
       size: {	type: 'f', value: [] },
       customColor: { type: 'c', value: [] }
     },
-		vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-
+		vertexShader:   [
+      'uniform float amplitude;',
+      'attribute float size;',
+      'attribute vec3 customColor;',
+      'varying vec3 vColor;',
+      'void main() {',
+        'vColor = customColor;',
+        'vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );',
+        'gl_PointSize = size * 300.0 / length(mvPosition.xyz);',
+        'gl_Position = projectionMatrix * mvPosition;',
+      '}'
+    ].join('\n'),
+		fragmentShader: [
+      'uniform vec3 color;',
+      'uniform sampler2D texture;',
+      'varying vec3 vColor;',
+      'void main() {',
+        'gl_FragColor = vec4( color * vColor, 1.0 );',
+        'gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );',
+      '}'
+    ].join('\n'),
 		blending: 		THREE.AdditiveBlending,
 		depthTest: 		true,
 		depthWrite: 	false, // <- if true, does not blend sprites
