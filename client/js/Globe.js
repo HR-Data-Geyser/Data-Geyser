@@ -236,7 +236,9 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   //make quadratic bezier out of the three points
   var curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(sourceXy.x, sourceXy.y, sourceXy.z), new THREE.Vector3(middle[0], middle[1], middle[2]), new THREE.Vector3(targetXy.x, targetXy.y, targetXy.z));
 
-  var points = curve.getPoints(30);
+  /////////// sets number of lines in curve and corresponds to number of particles //////////////
+
+  var points = curve.getPoints(30); 
 
   THREE.Curve.Utils.createLineGeometry = function( points ) {
   	var geometry = new THREE.Geometry();
@@ -267,8 +269,11 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
 	// var points = set.lineGeometry.vertices;
   var points = curveGeometry.vertices;
+  
   var particleCount = 100;  //  <- This determines how heavy the sprites show up.  Higher number -> Denser image
+  
   var particleSize = 10; // curveGeometry.size;
+  
 	for( var s=0; s<particleCount; s++ ){
 		var desiredIndex = s / particleCount * points.length;
 		var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
