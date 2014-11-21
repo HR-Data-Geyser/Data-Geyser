@@ -312,15 +312,33 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 		uniforms: 		{
       amplitude: { type: "f", value: 1.0 },
       color:     { type: "c", value: new THREE.Color( 0xffffff ) },  // these are the clouds
-      texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "../assets/images/particleA.png" ) },
+      texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "../assets/images/particleA.png" ) }
     },
 		attributes:     {
       size: {	type: 'f', value: [] },
       customColor: { type: 'c', value: [] }
     },
-		vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-
+		vertexShader:   [
+      'uniform float amplitude;',
+      'attribute float size;',
+      'attribute vec3 customColor;',
+      'varying vec3 vColor;',
+      'void main() {',
+        'vColor = customColor;',
+        'vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );',
+        'gl_PointSize = size * 300.0 / length(mvPosition.xyz);',
+        'gl_Position = projectionMatrix * mvPosition;',
+      '}'
+    ].join('\n'),
+		fragmentShader: [
+      'uniform vec3 color;',
+      'uniform sampler2D texture;',
+      'varying vec3 vColor;',
+      'void main() {',
+        'gl_FragColor = vec4( color * vColor, 1.0 );',
+        'gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );',
+      '}'
+    ].join('\n'),
 		blending: 		THREE.AdditiveBlending,
 		depthTest: 		true,
 		depthWrite: 	false, // <- if true, does not blend sprites
@@ -384,4 +402,74 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
     curvedLine.material.transparent = true;
     createjs.Tween.get(curvedLine.material).wait(1000).to({opacity: 0}, 1000).call(onComplete, [curvedLine]);
   }
-}
+};
+
+
+Globe.prototype.dateToJD = function(date){
+  var y = date.getUTCFullYear();
+  var m = date.getUTCMonth() + 1;
+  var d = date.getUTCDate();
+  d += date.getUTCHours() / 24;
+  d += date.getUTCMinutes() / (60 * 24);
+  d += date.getUTCSeconds() / (60 * 60 * 24);
+  d += date.getUTCMilliseconds() / (1000 * 60 * 60 * 24);
+  if (m < 3) { y--; m+=12; }
+  var a = Math.floor(y/100);
+  var b = 2-a+Math.floor(a/4);
+  return Math.floor(365.25  * (y + 4716)) +
+         Math.floor(30.6001 * (m + 1   )) +
+         d + b - 1524.5;
+};
+
+
+Globe.prototype.solarCoordinates = function(date){
+  var JD = this.dateToJD(date);
+  var T = (JD - 2451545.0)/36525.0;
+  var L0 = 280.46646 +
+           36000.76983 * T +
+           0.0003032 * Math.pow(T, 2);
+  var M = 357.52911 +
+          35999.05029 * T +
+          0.0001537 * Math.pow(T, 2);
+  var e = 0.016708634 -
+          0.000042037 * T -
+          0.0000001267 * Math.pow(T, 2);
+  var C = (1.914602 - 0.004817 * T - 0.000014 * Math.pow(T, 2)) * Math.sin(THREE.Math.degToRad(M)) +
+          (0.019993 - 0.000101 * T) * Math.sin(THREE.Math.degToRad(2 * M)) +
+          0.000289 * Math.sin(THREE.Math.degToRad(3 * M));
+  var lon = L0 + C;
+  var v = M + C;
+  var R = 1.000001018 * (1 - Math.pow(e, 2)) / (1 + e * Math.cos( THREE.Math.degToRad(v) ));
+  var Ω = 125.04 - 1934.136 * T;
+  var ε0 = 23 + (26/60) + (21.448/3600) - ((46.8150/3600) * T) - ((0.00059/3600) * Math.pow(T, 2)) + ((0.001813/3600) * Math.pow(T, 3));
+  var ε = ε0 + 0.00256 * Math.cos(THREE.Math.degToRad(Ω));
+  var λ = lon - 0.00569 - 0.00478 * Math.sin(THREE.Math.degToRad(Ω));
+  var α = THREE.Math.radToDeg(Math.atan2(Math.cos(THREE.Math.degToRad(ε)) * Math.sin(THREE.Math.degToRad(λ)), Math.cos(THREE.Math.degToRad(λ))));
+  var δ = THREE.Math.radToDeg(Math.asin(Math.sin(THREE.Math.degToRad(ε)) * Math.sin(THREE.Math.degToRad(λ))));
+  return {
+    T: T,
+    L0: L0 % 360 + (L0 < 0 ? 360 : 0),
+    M: M % 360 + (L0 < 0 ? 360 : 0),
+    e: e,
+    C: C,
+    lon: lon % 360 + (lon < 0 ? 360 : 0),
+    R: R,// * 23454.791 / this.equatorialRadius,
+    Ω: Ω % 360 + (Ω < 0 ? 360 : 0),
+    λ: λ % 360 + (λ < 0 ? 360 : 0),
+    ε0: ((ε0 + 180) % 360) - 180,
+    ε: ((ε + 180) % 360) - 180,
+    α: α % 360 + (α < 0 ? 360 : 0),
+    δ: ((δ + 180) % 360) - 180
+  }
+};
+
+Globe.prototype.siderealTime = function(date){
+  var JD = this.dateToJD(date);
+  var T = (JD - 2451545.0) / 36525.0;
+  var θ = (280.46061837 +
+           360.98564736629 * (JD - 2451545.0) +
+           0.000387933 * Math.pow(T, 2) -
+           Math.pow(T, 3) / 38710000) % 360;
+  if (θ < 0) { θ += 360; }
+  return θ;
+};
