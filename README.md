@@ -5,8 +5,8 @@ Data Geyser is a virtual reality enabled, immersive and interactive data visuali
 
 The app can be experienced either in the browser or using the Oculus Rift headset. The app can be controlled using either the mouse or Leap Motion Controller.
 
-![Alt text] (screenshot-globe.png?raw=true)
-![Alt text] (screenshot-geyser.png?raw=true)
+![Alt text] (/client/assets/images/screenshot-globe.png?raw=true)
+![Alt text] (/client/assets/images/screenshot-geyser.png?raw=true)
 
 ## Installation
 
