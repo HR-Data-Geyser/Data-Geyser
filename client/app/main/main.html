@@ -110,7 +110,7 @@
     
     this.rotationSpeed = 0.6;
 
-    this.toggleFullscreen = function() { console.log('toggled') };
+    this.toggleFullscreen = function() { toggleFullscreen(); };
   };
 
   window.params = new GuiParams();
@@ -362,6 +362,7 @@
     orbitControls.maxDistance = 2000;
     orbitControls.autoRotate = true;
     orbitControls.autoRotateSpeed = params.rotationSpeed;
+    
     animate();
   };
 
