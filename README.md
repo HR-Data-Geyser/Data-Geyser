@@ -44,11 +44,11 @@ Data Geyser is a project developed in collaboration with Kine-tech Arts. It has 
 
 Data Geyser was created by a team of 4 software engineers:
 
-Brian Iversen
-Tom Varik
-Steve Sharp
-Carl Goldberg
+Brian Iversen, 
+Tom Varik, 
+Steve Sharp, 
+Carl Goldberg, 
 
 ## License
 
-TODO: Write license
+[LICENSE] (LICENSE.md)
