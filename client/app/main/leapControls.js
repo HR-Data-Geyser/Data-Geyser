@@ -3,19 +3,13 @@
 var leapController = new Leap.Controller({ enableGestures: true });
 
 var leapIsOn = true; 
-var oculusIsOn = false; 
-console.log('1) OC ON? ', oculusIsOn); 
+// var oculusIsOn = false; 
+ 
 if (leapIsOn) {
 
   console.log('LEEAAAPP'); 
   leapController.connect();
-  // leapController.use('screenPosition');   // Attempt to display handPos on screen 
-  
-  
-  // are these being used?
-  var dx = 0.001;
-  var dy = 0.001;
-  var dz = 0.001;
+
 
   leapController.on( 'animationFrame' , function( frame ) {
 
@@ -54,14 +48,11 @@ if (leapIsOn) {
 
 
       if ( oculusIsOn ) {
-      console.log('2) OC ON? ', oculusIsOn); 
         leapBoxLimits.lr = 40; 
         leapBoxLimits.ud = 40;
         leapBoxLimits.zoomIn = 20;
         leapBoxLimits.zoomOut = 40;
       } else {
-      console.log('3) OC ON? ', oculusIsOn); 
-
         leapBoxLimits.lr = 80; 
         leapBoxLimits.ud = 70;
         leapBoxLimits.zoomIn = 20;
@@ -126,10 +117,6 @@ if (leapIsOn) {
         var gesture = frame.gestures[g]; 
 
         var type = gesture.type;
-<<<<<<< HEAD
-=======
-        // console.log('frame gestures: ', frame.gestures); 
->>>>>>> 3f1f4662bbee283f53bbb8de720001c01b25a8dd
 
         if (type === 'swipe') { 
           onSwipe(gesture); 
@@ -139,7 +126,6 @@ if (leapIsOn) {
   });
   var onSwipe = function(gesture, direction, velocity) {
 
-    // console.log('speed ', gesture.speed); 
     velocity = gesture.speed; 
 
   // Manipulate Globe by swiping 
