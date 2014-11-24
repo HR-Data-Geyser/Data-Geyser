@@ -139,34 +139,6 @@ Globe.prototype.EcefToGeo = function (x, y, z) {
   };
 };
 
-Globe.prototype.flash = function(params){
-  var lat = params['lat'] || 0;
-  var lon = params['lon'] || 0;
-  var alt = params['alt'] || 0;
-  var size = params['size'] || 1;
-  var duration = params['duration'] || 1;
-  var geo = this.geoToEcef(lat, lon, alt);
-  var arrow = new THREE.ArrowHelper(geo.clone().normalize(), geo.clone(), 0, new THREE.Color(params.color), undefined, 0)
-  this.add(arrow);
-  var that = this;
-  var updateArrow = function(){
-    arrow.setLength(this.length, undefined, this.headWidth);
-  };
-  var outTween = new TWEEN.Tween({length: size, headWidth: size})
-      .to({length: 0, headWidth: size * 7 / 8}, 875 * duration)
-      .easing(TWEEN.Easing.Exponential.In)
-      .onUpdate(updateArrow)
-      .onComplete(function(){
-        that.remove(arrow);
-      });
-  var inTween = new TWEEN.Tween({length: 0, headWidth: 0})
-      .to({length: size, headWidth: size}, 125 * duration)
-      .easing(TWEEN.Easing.Circular.Out)
-      .onUpdate(updateArrow)
-      .chain(outTween)
-      .start();
-};
-
 Globe.prototype.spark = function(params){
   params = params || {};
   var lat = params['lat'] || 0;

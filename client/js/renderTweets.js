@@ -125,7 +125,7 @@ var displayPhoto = function(url, node){
   texture.onload = function(){
     var material = new THREE.MeshBasicMaterial( { map: new THREE.Texture(texture), side:THREE.DoubleSide, transparent: true } );
     material.opacity = 0.7;
-    var imageGeometry = new THREE.PlaneBufferGeometry(texture.width / 10, texture.height / 10, 1, 1);
+    var imageGeometry = new THREE.PlaneBufferGeometry(texture.width / 5, texture.height / 5, 1, 1);
     var image = new THREE.Mesh(imageGeometry, material);
     
     // sets origin to x,y,z coordinates based on geo data from tweet
