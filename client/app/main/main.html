@@ -107,7 +107,7 @@
     
     this.rotationSpeed = 0.6;
 
-    this.toggleFullscreen = function() { console.log('toggled') };
+    this.toggleFullscreen = function() { toggleFullscreen(); };
   };
 
   window.params = new GuiParams();
@@ -163,6 +163,7 @@
       while (el){
         wOff += el.offsetLeft;
         hOff += el.offsetTop;
+        el = el.offsetParent;
       }
       w = window.innerWidth - wOff;
       h = window.innerHeight - hOff;
@@ -184,7 +185,6 @@
     if(oculusIsOn) {
       $('#gui').hide();
     }
-    //init();
     onWindowResize();
   };
 
@@ -353,6 +353,7 @@
     orbitControls.maxDistance = 2000;
     orbitControls.autoRotate = true;
     orbitControls.autoRotateSpeed = params.rotationSpeed;
+    
     animate();
   };
 
