@@ -98,6 +98,7 @@
     this.wordThreshold = 1;
     this.particleSize = 10;
     this.particleFrequency = 30;
+    this.fountainHeight = 2.3;
     this.timeMultiplier = 1;
     this.cloudSpeed = 0.0000003;
 
@@ -106,8 +107,8 @@
     this.addEdge = true;
     this.showOffensive = false;
     this.showPhotos = false;
-
-    this.rotationSpeed = 2;
+    
+    this.rotationSpeed = 0.6;
 
     this.toggleFullscreen = function() { console.log('toggled') };
   };
@@ -121,6 +122,7 @@
   gui.add(params, 'wordThreshold').min(1).max(100).step(1);
   gui.add(params, 'particleSize').min(2).max(50).step(2);
   gui.add(params, 'particleFrequency').min(10).max(50).step(5);
+  gui.add(params, 'fountainHeight').min(1).max(5).step(0.1);
   gui.add(params, 'timeMultiplier').min(1).max(1000000).step(1);
   gui.add(params, 'cloudSpeed').min(0.0000001).max(0.01).step(0.0000001)
 
@@ -154,7 +156,24 @@
   /////////////////// Re-init on resize of window ///////////////////////
 
   function onWindowResize() {
-    init();
+    var w, h;
+    if (oculusIsOn){
+      w = 1960;
+      h = 1080;
+    } else {
+      var wOff = 0, hOff = 0;
+      var el = renderer.domElement;
+      while (el){
+        wOff += el.offsetLeft;
+        hOff += el.offsetTop;
+      }
+      w = window.innerWidth - wOff;
+      h = window.innerHeight - hOff;
+    }
+    renderer.setSize(w, h);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+    oculusVr.setSize(w, h);
   }
 
   ///////////// Removes sidebar and navbar to resize fullscreen window /////////////
@@ -168,7 +187,8 @@
     if(oculusIsOn) {
       $('#gui').hide();
     }
-    init();
+    //init();
+    onWindowResize();
   };
 
 ///////////// THREE.js globe visualization and VR ////////////////
@@ -218,7 +238,7 @@
 
   var init = function () {
 
-    $('#container').empty();
+    //$('#container').empty();
 
     var container = document.getElementById('container');
     var wInit = 0, hInit = 0;
