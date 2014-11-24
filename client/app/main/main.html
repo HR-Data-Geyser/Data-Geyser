@@ -85,6 +85,9 @@
     });
 
     window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('keypress', function(e){
+
+    })
   });
   ///////////////// Dat GUI ////////////////////
 
@@ -143,6 +146,7 @@
 
   var nextFuncReady = true;
   var oculusIsOn = false;
+  var isFullscreen = false;
   var oculusControl = true;
   var earth_radius = 200;
 
@@ -157,6 +161,9 @@
     if (oculusIsOn){
       w = 1960;
       h = 1080;
+    } else if (isFullscreen) {
+      w = window.innerWidth;
+      h = window.innerHeight;
     } else {
       var wOff = 0, hOff = 0;
       var el = renderer.domElement;
@@ -185,6 +192,8 @@
     if(oculusIsOn) {
       $('#gui').hide();
     }
+    isFullscreen = true;
+    //init();
     onWindowResize();
   };
 
