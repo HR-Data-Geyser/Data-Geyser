@@ -18,7 +18,8 @@
     "numeral": "~1.5.3",
     "leapjs-plugins": "~0.1.6",
     "threejs": "*",
-    "leapjs-rigged-hand": "~0.1.4"
+    "leapjs-rigged-hand": "~0.1.4",
+    "dat.gui": "*"
   },
   "devDependencies": {
     "angular-mocks": ">=1.2.*",

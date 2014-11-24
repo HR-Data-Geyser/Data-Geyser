@@ -41,9 +41,10 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 	var pCamera = new THREE.PerspectiveCamera();
 	pCamera.matrixAutoUpdate = false;
 	pCamera.target = new THREE.Vector3();
+  pCamera.far = 10000000;
 
 	// Orthographic camera
-	var oCamera = new THREE.OrthographicCamera( -1, 1, 1, -1, 1, 1000 );
+	var oCamera = new THREE.OrthographicCamera( -1, 1, 1, -1, 1, 10000000 );
 	oCamera.position.z = 1;
 
 	// pre-render hooks
@@ -125,7 +126,7 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 		var fov = THREE.Math.radToDeg(2*Math.atan2(HMD.vScreenSize*distScale, 2*HMD.eyeToScreenDistance));
 
 		// Compute camera projection matrices
-		var proj = (new THREE.Matrix4()).makePerspective( fov, aspect, 0.3, 10000 );
+		var proj = (new THREE.Matrix4()).makePerspective( fov, aspect, 0.3, 10000000 );
 		var h = 4 * (HMD.hScreenSize/4 - HMD.interpupillaryDistance/2) / HMD.hScreenSize;
 		left.proj = ((new THREE.Matrix4()).makeTranslation( h, 0.0, 0.0 )).multiply(proj);
 		right.proj = ((new THREE.Matrix4()).makeTranslation( -h, 0.0, 0.0 )).multiply(proj);
