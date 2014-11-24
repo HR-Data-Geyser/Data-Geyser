@@ -58,13 +58,17 @@
   <script>
 
   $(function () {
-
+    
+    var checkKeyPressed;
     // mouseenter and mouseleave adjust listeners to allow typing in input box while mouse is over
     $('.topic').mouseenter(function () {
+      checkKeyPressed = window.onkeydown;
+      window.onkeydown = undefined;
       orbitControls.enabled = false;
     });
 
     $('.topic').mouseleave(function () {
+      window.onkeydown = checkKeyPressed;
       orbitControls.enabled = true;
     });
 
@@ -80,7 +84,8 @@
 
     })
   });
-  ///////////////// Dat GUI ////////////////////
+  
+  //////////////////////// Dat GUI ////////////////////////////
 
   var GuiParams = function() {
     // render options
@@ -116,8 +121,6 @@
   gui.add(params, 'fountainHeight').min(1).max(5).step(0.1);
   gui.add(params, 'timeMultiplier').min(1).max(1000000).step(1);
   gui.add(params, 'cloudSpeed').min(0.0000001).max(0.01).step(0.0000001)
-
-  // gui.add(params, 'renderedDate');
 
   // set filter gui params
   gui.add(params, 'addEdge');

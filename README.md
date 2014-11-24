@@ -22,6 +22,33 @@ To start the app, ensure no instances of MongoDB are running and then run:
 grunt serve
 ```
 
+To configure Twitter API keys using your Twitter auth info, edit the following:
+
+```
+'use strict';
+
+module.exports = {
+  DOMAIN: 'http://localhost:9000',
+  SESSION_SECRET: "OXfDXXBfFKML4fBaQDb9ptujbEqTVS7yu7VP9LGJBGSUw",
+  TWITTER_ACCESS_TOKEN: 'Enter token here',
+  TWITTER_ACCESS_TOKEN_SECRET: 'Enter token secret here',
+  TWITTER_CONSUMER_KEY: 'Enter consumer key here',
+  TWITTER_CONSUMER_SECRET: 'Enter consumer secret here',
+  // Control debug level for modules using visionmedia/debug
+  DEBUG: ''
+};
+
+```
+and save locally as:
+
+```
+server/config/local.env.js
+```
+
+You will then need to uncomment the following admin controls once properly configured:
+
+*Insert appropriate lines when ready*
+
 To launch browser (example is using Chrome) without security to enable flying photos by removing CORS limitations: 
 
 ```
