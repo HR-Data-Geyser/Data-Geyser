@@ -20,15 +20,10 @@
       Destroy {{topic}}
     </button></p>
     <p>
-    <div class="filters">
       <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
         Oculus
       </button>
-      <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
-        FullScreen
-      </button>
     </p>
-    </div>
     <div class="row">
       <div class="col-md-8 pull-left">
         <table class="table table-bordered table-striped table-condensed">
@@ -77,10 +72,6 @@
 
     $('.fullscreen-oculus-on').on('click', function () {
       oculusIsOn = true;
-      toggleFullscreen();
-    });
-
-    $('.fullscreen-oculus-off').on('click', function () {
       toggleFullscreen();
     });
 
@@ -158,23 +149,29 @@
 
   function onWindowResize() {
     var w, h;
+    
     if (oculusIsOn){
       w = 1960;
       h = 1080;
+      
     } else if (isFullscreen) {
       w = window.innerWidth;
       h = window.innerHeight;
+      
     } else {
       var wOff = 0, hOff = 0;
       var el = renderer.domElement;
+      
       while (el){
         wOff += el.offsetLeft;
         hOff += el.offsetTop;
         el = el.offsetParent;
       }
+      
       w = window.innerWidth - wOff;
       h = window.innerHeight - hOff;
     }
+    
     renderer.setSize(w, h);
     camera.aspect = w/h;
     camera.updateProjectionMatrix();
@@ -184,6 +181,7 @@
   ///////////// Removes sidebar and navbar to resize fullscreen window /////////////
 
   var toggleFullscreen = function () {
+    
     topic = $('.topic').val();
     $('.panel').hide();
     $('.navbar').hide();
