@@ -56,11 +56,11 @@
   vertical-align: middle;
 }
 
-button {
+/*button {
   float:left;
   text-align:center;
   clear: left;
-}
+}*/
 
 table {
   position: relative;
@@ -72,4 +72,10 @@ table {
 
 hr {
   clear: both;
+}
+
+#gui {
+  position:absolute;
+  top: 75px;
+  left: 1200px;
 }
