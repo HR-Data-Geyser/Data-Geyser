@@ -146,6 +146,7 @@
 
   var nextFuncReady = true;
   var oculusIsOn = false;
+  var isFullscreen = false;
   var oculusControl = true;
   var earth_radius = 200;
 
@@ -160,12 +161,16 @@
     if (oculusIsOn){
       w = 1960;
       h = 1080;
+    } else if (isFullscreen) {
+      w = window.innerWidth;
+      h = window.innerHeight;
     } else {
       var wOff = 0, hOff = 0;
       var el = renderer.domElement;
       while (el){
         wOff += el.offsetLeft;
         hOff += el.offsetTop;
+        el = el.offsetParent;
       }
       w = window.innerWidth - wOff;
       h = window.innerHeight - hOff;
@@ -187,6 +192,7 @@
     if(oculusIsOn) {
       $('#gui').hide();
     }
+    isFullscreen = true;
     //init();
     onWindowResize();
   };
