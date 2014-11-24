@@ -23,6 +23,11 @@ angular.module('dataGeyserApp')
         e.preventDefault();
         $scope.getTopic($scope.topic);
       }
+
+      if (e.keyCode === 81){
+        e.preventDefault();
+        $('#gui').toggle(1000);
+      }
     }
 
     ////////// scope methods ///////////
