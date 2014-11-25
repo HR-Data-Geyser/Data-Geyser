@@ -168,7 +168,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '.tmp/',
-          src: '{,*/}*.css',
+          src: '**/*.css',
           dest: '.tmp/'
         }]
       }
@@ -240,9 +240,9 @@ module.exports = function (grunt) {
       dist: {
         files: {
           src: [
-            '<%= yeoman.dist %>/public/{,*/}*.js',
-            '<%= yeoman.dist %>/public/{,*/}*.css',
-            '<%= yeoman.dist %>/public/assets/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+            '<%= yeoman.dist %>/public/**/*.js',
+            '<%= yeoman.dist %>/public/**/*.css',
+            '<%= yeoman.dist %>/public/assets/images/**/*.{png,jpg,jpeg,gif,webp,svg}',
             '<%= yeoman.dist %>/public/assets/fonts/*'
           ]
         }
@@ -261,9 +261,9 @@ module.exports = function (grunt) {
 
     // Performs rewrites based on rev and the useminPrepare configuration
     usemin: {
-      html: ['<%= yeoman.dist %>/public/{,*/}*.html'],
-      css: ['<%= yeoman.dist %>/public/{,*/}*.css'],
-      js: ['<%= yeoman.dist %>/public/{,*/}*.js'],
+      html: ['<%= yeoman.dist %>/public/**/*.html'],
+      css: ['<%= yeoman.dist %>/public/**/*.css'],
+      js: ['<%= yeoman.dist %>/public/**/*.js'],
       options: {
         assetsDirs: [
           '<%= yeoman.dist %>/public',
@@ -284,7 +284,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.client %>/assets/images',
-          src: '{,*/}*.{png,jpg,jpeg,gif}',
+          src: '**/*.{png,jpg,jpeg,gif}',
           dest: '<%= yeoman.dist %>/public/assets/images'
         }]
       }
@@ -295,9 +295,21 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.client %>/assets/images',
-          src: '{,*/}*.svg',
+          src: '**/*.svg',
           dest: '<%= yeoman.dist %>/public/assets/images'
         }]
+      }
+    },
+
+    concat: {
+      options: {
+        sourceMap: true
+      }
+    },
+
+    uglify: {
+      options: {
+        sourceMap: true
       }
     },
 
@@ -375,7 +387,8 @@ module.exports = function (grunt) {
           dest: '<%= yeoman.dist %>',
           src: [
             'package.json',
-            'server/**/*'
+            'server/**/*',
+            '!server/config/local.env.js'
           ]
         }]
       },
@@ -544,8 +557,30 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('serve', function (target) {
+    if (target === 'distnobuild'){
+      return grunt.task.run([
+        'env:all',
+        'env:prod',
+        'shell:mongodb',
+        'wait',
+        'express:prod',
+        'wait',
+        'open',
+        'express-keepalive'
+      ])
+    }
     if (target === 'dist') {
-      return grunt.task.run(['build', 'env:all', 'env:prod', 'express:prod', 'wait', 'open', 'express-keepalive']);
+      return grunt.task.run([
+        'build',
+        'env:all',
+        'env:prod',
+        'shell:mongodb',
+        'wait',
+        'express:prod',
+        'wait',
+        'open',
+        'express-keepalive'
+        ]);
     }
 
     if (target === 'debug') {
