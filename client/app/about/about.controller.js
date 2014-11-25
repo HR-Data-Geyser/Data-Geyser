@@ -2,6 +2,6 @@
 
 angular.module('dataGeyserApp')
 
-  .controller('AboutCtrl', function ($scope, $http, socket, Interceptor) {
+  .controller('AboutCtrl', ['$scope', '$http', 'socket', 'Interceptor', function ($scope, $http, socket, Interceptor) {
 
-  });
+  }]);
