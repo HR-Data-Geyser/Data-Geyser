@@ -2,34 +2,33 @@
 
 angular.module('dataGeyserApp')
 
-  .controller('MainCtrl', function ($scope, $http, socket, Interceptor) {
+  .controller('MainCtrl', ['$scope', '$http', 'socket', 'Interceptor', function ($scope, $http, socket, Interceptor) {
     $scope.awesomeTweets = [];
     $scope.tweetParser = [];
-    $scope.topic = "ebola";
     $scope.streaming = false;
 
-    window.onkeydown = checkKeyPressed;
+    // window.onkeydown = checkKeyPressed;
 
-    var tweetTempStorage = {};
+    $scope.tweetTempStorage = {};
 
     ///////// keydown event listener function...should probably go elsewhere //////////////
     
-    function checkKeyPressed(e){
-      if (e.keyCode === 32) {
-        e.preventDefault();
-        vrControls.zeroSensor();
-      }
-
-      if (e.keyCode === 13) {
-        e.preventDefault();
-        $scope.getTopic($scope.topic);
-      }
-
-      if (e.keyCode === 81){
-        e.preventDefault();
-        $('#gui').toggle(1000);
-      }
-    }
+    // function checkKeyPressed(e){
+    //   if (e.keyCode === 32) {
+    //     e.preventDefault();
+    //     vrControls.zeroSensor();
+    //   }
+    //
+    //   if (e.keyCode === 13) {
+    //     e.preventDefault();
+    //     $scope.getTopic($scope.topic);
+    //   }
+    //
+    //   if (e.keyCode === 81){
+    //     e.preventDefault();
+    //     $('#gui').toggle(1000);
+    //   }
+    // }
 
     ////////// scope methods ///////////
 
@@ -38,23 +37,23 @@ angular.module('dataGeyserApp')
 
       // creates object param for each topic in DB with total num of tweets
       for (var i = 0; i < awesomeTweets.length; i++){
-        tweetTempStorage[awesomeTweets[i].keyword] = tweetTempStorage[awesomeTweets[i].keyword] || 0;
-        tweetTempStorage[awesomeTweets[i].keyword]++;
+        $scope.tweetTempStorage[awesomeTweets[i].keyword] = $scope.tweetTempStorage[awesomeTweets[i].keyword] || 0;
+        $scope.tweetTempStorage[awesomeTweets[i].keyword]++;
       }
 
       // changes db summary object into array
-      for (var key in tweetTempStorage) {
-        var newBucket = {};
-        newBucket.topic = key;
-        newBucket.numTweets = tweetTempStorage[key];
+      for (var key in $scope.tweetTempStorage) {
+        $scope.newBucket = {};
+        $scope.newBucket.topic = key;
+        $scope.newBucket.numTweets = $scope.tweetTempStorage[key];
 
-        if (tweetTempStorage[key] > 2000) {
-          newBucket.isOptimal = "Yes";
+        if ($scope.tweetTempStorage[key] > 2000) {
+          $scope.newBucket.isOptimal = "Yes";
         } else {
-          newBucket.isOptimal = "No";
+          $scope.newBucket.isOptimal = "No";
         }
 
-        $scope.tweetParser.push(newBucket);
+        $scope.tweetParser.push($scope.newBucket);
       }
       // socket.syncUpdates('tweet', $scope.awesomeTweets);
     });
@@ -64,43 +63,42 @@ angular.module('dataGeyserApp')
     });
 
     // starts twitter api stream
-    $scope.chooseTopic = function(topic){
+    $scope.chooseTopic = function(){
       $scope.streaming = true;
-      $http.post('/api/tweets/getTweets/' + topic).success(function(){
+      $http.post('/api/tweets/getTweets/ebola').success(function(){
         console.log('post success');
       });
     }
 
     // stops twitter stream
-    $scope.stopTopic = function(topic){
+    $scope.stopTopic = function(){
       $scope.streaming = false;
-      $http.put('/api/tweets/getTweets/' + topic).success(function(){
+      $http.put('/api/tweets/getTweets/ebola').success(function(){
         console.log('stopped stream');
       });
     }
 
     // fetches tweets matching topic from DB
-    $scope.getTopic = function(topic) {
+    $scope.getTopic = function() {
 
-      Interceptor.start(); 
+      // Interceptor.start(); 
       // $('#gui').hide();
 
-      $http.get('/api/tweets/getTweets/' + topic)
-      .success(function(data){
+      $http.get('/api/tweets/getTweets/ebola').success(function(data){
 
-        Interceptor.end();
+        // Interceptor.end();
         renderTweets(data);
       });
     }
 
 
     // destroys all tweets matching topic in DB
-    $scope.destroyTopic = function(topic) {
+    $scope.destroyTopic = function() {
       Interceptor.start();
-      $http.delete('/api/tweets/getTweets/' + topic).success(function(){
+      $http.delete('/api/tweets/getTweets/ebola').success(function(){
         Interceptor.end();
         console.log(topic, 'destroyed');
       })
     }
 
-  });
+  }]);

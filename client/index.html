@@ -15,9 +15,10 @@
       <!-- bower:css -->
       <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
       <!-- endbower -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet"/>
+    <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet"/>
     <!-- endbuild -->
     <!-- build:css({.tmp,client}) app/app.css -->
-    <link rel="stylesheet" href="app/app.css">
       <!-- injector:css -->
       <link rel="stylesheet" href="app/about/about.css">
       <link rel="stylesheet" href="app/account/login/login.css">
@@ -29,9 +30,7 @@
     <!-- endbuild -->
     <!-- Latest compiled and minified CSS -->
     <!-- Latest compiled and minified CSS -->
-    <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet"/>
-    <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet"/>
-    <link href="components/ngLoading/ngLoading.css" rel="stylesheet"/>
+
   </head>
   <body class='appBody' ng-app="dataGeyserApp">
     <!--[if lt IE 7]>
@@ -52,25 +51,33 @@
       <script src="bower_components/angular-resource/angular-resource.js"></script>
       <script src="bower_components/angular-cookies/angular-cookies.js"></script>
       <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-      <script src="bower_components/lodash/dist/lodash.compat.js"></script>
       <script src="bower_components/angular-socket-io/socket.js"></script>
       <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-      <script src="bower_components/leapjs/leap-0.6.2.js"></script>
-      <script src="bower_components/tweenjs/build/tween.min.js"></script>
-      <script src="bower_components/numeral/numeral.js"></script>
-      <script src="bower_components/leapjs-plugins/main/leap-plugins-0.1.6.js"></script>
+      <script src="bower_components/lodash/dist/lodash.compat.js"></script>
       <script src="bower_components/threejs/build/three.js"></script>
-      <script src="bower_components/leapjs-rigged-hand/build/leap.rigged-hand-0.1.4.js"></script>
+      <script src="bower_components/tweenjs/build/tween.min.js"></script>
       <script src="bower_components/dat.gui/dat.gui.js"></script>
+      <script src="bower_components/leapjs/leap-0.6.2.js"></script>
+      <script src="bower_components/leapjs-plugins/main/leap-plugins-0.1.6.js"></script>
+      <script src="bower_components/leapjs-rigged-hand/build/leap.rigged-hand-0.1.4.js"></script>
+      <script src="bower_components/numeral/numeral.js"></script>
       <!-- endbower -->
       <script src="socket.io-client/socket.io.js"></script>
     <!-- endbuild -->
-        <script src="js/ShaderExtras.js"></script>
-        <script src="js/renderTweets.js"></script>
-        <script src="js/leapControls.js"></script>
 
         <!-- build:js({.tmp,client}) app/app.js -->
         <script src="app/app.js"></script>
+        <script src="js/Globe.js"></script>
+        <script src="js/orbitControls.js"></script>
+        <script src="js/oculusRiftEffect.js"></script>
+        <script src="js/ShaderExtras.js"></script>
+        <script src="js/renderTweets.js"></script>
+        <script src="js/leapControls.js"></script>
+        <script src="js/oculus/DeviceOrientationControls.js"></script>
+        <script src="js/oculus/StereoEffect.js"></script>
+        <script src="js/oculus/VREffect.js"></script>
+        <script type="text/javascript" src="js/oculus/VRControls.js"></script>
+        <script type="text/javascript" src="js/oculus/vrclient.js"></script>
           <!-- injector:js -->
           <script src="app/about/about.controller.js"></script>
           <script src="app/about/about.js"></script>
@@ -89,14 +96,11 @@
           <script src="components/ngLoading/ngLoading.js"></script>
           <script src="components/socket/socket.service.js"></script>
           <!-- endinjector -->
-        <!-- endbuild -->
-
+      
+          <!-- endbuild -->
+        
         <!--import firefox vr scripts-->
-        <script type="text/javascript" src="js/oculus/VRControls.js"></script>
-        <script type="text/javascript" src="js/oculus/VREffect.js"></script>
-        <script type="text/javascript" src="js/oculus/DeviceOrientationControls.js"></script>
-        <script type="text/javascript" src="js/oculus/StereoEffect.js"></script>
-        <script type="text/javascript" src="js/oculus/vrclient.js"></script>
+
         <!--end firefox vr scripts-->
 </body>
 </html>

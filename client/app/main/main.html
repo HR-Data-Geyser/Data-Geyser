@@ -5,20 +5,20 @@
   </p><label>Enter topic:&nbsp;</label>
     <input type="text" class="topic" ng-model="topic"></p>
     <p>
-    <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)" ng-show="!streaming">
+    <!-- <button type="button" class="btn btn-lg btn-default" ng-click="chooseTopic(topic, true)" ng-show="!streaming">
       Start Gathering Topic: {{topic}}
     </button>
     <button type="button" class="btn btn-lg btn-default" ng-click="stopTopic(topic, true)" ng-show="streaming">
       Stop Gathering
-    </button>
+    </button> -->
   </p>
   <p>
     <button type="button" class="get-topic btn btn-lg btn-default" ng-click="getTopic(topic)">
       Show {{topic}}
     </button>
-    <button type="button" class="destroy-topic btn btn-lg btn-default btn-danger" ng-click="destroyTopic(topic)">
+    <!-- <button type="button" class="destroy-topic btn btn-lg btn-default btn-danger" ng-click="destroyTopic(topic)">
       Destroy {{topic}}
-    </button></p>
+    </button> --></p>
     <p>
       <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
         Oculus
@@ -50,11 +50,6 @@
 </div>
 <div class="display ocOff">
   <div id="container"></div>
-  <script src="js/globe.js"></script>
-  <script src="js/orbitControls.js"></script>
-  <script src="js/oculusRiftEffect.js"></script>
-  <script src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
   <script>
 
   $(function () {
@@ -152,15 +147,16 @@
 
   function onWindowResize() {
     var w, h;
-    
     if (oculusIsOn){
       w = 1960;
       h = 1080;
-      
+      renderer.autoClear = false;
+      oculusVr.setSize(w, h);
     } else if (isFullscreen) {
       w = window.innerWidth;
       h = window.innerHeight;
-      
+      renderer.autoClear = true;
+      renderer.setSize(w, h);
     } else {
       var wOff = 0, hOff = 0;
       var el = renderer.domElement;
@@ -173,12 +169,11 @@
       
       w = window.innerWidth - wOff;
       h = window.innerHeight - hOff;
+      renderer.autoClear = true;
+      renderer.setSize(w, h);
     }
-    
-    renderer.setSize(w, h);
     camera.aspect = w/h;
     camera.updateProjectionMatrix();
-    oculusVr.setSize(w, h);
   }
 
   ///////////// Removes sidebar and navbar to resize fullscreen window /////////////
