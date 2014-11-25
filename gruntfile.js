@@ -603,6 +603,7 @@ module.exports = function (grunt) {
       'wiredep',
       'autoprefixer',
       'shell:mongodb',
+      'wait',
       'express:dev',
       'wait',
       'open',

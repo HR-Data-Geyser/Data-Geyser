@@ -363,7 +363,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 		this.geometry.verticesNeedUpdate = true;
 	};
 
-  var onComplete = function(curvedLine){
+  var onComplete = function(){
     scene.remove(curvedLine);
   };
 
@@ -372,7 +372,13 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
   if(fade){
     curvedLine.material.transparent = true;
-    createjs.Tween.get(curvedLine.material).wait(1000).to({opacity: 0}, 1000).call(onComplete, [curvedLine]);
+    new TWEEN.Tween(curvedLine.material)
+        .to({opacity: 0}, 1000)
+        .onComplete(function(){
+          scene.remove(curvedLine);
+        })
+        .start();
+    //createjs.Tween.get(curvedLine.material).wait(1000).to({opacity: 0}, 1000).call(onComplete, [curvedLine]);
   }
 };
 
