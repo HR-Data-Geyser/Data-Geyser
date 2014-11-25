@@ -7,28 +7,28 @@ angular.module('dataGeyserApp')
     $scope.tweetParser = [];
     $scope.streaming = false;
 
-    // window.onkeydown = checkKeyPressed;
+    window.onkeydown = checkKeyPressed;
 
     $scope.tweetTempStorage = {};
 
     ///////// keydown event listener function...should probably go elsewhere //////////////
     
-    // function checkKeyPressed(e){
-    //   if (e.keyCode === 32) {
-    //     e.preventDefault();
-    //     vrControls.zeroSensor();
-    //   }
-    //
-    //   if (e.keyCode === 13) {
-    //     e.preventDefault();
-    //     $scope.getTopic($scope.topic);
-    //   }
-    //
-    //   if (e.keyCode === 81){
-    //     e.preventDefault();
-    //     $('#gui').toggle(1000);
-    //   }
-    // }
+    function checkKeyPressed(e){
+      if (e.keyCode === 32) {
+        e.preventDefault();
+        vrControls.zeroSensor();
+      }
+
+      if (e.keyCode === 13) {
+        e.preventDefault();
+        $scope.getTopic($scope.topic);
+      }
+
+      if (e.keyCode === 81){
+        e.preventDefault();
+        $('#gui').toggle(1000);
+      }
+    }
 
     ////////// scope methods ///////////
 
