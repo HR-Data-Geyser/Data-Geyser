@@ -84,11 +84,10 @@ angular.module('dataGeyserApp')
       // Interceptor.start(); 
       // $('#gui').hide();
 
-      $http.get('/api/tweets/getTweets/ebola').success(function(){
+      $http.get('/api/tweets/getTweets/ebola').success(function(data){
 
         // Interceptor.end();
-        // renderTweets(data);
-        console.log('success');
+        renderTweets(data);
       });
     }
 
