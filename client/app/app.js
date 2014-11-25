@@ -5,14 +5,27 @@ angular.module('dataGeyserApp', [
   'ngResource',
   'ngSanitize',
   'btford.socket-io',
-  'ui.router'
+  'ui.router', 
+  'ngLoading'
 ])
-  .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+  .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, loadingProvider) {
     $urlRouterProvider
       .otherwise('/');
 
     $locationProvider.html5Mode(true);
     $httpProvider.interceptors.push('authInterceptor');
+    
+    loadingProvider
+      .load({
+        transitionSpeed: '.5s',
+        // icon: 'fa fa-spin fa-spinner fa-5x',
+        overlay: {
+          display: true,
+          color: '#FEFEFE',
+          opacity: '.2'
+        }
+      });
+
   })
 
   .factory('authInterceptor', function ($rootScope, $q, $cookieStore, $location) {

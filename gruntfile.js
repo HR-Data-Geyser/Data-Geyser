@@ -26,7 +26,6 @@ module.exports = function (grunt) {
 
   // Define the configuration for all the tasks
   grunt.initConfig({
-
     // Project settings
     pkg: grunt.file.readJSON('package.json'),
     yeoman: {
@@ -214,7 +213,25 @@ module.exports = function (grunt) {
       target: {
         src: '<%= yeoman.client %>/index.html',
         ignorePath: '<%= yeoman.client %>/',
-        exclude: [/bootstrap-sass-official/, /bootstrap.js/, '/json3/', '/es5-shim/']
+        exclude: [/bootstrap-sass-official/, /bootstrap.js/, '/json3/', '/es5-shim/'],
+        overrides: {
+          'leapjs-plugins': {
+            main: 'main/leap-plugins-0.1.6.js'
+          },
+          tweenjs: {
+            main: 'build/tween.min.js',
+            ignore: [
+                'assets/',
+                'docs/',
+                'examples/',
+                'test/',
+                'utils/',
+                '.*',
+                'CONTRIBUTING.md',
+                'gulpfile.js'
+            ]
+          }
+        }
       }
     },
 
@@ -378,15 +395,15 @@ module.exports = function (grunt) {
         connectCommits: false,
         message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
       },
-      heroku: {
+      staging: {
         options: {
-          remote: 'heroku',
+          remote: 'git@heroku.com:datageyser-staging.git',
           branch: 'master'
         }
       },
-      openshift: {
+      production: {
         options: {
-          remote: 'openshift',
+          remote: 'git@heroku.com:datageyser.git',
           branch: 'master'
         }
       }

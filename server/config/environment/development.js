@@ -8,5 +8,5 @@ module.exports = {
     uri: 'mongodb://localhost/datageyser-dev'
   },
 
-  seedDB: true
+  seedDB: false
 };

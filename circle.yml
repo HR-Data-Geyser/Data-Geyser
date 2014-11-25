@@ -1,12 +1,30 @@
-test:
+dependencies:
+  override: 
+    - grunt build:dist:
+        timeout: 600
   pre:
+    - wget http://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-0.7.5/optipng-0.7.5.tar.gz
+    - tar xvf optipng-0.7.5.tar.gz
+    - cd optipng-0.7.5; ./configure; make; sudo checkinstall -y;
     - bower install
 deployment:
   production:
     branch: master
-    heroku:
-      appname: datageyser
+    commands:
+      - grunt build:dist:
+          timeout: 600
+      - git config --global user.email "tgvarik@me.com"
+      - git config --global user.name "Tom G Varik"
+      - heroku maintenance:on --app datageyser
+      - grunt buildcontrol:production
+      - heroku maintenance:off --app datageyser
   staging:
     branch: develop
-    heroku:
-      appname: datageyser-staging
+    commands:
+      - grunt build:dist:
+          timeout: 600
+      - git config --global user.email "tgvarik@me.com"
+      - git config --global user.name "Tom G Varik"
+      - heroku maintenance:on --app datageyser
+      - grunt buildcontrol:staging
+      - heroku maintenance:off --app datageyser

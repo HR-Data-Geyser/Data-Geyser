@@ -1,4 +1,4 @@
-.thing-form {
+.tweet-form {
     margin: 20px 0;
 }
 
@@ -27,4 +27,55 @@
     padding: 30px 0;
     margin-top: 70px;
     border-top: 1px solid #E5E5E5;
+}
+
+.panel {
+  float: left;
+  width: 35%;
+  height: 630px;
+  background-color: #cccccc;
+}
+
+.term {
+  height: 100px;
+}
+
+.dashboard {
+  float: right;
+}
+
+.ocOff{
+  float: right;
+  width: 65%;
+  height: 630px;
+}
+
+.display{
+  background-color: #eeeeee;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/*button {
+  float:left;
+  text-align:center;
+  clear: left;
+}*/
+
+table {
+  position: relative;
+  float: left;
+  padding-right: 0px;
+  margin-right: 0px;
+  clear: left;
+}
+
+hr {
+  clear: both;
+}
+
+#gui {
+  position:absolute;
+  top: 75px;
+  right: 0px;
 }
