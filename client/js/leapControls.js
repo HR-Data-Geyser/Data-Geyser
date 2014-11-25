@@ -13,21 +13,6 @@ if (leapIsOn) {
   leapController.on( 'animationFrame' , function( frame ) {
 
 
-      ////////////// Autopilot command will go here //////////////////
-    // if (frame.hands.length === 2) {
-    //   var handOne = frame.hands[0];
-    //   var handTwo = frame.hands[1];
-    //
-    //   var directionOne = handOne.direction;
-    //   var directionTwo = handTwo.direction;
-    //
-    //   if ((Math.abs(directionOne[0]) + Math.abs(directionTwo[0])) > 0.5) {
-    //     console.log((Math.abs(directionOne[0]) + Math.abs(directionTwo[0])));
-    //   }
-    //
-    // }
-
-
     for(var h = 0; h < frame.hands.length; h++){
 
       frame = frame; 

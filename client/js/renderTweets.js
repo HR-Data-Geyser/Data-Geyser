@@ -34,6 +34,7 @@ var renderTweets = function(tweets){
         globe.drawEdge(nodeSource, nodeTarget, color, true, 5);
       }
       
+      // checks for showPhotos tag to enable photos due to CORS issues
       if (params.showPhotos) {
         var url = tweets[i].photo;
         displayPhoto(url, nodeSource);  
@@ -66,7 +67,7 @@ var postText = function(text, blacklist, node){
   var canvas = document.createElement("canvas");
   var context = canvas.getContext('2d');
 
-  context.font = '8pt Calibri';
+  context.font = '10pt Calibri';
   
   // checks text for offensive words and highlights red if showBlacklisted is active
   if (blacklist && params.showOffensive) {
@@ -92,6 +93,7 @@ var postText = function(text, blacklist, node){
   var geo = new THREE.PlaneBufferGeometry(canvas.width, canvas.height, 1, 1);  
   var textMesh = new THREE.Mesh(geo, material);
   
+  // sets origin at center of globe with starting position towards camera
   textMesh.position.set(0, 0, 0)
   textMesh.lookAt(camera.position);
   
@@ -101,6 +103,7 @@ var postText = function(text, blacklist, node){
     scene.remove(object);
   };
   
+  // basic tween to transition mesh to random x,y,z coordinates 
   createjs.Tween.get(textMesh.position)
   .to({x: nodeTargetRandom(800), y: nodeTargetRandom(800), z: nodeTargetRandom(800)}, 8000)
   .call(onComplete, [textMesh]); 
@@ -122,12 +125,16 @@ var displayPhoto = function(url, node){
   texture.onload = function(){
     var material = new THREE.MeshBasicMaterial( { map: new THREE.Texture(texture), side:THREE.DoubleSide, transparent: true } );
     material.opacity = 0.7;
-    var imageGeometry = new THREE.PlaneBufferGeometry(texture.width / 10, texture.height / 10, 1, 1);
+    var imageGeometry = new THREE.PlaneBufferGeometry(texture.width / 5, texture.height / 5, 1, 1);
     var image = new THREE.Mesh(imageGeometry, material);
+    
+    // sets origin to x,y,z coordinates based on geo data from tweet
     image.position.set( node.position.x, node.position.y, node.position.z );
     image.material.map.needsUpdate = true;
     image.lookAt(camera.position);
     scene.add(image);
+    
+    // basic tween to transition mesh to random x,y,z coordinates in vicinity of camera position at time of instantiation
     createjs.Tween.get(image.position)
       .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
     .call(onComplete, [image]); 

@@ -13,6 +13,7 @@ angular.module('dataGeyserApp')
     var tweetTempStorage = {};
 
     ///////// keydown event listener function...should probably go elsewhere //////////////
+    
     function checkKeyPressed(e){
       if (e.keyCode === 32) {
         e.preventDefault();
@@ -22,6 +23,11 @@ angular.module('dataGeyserApp')
       if (e.keyCode === 13) {
         e.preventDefault();
         $scope.getTopic($scope.topic);
+      }
+
+      if (e.keyCode === 81){
+        e.preventDefault();
+        $('#gui').toggle(1000);
       }
     }
 

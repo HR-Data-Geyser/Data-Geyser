@@ -20,15 +20,10 @@
       Destroy {{topic}}
     </button></p>
     <p>
-    <div class="filters">
       <button type="button" class="fullscreen-oculus-on btn btn-lg btn-default">
         Oculus
       </button>
-      <button type="button" class="fullscreen-oculus-off btn btn-lg btn-default">
-        FullScreen
-      </button>
     </p>
-    </div>
     <div class="row">
       <div class="col-md-8 pull-left">
         <table class="table table-bordered table-striped table-condensed">
@@ -63,13 +58,17 @@
   <script>
 
   $(function () {
-
+    
+    var checkKeyPressed;
     // mouseenter and mouseleave adjust listeners to allow typing in input box while mouse is over
     $('.topic').mouseenter(function () {
+      checkKeyPressed = window.onkeydown;
+      window.onkeydown = undefined;
       orbitControls.enabled = false;
     });
 
     $('.topic').mouseleave(function () {
+      window.onkeydown = checkKeyPressed;
       orbitControls.enabled = true;
     });
 
@@ -80,13 +79,13 @@
       toggleFullscreen();
     });
 
-    $('.fullscreen-oculus-off').on('click', function () {
-      toggleFullscreen();
-    });
-
     window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('keypress', function(e){
+
+    })
   });
-  ///////////////// Dat GUI ////////////////////
+  
+  //////////////////////// Dat GUI ////////////////////////////
 
   var GuiParams = function() {
     // render options
@@ -107,7 +106,7 @@
     
     this.rotationSpeed = 0.6;
 
-    this.toggleFullscreen = function() { console.log('toggled') };
+    this.toggleFullscreen = function() { toggleFullscreen(); };
   };
 
   window.params = new GuiParams();
@@ -122,8 +121,6 @@
   gui.add(params, 'fountainHeight').min(1).max(5).step(0.1);
   gui.add(params, 'timeMultiplier').min(1).max(1000000).step(1);
   gui.add(params, 'cloudSpeed').min(0.0000001).max(0.01).step(0.0000001)
-
-  // gui.add(params, 'renderedDate');
 
   // set filter gui params
   gui.add(params, 'addEdge');
@@ -143,6 +140,7 @@
 
   var nextFuncReady = true;
   var oculusIsOn = false;
+  var isFullscreen = false;
   var oculusControl = true;
   var earth_radius = 200;
 
@@ -154,19 +152,29 @@
 
   function onWindowResize() {
     var w, h;
+    
     if (oculusIsOn){
       w = 1960;
       h = 1080;
+      
+    } else if (isFullscreen) {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      
     } else {
       var wOff = 0, hOff = 0;
       var el = renderer.domElement;
+      
       while (el){
         wOff += el.offsetLeft;
         hOff += el.offsetTop;
+        el = el.offsetParent;
       }
+      
       w = window.innerWidth - wOff;
       h = window.innerHeight - hOff;
     }
+    
     renderer.setSize(w, h);
     camera.aspect = w/h;
     camera.updateProjectionMatrix();
@@ -176,6 +184,7 @@
   ///////////// Removes sidebar and navbar to resize fullscreen window /////////////
 
   var toggleFullscreen = function () {
+    
     topic = $('.topic').val();
     $('.panel').hide();
     $('.navbar').hide();
@@ -184,6 +193,7 @@
     if(oculusIsOn) {
       $('#gui').hide();
     }
+    isFullscreen = true;
     //init();
     onWindowResize();
   };
@@ -353,6 +363,7 @@
     orbitControls.maxDistance = 2000;
     orbitControls.autoRotate = true;
     orbitControls.autoRotateSpeed = params.rotationSpeed;
+    
     animate();
   };
 
