@@ -71,7 +71,7 @@ if (leapIsOn) {
         // Hand is open (not grabbing) and thus intending to move globe
         if(hand.grabStrength < 0.4){ 
 
-          // When handPosition is greater than any limit, the globe moves that direction
+          // When handPosition is greater than a limit, the globe moves that direction
           // Multi-directional movement is allowed with cascading 'if' statements with no 'else'
           if( Math.abs(lr) > leapBoxLimits.lr ){
             var direction = lr > 0 ? -1 : 1 ;
@@ -105,7 +105,7 @@ if (leapIsOn) {
         }
       }
 
-// // Check for gestures
+// Check for gestures
       for (var g = 0; g < frame.gestures.length; g++) {
         var gesture = frame.gestures[g]; 
 
