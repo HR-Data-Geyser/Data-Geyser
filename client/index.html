@@ -44,7 +44,7 @@
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
-    <!-- build:js(client,node_modules) app/vendor.js -->
+    <!-- build:js({client,node_modules}) app/vendor.js -->
       <!-- bower:js -->
       <script src="bower_components/jquery/dist/jquery.js"></script>
       <script src="bower_components/angular/angular.js"></script>
@@ -65,7 +65,7 @@
       <script src="socket.io-client/socket.io.js"></script>
     <!-- endbuild -->
 
-        <!-- build:js(.tmp,client) app/app.js -->
+        <!-- build:js({.tmp,client}) app/app.js -->
         <script src="app/app.js"></script>
         <script src="js/Globe.js"></script>
         <script src="js/orbitControls.js"></script>
