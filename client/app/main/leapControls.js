@@ -10,7 +10,6 @@ if (leapIsOn) {
   console.log('LEEAAAPP'); 
   leapController.connect();
 
-
   leapController.on( 'animationFrame' , function( frame ) {
 
 
@@ -28,6 +27,7 @@ if (leapIsOn) {
     //
     // }
 
+
     for(var h = 0; h < frame.hands.length; h++){
 
       frame = frame; 
@@ -35,18 +35,23 @@ if (leapIsOn) {
       window.hand = hand;
       var position = hand.palmPosition;
       var direction = hand.direction;
-      var timer = new Date().getTime() * 0.0005; // is this being used?
+
+      // Left-right rotation - Leap x-axis
       var lr = hand.palmPosition[0];
+      // Up-down rotation - Leap z-axis
       var ud = hand.palmPosition[2];
+      // Zoom position - Leap y-axis
       var zoom = hand.palmPosition[1];
+
+      // Scale y-axis to make controls more comfortable
+      var scaleZoom = zoom - 200;
       var vel = hand.palmVelocity;
       var v = Math.sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
-      var scaleZoom = zoom - 200;
       var scrollSpeed;
 
       var leapBoxLimits = {}; 
 
-
+      // Set different Leap control settings if Oculus-enabled
       if ( oculusIsOn ) {
         leapBoxLimits.lr = 40; 
         leapBoxLimits.ud = 40;
@@ -74,11 +79,15 @@ if (leapIsOn) {
 
 // // Basic movement with neutral zone
 
-      console.log('position: ', hand.palmPosition); 
-
+      // Confidence greater than 0.5 and speed less than 500 prevents misunderstandings
       if(hand.confidence > 0.5 && v < 500){
+        console.log('leapBoxLimits ', leapBoxLimits.lr);
 
-        if(hand.grabStrength < 0.4){ //hand open
+        // Hand is open (not grabbing) and thus intending to move globe
+        if(hand.grabStrength < 0.4){ 
+
+          // When handPosition is greater than any limit, the globe moves that direction
+          // Multi-directional movement is allowed with cascading 'if' statements with no 'else'
           if( Math.abs(lr) > leapBoxLimits.lr ){
             var direction = lr > 0 ? -1 : 1 ;
             scrollSpeed = ( Math.abs(lr) - leapBoxLimits.lr ) / leapSpeed.lr;
@@ -90,13 +99,13 @@ if (leapIsOn) {
             orbitControls.rotateUp(direction * scrollSpeed);
           }
           if( scaleZoom < leapBoxLimits.zoomIn || scaleZoom > leapBoxLimits.zoomOut ) {
-            var offset = scaleZoom;
-            if(offset < leapBoxLimits.zoomIn) {
-              scrollSpeed = Math.abs(offset - leapBoxLimits.zoomIn) / leapSpeed.zoom ;
+
+            if(scaleZoom < leapBoxLimits.zoomIn) {
+              scrollSpeed = Math.abs(scaleZoom - leapBoxLimits.zoomIn) / leapSpeed.zoom ;
               orbitControls.dollyIn(1 + scrollSpeed);
             }
-            if (offset > leapBoxLimits.zoomOut){
-              scrollSpeed = Math.abs(offset - leapBoxLimits.zoomOut) / leapSpeed.zoom ;
+            if (scaleZoom > leapBoxLimits.zoomOut){
+              scrollSpeed = Math.abs(scaleZoom - leapBoxLimits.zoomOut) / leapSpeed.zoom ;
               orbitControls.dollyOut(1 + scrollSpeed);
             }
           }
@@ -105,7 +114,6 @@ if (leapIsOn) {
         if(hand.grabStrength > 0.8){
 
           if(nextFuncReady){
-            // getTweets();
             nextFuncReady = false;
             setTimeout(function(){nextFuncReady = true;}, 10000);
           }
@@ -124,17 +132,17 @@ if (leapIsOn) {
       }
     }
   });
+
+  // Manipulate Globe by swiping 
   var onSwipe = function(gesture, direction, velocity) {
 
     velocity = gesture.speed; 
 
-  // Manipulate Globe by swiping 
-  // TweenJS takes care of timing of this rotation
 
     orbitControls.autoRotate = true; 
 
-  // TODO: play with velocity scales
-    var tween = new TWEEN.Tween({ speed: velocity / 15 })
+  // TweenJS takes care of timing of this rotation
+    var tween = new TWEEN.Tween({ speed: velocity / 15 }) // TODO: play with velocity scales
       .to({speed: 0}, 10000)
       .easing(TWEEN.Easing.Circular.Out)
       .onUpdate(function() {

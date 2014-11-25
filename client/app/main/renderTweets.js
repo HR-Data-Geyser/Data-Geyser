@@ -6,12 +6,9 @@ var nodeTargetRandom = function(range){
 
 ////////////// renders tweets in order gathered from DB ////////////////
 
-
 var renderTweets = function(tweets){
   
   var i = 0;
-  
-  var speechThreshold = 30; // frequency of tweets that trigger speech synth
   
   var renderLoop = function(){
     var followerThreshold = window.params.followerThreshold; // number of followers needed to trigger a fountain
@@ -23,12 +20,6 @@ var renderTweets = function(tweets){
     if (i % wordThreshold === 0) {
       postText(tweets[i].text_keywords, tweets[i].isBlacklisted, nodeSource);
     }
-    
-    // // trigger speech synth
-    // if (i % speechThreshold === 0) {
-    //   var msg = new SpeechSynthesisUtterance(tweets[i].text_keywords);
-    //   window.speechSynthesis.speak(msg);
-    // }
 
     // fires fountains if tweet has more than n followers
     if (tweets[i].followers_count > followerThreshold && params.addEdge) {
