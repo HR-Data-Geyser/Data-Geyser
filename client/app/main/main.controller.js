@@ -89,7 +89,8 @@ angular.module('dataGeyserApp')
       .success(function(data){
 
         Interceptor.end();
-        renderTweets(data);
+        // renderTweets(data);
+        console.log('success');
       });
     }
 
