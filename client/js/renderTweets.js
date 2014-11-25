@@ -103,10 +103,10 @@ var postText = function(text, blacklist, node){
     scene.remove(object);
   };
   
-  // basic tween to transition mesh to random x,y,z coordinates 
+  // basic tween to transition mesh to random x,y,z coordinates
   createjs.Tween.get(textMesh.position)
   .to({x: nodeTargetRandom(800), y: nodeTargetRandom(800), z: nodeTargetRandom(800)}, 8000)
-  .call(onComplete, [textMesh]); 
+  .call(onComplete, [textMesh]);
 }
 
 ////////////////// displays photos flying into space //////////////////
