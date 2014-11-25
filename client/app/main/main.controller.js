@@ -2,7 +2,7 @@
 
 angular.module('dataGeyserApp')
 
-  .controller('MainCtrl', function ($scope, $http, socket, Interceptor) {
+  .controller('MainCtrl', ['$scope', '$http', 'socket', 'Interceptor', function ($scope, $http, socket, Interceptor) {
     $scope.awesomeTweets = [];
     $scope.tweetParser = [];
     $scope.topic = "ebola";
@@ -103,4 +103,4 @@ angular.module('dataGeyserApp')
       })
     }
 
-  });
+  }]);
