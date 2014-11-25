@@ -103,16 +103,13 @@ var postText = function(text, blacklist, node){
   };
   
   // basic tween to transition mesh to random x,y,z coordinates
+
   new TWEEN.Tween(textMesh.position)
       .to({x: nodeTargetRandom(800), y: nodeTargetRandom(800), z: nodeTargetRandom(800)}, 8000)
       .onComplete(function(){
         scene.remove(textMesh);
       })
       .start();
-
-  //createjs.Tween.get(textMesh.position)
-  //.to({x: nodeTargetRandom(800), y: nodeTargetRandom(800), z: nodeTargetRandom(800)}, 8000)
-  //.call(onComplete, [textMesh]);
 }
 
 ////////////////// displays photos flying into space //////////////////
@@ -143,9 +140,6 @@ var displayPhoto = function(url, node){
           scene.remove(image)
         })
         .start();
-    //createjs.Tween.get(image.position)
-    //  .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
-    //.call(onComplete, [image]);
   };
   
   texture.src = url;
