@@ -81,12 +81,12 @@ angular.module('dataGeyserApp')
     // fetches tweets matching topic from DB
     $scope.getTopic = function() {
 
-      Interceptor.start(); 
+      // Interceptor.start(); 
       // $('#gui').hide();
 
       $http.get('/api/tweets/getTweets/ebola').success(function(){
 
-        Interceptor.end();
+        // Interceptor.end();
         // renderTweets(data);
         console.log('success');
       });
