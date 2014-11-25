@@ -5,7 +5,7 @@ angular.module('dataGeyserApp', [
   'ngResource',
   'ngSanitize',
   'btford.socket-io',
-  'ui.router', 
+  'ui.router',
   'ngLoading'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, loadingProvider) {
@@ -14,7 +14,7 @@ angular.module('dataGeyserApp', [
 
     $locationProvider.html5Mode(true);
     $httpProvider.interceptors.push('authInterceptor');
-    
+
     loadingProvider
       .load({
         transitionSpeed: '.5s',
