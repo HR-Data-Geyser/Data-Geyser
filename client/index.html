@@ -19,6 +19,7 @@
     <!-- build:css({.tmp,client}) app/app.css -->
     <link rel="stylesheet" href="app/app.css">
       <!-- injector:css -->
+      <link rel="stylesheet" href="app/about/about.css">
       <link rel="stylesheet" href="app/account/login/login.css">
       <link rel="stylesheet" href="app/admin/admin.css">
       <link rel="stylesheet" href="app/app.css">
@@ -67,10 +68,12 @@
         <script src="js/ShaderExtras.js"></script>
         <script src="js/renderTweets.js"></script>
         <script src="js/leapControls.js"></script>
-    
+
         <!-- build:js({.tmp,client}) app/app.js -->
         <script src="app/app.js"></script>
           <!-- injector:js -->
+          <script src="app/about/about.controller.js"></script>
+          <script src="app/about/about.js"></script>
           <script src="app/account/account.js"></script>
           <script src="app/account/login/login.controller.js"></script>
           <script src="app/account/settings/settings.controller.js"></script>
@@ -87,7 +90,7 @@
           <script src="components/socket/socket.service.js"></script>
           <!-- endinjector -->
         <!-- endbuild -->
-        
+
         <!--import firefox vr scripts-->
         <script type="text/javascript" src="js/oculus/VRControls.js"></script>
         <script type="text/javascript" src="js/oculus/VREffect.js"></script>
