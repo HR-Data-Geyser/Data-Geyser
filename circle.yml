@@ -8,13 +8,11 @@ dependencies:
     - cd optipng-0.7.5; ./configure; make; sudo checkinstall -y;
     - bower install
 deployment:
-  override: 
-    - grunt build:dist:
-        timeout: 600
   production:
     branch: master
     commands:
-      - grunt build:dist
+      - grunt build:dist:
+          timeout: 600
       - git config --global user.email "tgvarik@me.com"
       - git config --global user.name "Tom G Varik"
       - heroku maintenance:on --app datageyser
@@ -23,7 +21,8 @@ deployment:
   staging:
     branch: develop
     commands:
-      - grunt build:dist
+      - grunt build:dist:
+          timeout: 600
       - git config --global user.email "tgvarik@me.com"
       - git config --global user.name "Tom G Varik"
       - heroku maintenance:on --app datageyser
