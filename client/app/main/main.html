@@ -147,15 +147,16 @@
 
   function onWindowResize() {
     var w, h;
-    
     if (oculusIsOn){
       w = 1960;
       h = 1080;
-      
+      renderer.autoClear = false;
+      oculusVr.setSize(w, h);
     } else if (isFullscreen) {
       w = window.innerWidth;
       h = window.innerHeight;
-      
+      renderer.autoClear = true;
+      renderer.setSize(w, h);
     } else {
       var wOff = 0, hOff = 0;
       var el = renderer.domElement;
@@ -168,12 +169,11 @@
       
       w = window.innerWidth - wOff;
       h = window.innerHeight - hOff;
+      renderer.autoClear = true;
+      renderer.setSize(w, h);
     }
-    
-    renderer.setSize(w, h);
     camera.aspect = w/h;
     camera.updateProjectionMatrix();
-    oculusVr.setSize(w, h);
   }
 
   ///////////// Removes sidebar and navbar to resize fullscreen window /////////////
