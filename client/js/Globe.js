@@ -210,8 +210,9 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 
   /////////// sets number of lines in curve and corresponds to number of particles //////////////
 
-  var points = curve.getPoints(params.particleFrequency); 
+  var points = curve.getPoints(params.particleFrequency);
 
+  /////////// this function takes in a set of points and returns a geometry ////////////////
   THREE.Curve.Utils.createLineGeometry = function( points ) {
   	var geometry = new THREE.Geometry();
   	for( var i = 0; i < points.length; i ++ ) {
@@ -220,8 +221,10 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   	return geometry;
   };
 
+  /////////// creates a curve geometry from points on the bezier curve formed above /////////////
   var curveGeometry = THREE.Curve.Utils.createLineGeometry( points );
 
+  /////////// constrains a value v to be between a min and max value ///////////////////
   function constrain(v, min, max){
   	if( v < min )
   		v = min;
@@ -231,21 +234,24 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   	return v;
   }
 
+  /////////// creates what will be the fancy edges ////////////////
   var linesGeo = new THREE.Geometry();
 	linesGeo.merge(curveGeometry);
 
+  /////////// creates what will be the particles along the fancy edges /////////////
   var particlesGeo = new THREE.Geometry();
 	var particleColors = [];
 
 	var particleColor = new THREE.Color(0xdd380c);
 
-	// var points = set.lineGeometry.vertices;
   var points = curveGeometry.vertices;
-  
+
   var particleCount = 100;  //  <- This determines how heavy the sprites show up.  Higher number -> Denser image
-  
+
   var particleSize = params.particleSize; // curveGeometry.size;
-  
+
+  /////////// updates particle position relative to other particles in particle animation //////////////
+  ///// i.e., particle in front goes to the back of the line when it gets to the end of the curve //////
 	for( var s=0; s<particleCount; s++ ){
 		var desiredIndex = s / particleCount * points.length;
 		var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
@@ -262,6 +268,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 		particleColors.push( particleColor );
 	}
 
+  ////////////////////////// fancy edge coloring and formatting //////////////////////
   linesGeo.colors = new THREE.Color(0xdd380c);
   //create curved line and add to scene
   var curvedLine = new THREE.Line( linesGeo, new THREE.LineBasicMaterial({ // these are the skinny lines
@@ -275,10 +282,9 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 	                     );
 
 	curvedLine.renderDepth = false;
-  // curvedLine.lookAt(scene.position);
 
 
-
+  ///////////////////  This is what actually shades and textures the particle edges  ///////////////////////
 	var shaderMaterial = new THREE.ShaderMaterial( {
 
 		uniforms: 		{
@@ -318,6 +324,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 		// sizeAttenuation: true,
 	});
 
+  /////////////////////  Format the particle colors and add particles to line  ////////////////////////
 	particlesGeo.colors = particleColor; // particleColors;
 	var pSystem = new THREE.PointCloud( particlesGeo, shaderMaterial );
 	pSystem.dynamic = true;
@@ -327,6 +334,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 	var values_size = shaderMaterial.attributes.size.value;
 	var values_color = shaderMaterial.attributes.customColor.value;
 
+  ///////////////////////// store vertices and vertex colors /////////////////////////
 	for( var v = 0; v < vertices.length; v++ ) {
 		values_size[ v ] = pSystem.geometry.vertices[v].size;
 		values_color[ v ] = new THREE.Color(0xdd380c)// particleColors[v];
@@ -335,6 +343,7 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
   shaderMaterial.attributes.size.needsUpdate = true;
   shaderMaterial.attributes.customColor.needsUpdate = true;
 
+  /////////////////// this function actually updates the particles absolute position //////////////////
 	pSystem.update = function(){
 		// var time = Date.now()
 		for( var i in this.geometry.vertices ){
@@ -363,13 +372,15 @@ Globe.prototype.drawEdge = function(source, target, color, fade, width) {
 		this.geometry.verticesNeedUpdate = true;
 	};
 
-  var onComplete = function(){
+  /////////////////  get ride of the edge ///////////////////////
+  var onComplete = function(curvedLine){
     scene.remove(curvedLine);
   };
 
-  //curvedLine.material.transparent = true;
+  /////////////////// add the edge to the scene ////////////////////
   scene.add(curvedLine);
 
+  //////////////////// fade out the edge //////////////////////////
   if(fade){
     curvedLine.material.transparent = true;
     new TWEEN.Tween(curvedLine.material)
