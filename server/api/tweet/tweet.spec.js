@@ -117,6 +117,7 @@ describe('Mongoose', function() {
   
   it('should find an existing tweet', function(done) {
     Tweet.find({keyword: 'ebola'}, function(err, tweets) {
+      tweets.length.should.equal(2);
       tweets[0].description.should.equal('testing');
       tweets[0].keyword.should.equal('ebola');
       done();

@@ -631,8 +631,8 @@ module.exports = function (grunt) {
         'env:all',
         'concurrent:test',
         'injector',
-        'autoprefixer'
-        // 'karma'
+        'autoprefixer',
+        'karma'
       ]);
     }
 
