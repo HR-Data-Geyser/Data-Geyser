@@ -24,7 +24,7 @@ exports.getTweets = function(req, res){
 // stops twitter stream
 exports.stopTweets = function(req, res) {
   twitter.stopTweets(req.params.topic, function(err, data){
-    return res.send(200);
+    return res.send(200, data);
   });
 }
 

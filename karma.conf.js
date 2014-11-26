@@ -26,21 +26,14 @@ module.exports = function(config) {
       'client/bower_components/threejs/build/three.js',
       'client/bower_components/leapjs-rigged-hand/build/leap.rigged-hand-0.1.4.js',
       'client/app/app.js',
-      'client/app/app.coffee',
       'client/app/**/*.js',
-      'client/app/**/*.coffee',
       'client/components/**/*.js',
-      'client/components/**/*.coffee',
-      'client/app/**/*.jade',
-      'client/components/**/*.jade',
       'client/app/**/*.html',
       'client/components/**/*.html'
     ],
 
     preprocessors: {
-      '**/*.jade': 'ng-jade2js',
       '**/*.html': 'html2js',
-      '**/*.coffee': 'coffee',
     },
 
     ngHtml2JsPreprocessor: {
