@@ -5,31 +5,30 @@ angular.module('dataGeyserApp')
   .controller('MainCtrl', ['$scope', '$http', 'socket', 'Interceptor', function ($scope, $http, socket, Interceptor) {
     $scope.awesomeTweets = [];
     $scope.tweetParser = [];
-    $scope.topic = "ebola";
     $scope.streaming = false;
 
-    // window.onkeydown = checkKeyPressed;
+    window.onkeydown = checkKeyPressed;
 
     $scope.tweetTempStorage = {};
 
     ///////// keydown event listener function...should probably go elsewhere //////////////
     
-    // function checkKeyPressed(e){
-    //   if (e.keyCode === 32) {
-    //     e.preventDefault();
-    //     vrControls.zeroSensor();
-    //   }
-    //
-    //   if (e.keyCode === 13) {
-    //     e.preventDefault();
-    //     $scope.getTopic($scope.topic);
-    //   }
-    //
-    //   if (e.keyCode === 81){
-    //     e.preventDefault();
-    //     $('#gui').toggle(1000);
-    //   }
-    // }
+    function checkKeyPressed(e){
+      if (e.keyCode === 32) {
+        e.preventDefault();
+        vrControls.zeroSensor();
+      }
+
+      if (e.keyCode === 13) {
+        e.preventDefault();
+        $scope.getTopic($scope.topic);
+      }
+
+      if (e.keyCode === 81){
+        e.preventDefault();
+        $('#gui').toggle(1000);
+      }
+    }
 
     ////////// scope methods ///////////
 
@@ -64,41 +63,39 @@ angular.module('dataGeyserApp')
     });
 
     // starts twitter api stream
-    $scope.chooseTopic = function(topic){
+    $scope.chooseTopic = function(){
       $scope.streaming = true;
-      $http.post('/api/tweets/getTweets/' + topic).success(function(){
+      $http.post('/api/tweets/getTweets/ebola').success(function(){
         console.log('post success');
       });
     }
 
     // stops twitter stream
-    $scope.stopTopic = function(topic){
+    $scope.stopTopic = function(){
       $scope.streaming = false;
-      $http.put('/api/tweets/getTweets/' + topic).success(function(){
+      $http.put('/api/tweets/getTweets/ebola').success(function(){
         console.log('stopped stream');
       });
     }
 
     // fetches tweets matching topic from DB
-    $scope.getTopic = function(topic) {
+    $scope.getTopic = function() {
 
-      Interceptor.start(); 
+      // Interceptor.start(); 
       // $('#gui').hide();
 
-      $http.get('/api/tweets/getTweets/' + topic)
-      .success(function(data){
+      $http.get('/api/tweets/getTweets/ebola').success(function(data){
 
-        Interceptor.end();
-        // renderTweets(data);
-        console.log('success');
+        // Interceptor.end();
+        renderTweets(data);
       });
     }
 
 
     // destroys all tweets matching topic in DB
-    $scope.destroyTopic = function(topic) {
+    $scope.destroyTopic = function() {
       Interceptor.start();
-      $http.delete('/api/tweets/getTweets/' + topic).success(function(){
+      $http.delete('/api/tweets/getTweets/ebola').success(function(){
         Interceptor.end();
         console.log(topic, 'destroyed');
       })

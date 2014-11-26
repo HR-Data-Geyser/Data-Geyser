@@ -77,9 +77,7 @@ var postText = function(text, blacklist, node){
   }
   
   context.fillText(text, 150, 100);
-  
-  var pos = camera.position;
-  var rnd = Math.random;
+
 
   var texture = new THREE.Texture(canvas);
   texture.needsUpdate = true;
@@ -87,35 +85,36 @@ var postText = function(text, blacklist, node){
   var material = new THREE.MeshBasicMaterial({
     side: THREE.DoubleSide,
     transparent: true,
-    map: texture
+    map: texture,
+    depthWrite: false
   });
   
   var geo = new THREE.PlaneBufferGeometry(canvas.width, canvas.height, 1, 1);  
   var textMesh = new THREE.Mesh(geo, material);
   
   // sets origin at center of globe with starting position towards camera
-  textMesh.position.set(0, 0, 0)
+  textMesh.position.set(0, 0, 0);
   textMesh.lookAt(camera.position);
   
   scene.add(textMesh);
 
-  var onComplete = function(object){
-    scene.remove(object);
+  var onComplete = function(){
+    scene.remove(textMesh);
   };
   
-  // basic tween to transition mesh to random x,y,z coordinates 
-  createjs.Tween.get(textMesh.position)
-  .to({x: nodeTargetRandom(800), y: nodeTargetRandom(800), z: nodeTargetRandom(800)}, 8000)
-  .call(onComplete, [textMesh]); 
+  // basic tween to transition mesh to random x,y,z coordinates
+
+  new TWEEN.Tween(textMesh.position)
+      .to({x: nodeTargetRandom(800), y: nodeTargetRandom(800), z: nodeTargetRandom(800)}, 8000)
+      .onComplete(function(){
+        scene.remove(textMesh);
+      })
+      .start();
 }
 
 ////////////////// displays photos flying into space //////////////////
 
 var displayPhoto = function(url, node){
-  
-  var onComplete = function(object){
-    scene.remove(object);
-  };
   
   var pos = camera.position;
   var rnd = Math.random;
@@ -135,9 +134,12 @@ var displayPhoto = function(url, node){
     scene.add(image);
     
     // basic tween to transition mesh to random x,y,z coordinates in vicinity of camera position at time of instantiation
-    createjs.Tween.get(image.position)
-      .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
-    .call(onComplete, [image]); 
+    new TWEEN.Tween(image.position)
+        .to({x: pos.x*(0.9+(rnd()*0.4)), y: pos.y*(0.9+(rnd()*0.4)), z: pos.z*(0.9+(rnd()*0.4))}, 8000)
+        .onComplete(function(){
+          scene.remove(image)
+        })
+        .start();
   };
   
   texture.src = url;
