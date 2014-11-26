@@ -5,6 +5,8 @@ Data Geyser is a virtual reality enabled, immersive and interactive data visuali
 
 The app can be experienced either in the browser or using the Oculus Rift headset. The app can be controlled using either the mouse or Leap Motion Controller.
 
+Deployed app is based on Master branch, and viewable at: datageyser.herokuapp.com
+
 ![Alt text] (/client/assets/images/screenshot-globe.png?raw=true)
 ![Alt text] (/client/assets/images/screenshot-geyser.png?raw=true)
 
@@ -81,7 +83,11 @@ Data Geyser was created by a team of 4 software engineers:
 Brian Iversen, 
 Tom Varik, 
 Steve Sharp, 
-Carl Goldberg, 
+Carl Goldberg
+
+In collaboration with Kine-tech Arts:
+Weidong Yang,
+Travis Bennett
 
 ## License
 
