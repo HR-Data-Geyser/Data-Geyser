@@ -26,11 +26,12 @@ var T = new Twit({
 
 var stream;
 
-function stopTweets(topic) {
+function stopTweets(topic, callback) {
   stream.stop();
+  callback();
 }
 
-function streamTweets(topic) {
+function streamTweets(topic, callback) {
   // console.log('started', topic);
   
   var globe = ['-180', '-90', '180', '90'];
@@ -72,6 +73,6 @@ function streamTweets(topic) {
       // Save to database
       Tweet.create(newTweet);
     }
-  })
-
+  });
+  callback(stream);
 }
